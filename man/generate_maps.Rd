@@ -2,7 +2,7 @@
 % Please edit documentation in R/Mapping.R
 \name{generate_maps}
 \alias{generate_maps}
-\title{Generate Multi-Panel Maps from Spatial Model Predictions}
+\title{Generate Multi-panel Maps from Spatial Model Predictions}
 \usage{
 generate_maps(
   data_to_plot,
