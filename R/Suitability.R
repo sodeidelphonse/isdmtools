@@ -1,5 +1,7 @@
 
-#--- Function to compute habitat suitability -------------------------
+#-----------------------------------------------------------
+#--- Function to compute an habitat suitability from ISDM
+#-----------------------------------------------------------
 
 #' @title Compute a unified suitability index from integrated spatial model predictions.
 #'

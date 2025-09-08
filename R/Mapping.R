@@ -1,13 +1,9 @@
 
 #----------------------------------------------------------
-#--- Alternative with reshape2::melt() for multi-panels
+#--- Multi-panel plot for spatial data visualization
 #----------------------------------------------------------
 
-#library(ggplot2)
-#library(reshape2)
-#library(sf)
-
-#' Generate Multi-Panel Maps from Spatial Model Predictions
+#' Generate Multi-panel Maps from Spatial Model Predictions
 #'
 #' This function creates a multi-panel map for visualizing multiple prediction
 #' variables from a species distribution model or other spatial model. It is
@@ -103,7 +99,6 @@ generate_maps <- function(data_to_plot,
                           x_axis_breaks = NULL,
                           y_axis_breaks = NULL) {
 
-  # Inputs validation
   if (!is.data.frame(data_to_plot) && !inherits(data_to_plot, "sf") && !inherits(data_to_plot, "SpatRaster")) {
     stop("'data_to_plot' must be a data.frame, an sf object, or a SpatRaster.", call. = FALSE)
   }

@@ -1,8 +1,8 @@
 
 
-#---------------------------------------------------------------------
-#--- Function to generate background points without NA cells (10)
-#---------------------------------------------------------------------
+#-----------------------------------------------------------------
+#--- Function to generate background points without NA cells
+#-----------------------------------------------------------------
 
 #' @title Generate background points
 #' @description A constructor function to generate background points for computing evaluation scores for presence-only data.
@@ -117,9 +117,9 @@ sample_bg_points <- function(mask, points = NULL, n = 500, method = "random", va
 }
 
 
-#-------------------------------------------
-#--- Useful methods for BackgroundPoints
-#-------------------------------------------
+#--------------------------------------------
+#--- Useful S3 methods for BackgroundPoints
+#--------------------------------------------
 
 #--- Print method for BackgroundPoints class ---
 
@@ -145,7 +145,7 @@ print.BackgroundPoints <- function(x, ...) {
 }
 
 
-#--- Plot method for BackgroundPoints objects ----
+#--- Plot method for BackgroundPoints objects ---
 
 #' @title Plot method for the class `BackgroundPoints`.
 #'

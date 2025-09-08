@@ -1,5 +1,7 @@
 
-#--- 1) Function to compute comprehensive evaluation metrics for integrated or standalone spatial models -----
+#--------------------------------------------------------------------------------------------------------
+#--- Function to compute comprehensive evaluation metrics for integrated or standalone spatial models
+#--------------------------------------------------------------------------------------------------------
 
 #' @title Compute Evaluation Metrics for Integrated Spatial Models from Multiple Datasets
 #'
