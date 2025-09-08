@@ -40,7 +40,7 @@ The package provides a set of core functions to handle common data preparation a
 
 **sample_bg_points()**: A constructor function for generating background points for presence-only data with `print()` and `plot()` methods for the `BackgroundPoints` class.
 
-# Getting Started: A Complete Example
+# Getting Started: A Short Example
 The core workflow of "isdmtools" involves creating a DataFolds object and then extracting specific folds for your modeling pipeline.
 
 First, let's load the package and set up some dummy data for a hypothetical study region.
@@ -51,7 +51,7 @@ library(sf)
 library(ggplot2)
 library(dplyr)
 
-### Create dummy presence-only and count data
+# Create dummy presence-only and count data
 set.seed(42)
 presence_data <- data.frame(
   x = runif(100, 0, 4),
@@ -67,32 +67,32 @@ count_data <- data.frame(
 ) %>%
   st_as_sf(coords = c("x", "y"), crs = 4326)
 
-### Create a list of datasets
+# Create a list of datasets
 datasets_list <- list(Presence = presence_data, Count = count_data)
 
-### Define a dummy study region
+# Define a dummy study region
 ben_utm_coords <- matrix(c(0, 6, 4, 6, 4, 13, 0, 13, 0, 6), ncol = 2, byrow = TRUE)
 ben_utm <- st_sfc(st_polygon(list(ben_utm_coords)), crs = 4326)
 ben_utm <- st_sf(data.frame(name = "Region"), ben_utm)
 
-### Create the DataFolds object
+# Create the DataFolds object
 my_folds <- create_folds(datasets_list, ben_utm, k = 5, seed = 23)
 
-### Print a summary of the object
+# Print a summary of the object
 print(my_folds)
 
-### Visualize the folds
+# Visualize the folds
 plot_cv <- plot(my_folds)
 print(plot_cv)
 
-### Extract a specific fold (e.g., Fold 3) for modeling
+# Extract a specific fold (e.g., Fold 3) for modeling
 splits_fold_3 <- extract_fold(my_folds, fold = 3)
 
-You now have two clean lists of `sf` objects for training and testing
-### Access the data for the 'Presence' dataset in the training set
+# You now have two clean lists of `sf` objects for training and testing
+# Access the data for the 'Presence' dataset in the training set
 train_data_presence <- splits_fold_3\$train\$Presence
 
-### Access the data for the 'Count' dataset in the testing set
+# Access the data for the 'Count' dataset in the testing set
 test_data_count <- splits_fold_3\$test\$count
 ```
 
