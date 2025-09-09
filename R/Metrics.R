@@ -62,7 +62,7 @@
 #' \dontrun{
 #' # Assuming you have dummy rasters and a list of sf objects with 'counts' and 'present' columns.
 #'
-#' # Example 1: Compute metrics for a PA model
+#' # Example 1: Compute metrics for a presence-absence model
 #' # my_metrics <- compute_metrics(
 #' #   test_data = list(ds1 = my_pa_sf),
 #' #   prob_raster = my_prob_raster  # compulsory prob_raster
@@ -76,9 +76,12 @@
 #' # )
 #'
 #' # Example 3: Compute both continuous and ROC-based metrics for a count model
-#' # The user must first generate a suitability index (prob_raster) from the linear scale prediction (pred_eta).
-#' # expected_raster    <- suitability_index(pred_eta, response.type = "count", output.format = "response")
-#' # suitability_raster <- suitability_index(pred_eta, response.type = "count", output.format = "prob")
+#' # The user must first generate a suitability index (prob_raster)
+#' from the linear scale prediction (pred_eta).
+#' # expected_raster <- suitability_index(pred_eta, response.type = "count",
+#'   output.format = "response")
+#' # suitability_raster <- suitability_index(pred_eta, response.type = "count",
+#'   output.format = "prob")
 #' # full_metrics <- compute_metrics(
 #' #   test_data = list(ds1 = my_count_sf),
 #' #   prob_raster = suitability_raster,
@@ -97,7 +100,7 @@
 #' #   exposure = "exposure_col"
 #' # )
 #'
-#' # Example 5: Compute dataset-specific and weighted composite metrics for a joint model (PO and PA)
+#' # Example 5: Compute dataset-specific and weighted composite metrics for a joint model
 #' # expected_raster  <- suitability_index(pred_eta, response.type = "count.pa", output.format = "response")
 #' # suitability_raster <- suitability_index(pred_eta, response.type = "count.pa", has.offset = FALSE)
 #' # full_metrics <- compute_metrics(
