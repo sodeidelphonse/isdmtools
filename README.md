@@ -90,10 +90,10 @@ splits_fold_3 <- extract_fold(my_folds, fold = 3)
 
 # You now have two clean lists of `sf` objects for training and testing
 # Access the data for the 'Presence' dataset in the training set
-train_data_presence <- splits_fold_3\$train\$Presence
+train_data_presence <- splits_fold_3$train$Presence
 
 # Access the data for the 'Count' dataset in the testing set
-test_data_count <- splits_fold_3\$test\$count
+test_data_count <- splits_fold_3$test$count
 ```
 
 # Usage with Prediction Models
