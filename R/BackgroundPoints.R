@@ -21,6 +21,7 @@
 #'
 #' @return A list object containing a `spatRaster` object (with `points` excluded if not `NULL`) and the background points.
 #' @export
+#' @family BackgroundPoints methods
 #'
 #' @examples
 #' \dontrun{
@@ -41,7 +42,6 @@
 #' dim(bg_sample2$bg)
 #' plot(bg_sample2)
 #' }
-#' @family BackgroundPoints methods
 #'
 sample_bg_points <- function(mask, points = NULL, n = 500, method = "random", values = FALSE,
                              cells = FALSE, xy = TRUE, as.points = FALSE, ...) {
@@ -129,6 +129,7 @@ sample_bg_points <- function(mask, points = NULL, n = 500, method = "random", va
 #' @param ... Additional arguments (not used by this method).
 #'
 #' @return The object invisibly.
+#' @method print BackgroundPoints
 #' @export
 #' @family BackgroundPoints methods
 #'
@@ -140,17 +141,18 @@ print.BackgroundPoints <- function(x, ...) {
 }
 
 #--- Plot method for BackgroundPoints objects ---
-#' @title Plot method for the class `BackgroundPoints`.
+#' @title Plot method for the class `BackgroundPoints`
 #'
 #' @description
 #' A method to visualize the background points generated in `BackgroundPoints` object for model evaluation,
-#' including the `points` locations that have been excluded from the sample (white color) if there are
+#' including the `points` locations that have been excluded from the sample (white color) if they are
 #' provided to \code{sample_bg_points()} function.
 #'
 #' @param x A `BackgroundPoints` S3 object.
 #' @param ... Additional arguments (not used by this method).
 #'
 #' @return The object invisibly.
+#' @method plot BackgroundPoints
 #' @export
 #' @importFrom graphics points
 #'
@@ -191,6 +193,7 @@ plot.BackgroundPoints <- function(x, ...) {
   plot(x$mask, ...)
   graphics::points(pts, col = "red", pch = 20, cex = 0.8)
 
+  invisible(x)
 }
 
 

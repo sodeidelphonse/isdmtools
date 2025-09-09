@@ -40,6 +40,7 @@
 #' }
 #'
 #' @export
+#' @family suitability mapping
 #'
 #' @examples
 #' \dontrun{
@@ -70,8 +71,6 @@
 #' Dorazio RM. Accounting for imperfect detection and survey bias in statistical analysis of presence-only data. _Global Ecology and Biogeography_ (2014) 23:1472–1484.
 #'
 #' Fithian W, Elith J, Hastie T, Keith DA. Bias correction in species distribution models: pooling survey and collection data for multiple species. _Methods in Ecology and Evolution_ (2015) 6:424–438. \doi{10.1111/2041-210X.12242}
-#'
-#' @family suitability mapping
 #'
 suitability_index <- function(x,
                               post.stat = "mean",
@@ -160,7 +159,6 @@ inv_cloglog <- function(eta, scaling = 1) {
 #'
 #' @return A `data.frame` for grid-based predictions or `sf` object for point-based predictions.
 #' @export
-#'
 #' @family suitability mapping
 #'
 prepare_predictions <- function(prediction_data, base_map = NULL) {

@@ -36,7 +36,6 @@ names(train_data_presence)
 names(test_data_count)
 }
 
-
 }
 \seealso{
 Other spatial blocking: 

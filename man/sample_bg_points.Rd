@@ -63,10 +63,11 @@ bg_sample2 <- sample_bg_points(r, points = pts, n = 10000, xy =TRUE, cells = FAL
 dim(bg_sample2$bg)
 plot(bg_sample2)
 }
+
 }
 \seealso{
-Other bg_points: 
+Other BackgroundPoints methods: 
 \code{\link{plot.BackgroundPoints}()},
 \code{\link{print.BackgroundPoints}()}
 }
-\concept{bg_points}
+\concept{BackgroundPoints methods}

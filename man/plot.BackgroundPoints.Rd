@@ -2,7 +2,7 @@
 % Please edit documentation in R/BackgroundPoints.R
 \name{plot.BackgroundPoints}
 \alias{plot.BackgroundPoints}
-\title{Plot method for the class \code{BackgroundPoints}.}
+\title{Plot method for the class \code{BackgroundPoints}}
 \usage{
 \method{plot}{BackgroundPoints}(x, ...)
 }
@@ -16,7 +16,7 @@ The object invisibly.
 }
 \description{
 A method to visualize the background points generated in \code{BackgroundPoints} object for model evaluation,
-including the \code{points} locations that have been excluded from the sample (white color) if there are
+including the \code{points} locations that have been excluded from the sample (white color) if they are
 provided to \code{sample_bg_points()} function.
 }
 \examples{
@@ -41,8 +41,8 @@ plot(bg_sample2)
 
 }
 \seealso{
-Other bg_points: 
+Other BackgroundPoints methods: 
 \code{\link{print.BackgroundPoints}()},
 \code{\link{sample_bg_points}()}
 }
-\concept{bg_points}
+\concept{BackgroundPoints methods}

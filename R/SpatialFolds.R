@@ -121,7 +121,6 @@ create_folds <- function(datasets, region_polygon = NULL, k = 5, seed = 23, cv_m
 #' names(test_data_count)
 #' }
 #'
-#'
 extract_fold.DataFolds <- function(object, fold, ...) {
   if (!(fold %in% 1:object$k)) {
     stop(paste("Invalid fold number. Must be between 1 and", object$k))
