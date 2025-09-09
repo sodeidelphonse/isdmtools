@@ -106,7 +106,7 @@ sample_bg_points <- function(mask, points = NULL, n = 500, method = "random", va
     )
     structure(list(bg = bg_points, mask = mask_modified), class = "BackgroundPoints")
   }, error = function(e) {
-    message(sprintf("⚠️ Sampling background points failed: %s", conditionMessage(e)))
+    message(sprintf("Sampling background points failed: %s", conditionMessage(e)))
     return(NULL)
   })
 
@@ -146,7 +146,7 @@ print.BackgroundPoints <- function(x, ...) {
 #' @description
 #' A method to visualize the background points generated in `BackgroundPoints` object for model evaluation,
 #' including the `points` locations that have been excluded from the sample (white color) if they are
-#' provided to \code{sample_bg_points()} function.
+#' provided to `sample_bg_points()` function.
 #'
 #' @param x A `BackgroundPoints` S3 object.
 #' @param ... Additional arguments (not used by this method).
@@ -155,6 +155,7 @@ print.BackgroundPoints <- function(x, ...) {
 #' @method plot BackgroundPoints
 #' @export
 #' @importFrom graphics points
+#' @family BackgroundPoints methods
 #'
 #' @examples
 #' \dontrun{
@@ -176,8 +177,6 @@ print.BackgroundPoints <- function(x, ...) {
 #' plot(bg_sample2)
 #' }
 #'
-#' @family BackgroundPoints methods
-#'
 plot.BackgroundPoints <- function(x, ...) {
 
   extract_points <- function(bg, mask) {
@@ -190,7 +189,7 @@ plot.BackgroundPoints <- function(x, ...) {
   }
 
   pts <- extract_points(bg = x$bg, mask = x$mask)
-  plot(x$mask, ...)
+  terra::plot(x$mask, ...)
   graphics::points(pts, col = "red", pch = 20, cex = 0.8)
 
   invisible(x)
@@ -202,7 +201,7 @@ plot.BackgroundPoints <- function(x, ...) {
 #' @title Helper function to print background points
 #'
 #' @description Print background points based on its format.
-#' @param A `BackgroundPoints` S3 object
+#' @param x A `BackgroundPoints` S3 object.
 #'
 #' @return An object that can be printed.
 #' @importFrom utils head tail
