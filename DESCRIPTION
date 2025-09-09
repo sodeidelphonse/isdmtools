@@ -11,7 +11,7 @@ Maintainer: <sdidelphonse@gmail.com>
 Description: A suite of tools for spatial data manipulation, visualization, block cross-validation, and evaluation metrics, designed to assist with building and analyzing Integrated Species Distribution Models (ISDMs).
 License: MIT LICENSE
 Encoding: UTF-8
-LazyData: true
+LazyData: false
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
 Imports: 
@@ -23,8 +23,9 @@ Imports:
     reshape2,
     ggplot2,
     ggspatial,
-    grDevices,
+    magrittr,
     pROC,
+    grDevices,
     fmesher,
     inlabru
 Suggests: 
