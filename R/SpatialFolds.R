@@ -212,6 +212,7 @@ print.DataFolds <- function(x, ...) {
 #' # Create some dummy sf data
 #' library(sf)
 #' library(dplyr)
+#'
 #' set.seed(42)
 #' presence_data <- data.frame(
 #'   x = runif(100, 0, 4),
@@ -240,6 +241,12 @@ print.DataFolds <- function(x, ...) {
 #'
 #' # Now you can plot the object
 #' plot_cv <- plot(my_folds)
+#' print(plot_cv)
+#'
+#' # You can even customize the plot output by adjusting the axes breaks
+#' plot_cv <- plot_cv +
+#'   ggplot2::scale_x_continuous(breaks = seq(0, 4, 1)) +
+#'   ggplot2::scale_y_continuous(breaks = seq(6, 13, 2))
 #' print(plot_cv)
 #' }
 #'
