@@ -6,8 +6,8 @@ Authors@R: person(given = "Akoeugnigan Idelphonse",
                  family = "SODE",
                  role = c("cre", "aut"),
                  email = "sdidelphonse@gmail.com",
-                 comment = "Maintainer of the package",
-                 yerar = "2025")
+                 comment = "Maintainer of the package")
+Date: 2025-09-08
 Maintainer: <sdidelphonse@gmail.com>
 Description: A suite of tools for spatial data manipulation, visualization, block cross-validation, and evaluation metrics, designed to assist with building and analyzing Integrated Species Distribution Models (ISDMs).
 License: MIT LICENSE
