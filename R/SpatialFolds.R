@@ -310,13 +310,15 @@ bind_datasets <- function(datasets) {
   return(bound_data)
 }
 
-# --- Citation information ---
+# --- Package documentation ---
 #' @title A Toolkit for Integrated Species Distribution Models
 #'
 #' @description
 #' The `isdmtools` package provides a set of tools for preparing, evaluating and visualizing spatial data for integrated species distribution models (ISDMs).
+#' It is designed to help users to prepare multisource spatial point datasets, in particular the spatial blocking techniques for spatial cross-validation, and
+#' analyse the habitat suitability from joint model predictions and map the results. It also help to compute a comprehensive evaluation metrics of the joint model
+#' performance using both ROC-based and continuous weighted composite scores providing a holistic view of model performance.
 #'
-#' @author SODE Akoeugnigan Idelphonse
 #' @name isdmtools-package
 #' @aliases isdmtools
 #' @keywords internal
