@@ -18,5 +18,8 @@ The object invisibly.
 A method to print the Background points generated from \code{BackgroundPoints} object for model evaluation.
 }
 \seealso{
-\code{\link{plot.BackgroundPoints}}
+Other bg_points: 
+\code{\link{plot.BackgroundPoints}()},
+\code{\link{sample_bg_points}()}
 }
+\concept{bg_points}

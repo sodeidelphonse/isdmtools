@@ -11,9 +11,9 @@
 #' point-based (sf) predictions.
 #'
 #' The function internally reshapes the data from a wide format (with a column
-#' for each prediction variable) to a long format suitable for plotting with
-#' `ggplot2::facet_wrap()`. It automatically selects the appropriate
-#' geometry (`geom_tile` for grids, `geom_sf` for points) and conditional scales.
+#' for each prediction variable) to a long format suitable for plotting with `ggplot2::facet_wrap()`.
+#' It automatically selects the appropriate geometry (`geom_tile()` for grids and `geom_sf()` for points) and conditional scales.
+#' Users can also add to the map other spatial vector layers or re-customize the plot using ggplot2 syntax if needed.
 #'
 #' @param data_to_plot A data frame, `sf` or `SpatRaster` object containing the prediction data.
 #'   For grid-based data frame, it must contain columns named "X" and "Y" representing pixels' coordinates.
@@ -81,12 +81,9 @@
 #' )
 #' }
 #'
-#' @importFrom ggplot2 ggplot geom_sf geom_tile aes scale_fill_gradientn scale_color_gradientn
-#' @importFrom ggplot2 facet_wrap labs theme element_blank element_text element_rect
-#' @importFrom reshape2 melt
-#' @importFrom sf st_as_sf
-#' @importFrom grDevices colorRampPalette rainbow terrain.colors heat.colors topo.colors
+#' @importFrom grDevices colorRampPalette rainbow terrain.colors topo.colors
 #' @importFrom grid unit
+#' @family mapping methods
 #'
 generate_maps <- function(data_to_plot,
                           vars_to_plot = c("mean", "sd"),

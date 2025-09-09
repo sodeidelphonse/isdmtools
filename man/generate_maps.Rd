@@ -56,9 +56,9 @@ point-based (sf) predictions.
 }
 \details{
 The function internally reshapes the data from a wide format (with a column
-for each prediction variable) to a long format suitable for plotting with
-\code{ggplot2::facet_wrap()}. It automatically selects the appropriate
-geometry (\code{geom_tile} for grids, \code{geom_sf} for points) and conditional scales.
+for each prediction variable) to a long format suitable for plotting with \code{ggplot2::facet_wrap()}.
+It automatically selects the appropriate geometry (\code{geom_tile()} for grids and \code{geom_sf()} for points) and conditional scales.
+Users can also add to the map other spatial vector layers or re-customize the plot using ggplot2 syntax if needed.
 }
 \examples{
 \dontrun{
@@ -106,3 +106,4 @@ generate_maps(
 }
 
 }
+\concept{mapping methods}

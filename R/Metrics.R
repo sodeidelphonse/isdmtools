@@ -108,7 +108,7 @@
 #' # )
 #' }
 #' @export
-#' @seealso \code{\link{extract_fold.DataFolds}}, \code{\link{suitability_index}}, \code{\link{sample_bg_points}}
+#' @seealso \code{\link{extract_fold.DataFolds}}, \code{\link{suitability_index}}
 #'
 compute_metrics <- function(test_data,
                             prob_raster = NULL,

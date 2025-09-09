@@ -4,15 +4,18 @@
 \alias{extract_fold.DataFolds}
 \title{Extract a specific fold from a DataFolds object}
 \usage{
-\method{extract_fold}{DataFolds}(object, fold)
+\method{extract_fold}{DataFolds}(object, fold, ...)
 }
 \arguments{
 \item{object}{A \code{DataFolds} S3 object.}
 
 \item{fold}{An integer specifying the fold ID to be extracted as the test set.}
+
+\item{...}{Additional arguments (not used by this method).}
 }
 \value{
-A list containing two named elements: \code{train} and \code{test}. Each of these elements is a named list of \code{sf} objects, with names corresponding to the original datasets.
+A list containing two named elements: \code{train} and \code{test}.
+Each of these elements is a named list of \code{sf} objects, with names corresponding to the original datasets.
 }
 \description{
 This method splits the data into training and testing sets for a given fold.
@@ -33,7 +36,13 @@ names(train_data_presence)
 names(test_data_count)
 }
 
+
 }
 \seealso{
-\code{\link{create_folds}}, \code{\link{plot.DataFolds}}, \code{\link{print.DataFolds}}
+Other spatial blocking: 
+\code{\link{create_folds}()},
+\code{\link{extract_fold}()},
+\code{\link{plot.DataFolds}()},
+\code{\link{print.DataFolds}()}
 }
+\concept{spatial blocking}

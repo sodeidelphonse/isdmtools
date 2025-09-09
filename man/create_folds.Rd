@@ -2,7 +2,7 @@
 % Please edit documentation in R/SpatialFolds.R
 \name{create_folds}
 \alias{create_folds}
-\title{Create block cross-validation folds for multi-source spatial datasets}
+\title{Create block cross-validation folds for multisource spatial datasets}
 \usage{
 create_folds(
   datasets,
@@ -79,5 +79,10 @@ Roberts DR, Bahn V, Ciuti S, Boyce MS, Elith J, Guillera-Arroita G, Hauenstein S
 Valavi R, Elith J, Lahoz-Monfort JJ, Guillera-Arroita G. blockCV: an R package for generating spatially or environmentally separated folds for k-fold cross-validation of species distribution models. \emph{bioRxiv} (2018)357798. \doi{10.1101/357798}
 }
 \seealso{
-\code{\link{extract_fold.DataFolds}}, \code{\link{plot.DataFolds}}, \code{\link{print.DataFolds}}
+Other spatial blocking: 
+\code{\link{extract_fold}()},
+\code{\link{extract_fold.DataFolds}()},
+\code{\link{plot.DataFolds}()},
+\code{\link{print.DataFolds}()}
 }
+\concept{spatial blocking}

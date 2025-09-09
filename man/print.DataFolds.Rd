@@ -19,3 +19,11 @@ A method to print a concise summary of the \code{DataFolds} object, including th
 number of folds, the datasets included, and a breakdown of individuals per
 dataset across all folds.
 }
+\seealso{
+Other spatial blocking: 
+\code{\link{create_folds}()},
+\code{\link{extract_fold}()},
+\code{\link{extract_fold.DataFolds}()},
+\code{\link{plot.DataFolds}()}
+}
+\concept{spatial blocking}

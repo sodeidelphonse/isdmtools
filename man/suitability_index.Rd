@@ -88,5 +88,7 @@ Dorazio RM. Accounting for imperfect detection and survey bias in statistical an
 Fithian W, Elith J, Hastie T, Keith DA. Bias correction in species distribution models: pooling survey and collection data for multiple species. \emph{Methods in Ecology and Evolution} (2015) 6:424–438. \doi{10.1111/2041-210X.12242}
 }
 \seealso{
-\code{\link{prepare_preparations}}, \code{\link{generate_maps}}, \code{\link{compute_metrics}}
+Other suitability mapping: 
+\code{\link{prepare_predictions}()}
 }
+\concept{suitability mapping}

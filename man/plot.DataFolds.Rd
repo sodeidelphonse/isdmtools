@@ -22,6 +22,7 @@ partitions for each fold of a \code{DataFolds} object.
 \dontrun{
 # Create some dummy sf data
 library(sf)
+library(dplyr)
 set.seed(42)
 presence_data <- data.frame(
   x = runif(100, 0, 4),
@@ -55,5 +56,10 @@ print(plot_cv)
 
 }
 \seealso{
-\code{\link{extract_fold.DataFolds}}, \code{\link{print.DataFolds}}
+Other spatial blocking: 
+\code{\link{create_folds}()},
+\code{\link{extract_fold}()},
+\code{\link{extract_fold.DataFolds}()},
+\code{\link{print.DataFolds}()}
 }
+\concept{spatial blocking}

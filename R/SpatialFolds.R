@@ -1,5 +1,9 @@
 
-#' @title Create block cross-validation folds for multi-source spatial datasets
+#-----------------------------------------------------------------------
+#--- Creating spatial cross-validation folds for mutisource datasets
+#-----------------------------------------------------------------------
+
+#' @title Create block cross-validation folds for multisource spatial datasets
 #'
 #' @description
 #' A constructor function for the `DataFolds` S3 class. It binds multiple `sf` datasets
@@ -23,6 +27,7 @@
 #' @return An S3 object of class `DataFolds` containing the combined data,
 #' fold information, and the original datasets.
 #' @export
+#' @family spatial blocking
 #'
 #' @examples
 #' \dontrun{
@@ -59,7 +64,6 @@
 #'
 #' Valavi R, Elith J, Lahoz-Monfort JJ, Guillera-Arroita G. blockCV: an R package for generating spatially or environmentally separated folds for k-fold cross-validation of species distribution models. _bioRxiv_ (2018)357798. \doi{10.1101/357798}
 #'
-#' @seealso \code{\link{extract_fold.DataFolds}}, \code{\link{plot.DataFolds}}, \code{\link{print.DataFolds}}
 #'
 create_folds <- function(datasets, region_polygon = NULL, k = 5, seed = 23, cv_method = "cluster", ...) {
 
@@ -85,7 +89,7 @@ create_folds <- function(datasets, region_polygon = NULL, k = 5, seed = 23, cv_m
   return(object)
 }
 
-
+#--- S3 method for DataFolds objects ----
 #' @title Extract a specific fold from a DataFolds object
 #'
 #' @description
@@ -95,10 +99,13 @@ create_folds <- function(datasets, region_polygon = NULL, k = 5, seed = 23, cv_m
 #'
 #' @param object A `DataFolds` S3 object.
 #' @param fold An integer specifying the fold ID to be extracted as the test set.
+#' @param ... Additional arguments (not used by this method).
 #'
-#' @return A list containing two named elements: `train` and `test`. Each of these elements is a named list of `sf` objects, with names corresponding to the original datasets.
+#' @return A list containing two named elements: `train` and `test`.
+#' Each of these elements is a named list of `sf` objects, with names corresponding to the original datasets.
 #' @method extract_fold DataFolds
 #' @export
+#' @family spatial blocking
 #'
 #' @examples
 #' \dontrun{
@@ -114,9 +121,8 @@ create_folds <- function(datasets, region_polygon = NULL, k = 5, seed = 23, cv_m
 #' names(test_data_count)
 #' }
 #'
-#' @seealso \code{\link{create_folds}}, \code{\link{plot.DataFolds}}, \code{\link{print.DataFolds}}
 #'
-extract_fold.DataFolds <- function(object, fold) {
+extract_fold.DataFolds <- function(object, fold, ...) {
   if (!(fold %in% 1:object$k)) {
     stop(paste("Invalid fold number. Must be between 1 and", object$k))
   }
@@ -136,21 +142,28 @@ extract_fold.DataFolds <- function(object, fold) {
   ))
 }
 
-# --- Generic function for S3 dispatch ---
-
-#' @exportS3Method extract_fold generic
+# --- Generic method ---
+#' @title Generic method for DataFolds object
+#'
+#' @param object A `DataFolds` S3 object.
+#' @param ... Additional arguments (not used by this method).
+#'
+#' @return A list containing two named elements: `train` and `test`.
+#' Each of these elements is a named list of `sf` objects, with names corresponding to the original datasets.
+#' @export
+#' @family spatial blocking
+#'
 extract_fold <- function(object, ...) {
   UseMethod("extract_fold")
 }
 
-# --- Default method for unexpected types ---
-
-#' @exportS3Method extract_fold default
+# --- Default method ---
+#' @method extract_fold default
 extract_fold.default <- function(x) {
   cat("Default method for class", sQuote(class(x)), ".\n")
 }
 
-
+#--- Print method ---
 #' @title Print a summary of a DataFolds object
 #'
 #' @description
@@ -164,6 +177,7 @@ extract_fold.default <- function(x) {
 #' @return The object invisibly.
 #' @method print DataFolds
 #' @export
+#' @family spatial blocking
 #'
 print.DataFolds <- function(x, ...) {
   cat("A DataFolds S3 object with", x$k, "folds.\n")
@@ -172,14 +186,14 @@ print.DataFolds <- function(x, ...) {
 
   summary_df <- x$data_all %>%
     dplyr::group_by(datasetName, folds_ids) %>%
-    dplyr::summarise(n = n(), .groups = "keep") %>%
+    dplyr::summarise(n = dplyr::n(), .groups = "keep") %>%
     dplyr::ungroup()
-
   print(summary_df)
+
   invisible(x)
 }
 
-
+#--- Plot method ---
 #' @title Plot block cross-validation folds for multiple datasets
 #'
 #' @description
@@ -192,11 +206,13 @@ print.DataFolds <- function(x, ...) {
 #' @return A `ggplot2` object that can be printed or saved.
 #' @method plot DataFolds
 #' @export
+#' @family spatial blocking
 #'
 #' @examples
 #' \dontrun{
 #' # Create some dummy sf data
 #' library(sf)
+#' library(dplyr)
 #' set.seed(42)
 #' presence_data <- data.frame(
 #'   x = runif(100, 0, 4),
@@ -228,8 +244,6 @@ print.DataFolds <- function(x, ...) {
 #' print(plot_cv)
 #' }
 #'
-#' @seealso \code{\link{extract_fold.DataFolds}}, \code{\link{print.DataFolds}}
-#'
 plot.DataFolds <- function(x, ...) {
 
   num_datasets <- length(x$dataset_names)
@@ -259,13 +273,13 @@ plot.DataFolds <- function(x, ...) {
       panel.grid.major = ggplot2::element_line(color = "grey80"),
       panel.grid.minor = ggplot2::element_line(color = "grey90")
     ) +
-    ggplot2::labs(title = paste("Spatial Cross-Validation Folds"), x = "Longitude", y = "Latitude") +
+    ggplot2::labs(title = "", # paste("Spatial Cross-Validation Folds")
+                  x = "Longitude", y = "Latitude") +
     ggspatial::annotation_north_arrow(location = "tl", height = grid::unit(0.6, "cm"), width = grid::unit(0.3, "cm")) +
     ggspatial::annotation_scale(location = "br", bar_cols = c("grey60", "white"))
 
   return(plot_cv)
 }
-
 
 #-- Helper function to bind sf objects into a single object ----
 
@@ -291,7 +305,6 @@ bind_datasets <- function(datasets) {
 }
 
 # --- Citation information ---
-
 #' @title A Toolkit for Integrated Species Distribution Models
 #'
 #' @description

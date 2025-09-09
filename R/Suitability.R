@@ -39,8 +39,6 @@
 #'   \item In all other cases (`has.offset = FALSE`), `eta` is treated as a log of the expected count/probability, and `scaling` is set to `1`.
 #' }
 #'
-#' @import terra
-#' @importFrom dplyr %>%
 #' @export
 #'
 #' @examples
@@ -73,7 +71,7 @@
 #'
 #' Fithian W, Elith J, Hastie T, Keith DA. Bias correction in species distribution models: pooling survey and collection data for multiple species. _Methods in Ecology and Evolution_ (2015) 6:424–438. \doi{10.1111/2041-210X.12242}
 #'
-#' @seealso \code{\link{prepare_preparations}}, \code{\link{generate_maps}}, \code{\link{compute_metrics}}
+#' @family suitability mapping
 #'
 suitability_index <- function(x,
                               post.stat = "mean",
@@ -158,12 +156,12 @@ inv_cloglog <- function(eta, scaling = 1) {
 #'
 #' @param prediction_data A model prediction which may be either an `sf` or a `data.frame` object or a raw prediction from the `inlabru-like` models.
 #' The prediction can be on the response or linear predictor scale, depending on whether the output is for a model evaluation or visualization.
-#' @param base_map An \code{sf} polygon having the same `crs` with the spatial locations used for predictions.
+#' @param base_map An `sf` polygon having the same `crs` with the spatial locations used for predictions.
 #'
 #' @return A `data.frame` for grid-based predictions or `sf` object for point-based predictions.
 #' @export
 #'
-#' @seealso \code{\link{suitability_index}}, \code{\link{generate_maps}}
+#' @family suitability mapping
 #'
 prepare_predictions <- function(prediction_data, base_map = NULL) {
 

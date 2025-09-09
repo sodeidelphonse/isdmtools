@@ -151,5 +151,5 @@ A \verb{total composite score} (\code{TOT_ROC_SCORE} or \code{TOT_ERROR_SCORE}) 
 }
 }
 \seealso{
-\code{\link{extract_fold.DataFolds}}, \code{\link{suitability_index}}, \code{\link{sample_bg_points}}
+\code{\link{extract_fold.DataFolds}}, \code{\link{suitability_index}}
 }

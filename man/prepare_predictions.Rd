@@ -22,5 +22,7 @@ the corresponding locations if it is from pixel grids (see \link[fmesher]{fm_pix
 using \code{expand.grid(x, y)} function, where 'x' and 'y' are geographical coordinates of the grids locations.
 }
 \seealso{
-\code{\link{suitability_index}}, \code{\link{generate_maps}}
+Other suitability mapping: 
+\code{\link{suitability_index}()}
 }
+\concept{suitability mapping}
