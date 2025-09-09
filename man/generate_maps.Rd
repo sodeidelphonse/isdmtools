@@ -46,19 +46,19 @@ optimal layout chosen by \code{ggplot2}.}
 \item{y_axis_breaks}{A numeric vector specifying the breaks for the y-axis.}
 }
 \value{
-A \code{ggplot} object representing the multi-panel map.
+A \code{ggplot} object representing the multi-panel plot that be customized by the user.
 }
 \description{
 This function creates a multi-panel map for visualizing multiple prediction
 variables from a species distribution model or other spatial model. It is
 designed to be flexible, handling both grid-based (data.frame) and
-point-based (sf) predictions.
+point-based (sf) spatial predictions.
 }
 \details{
 The function internally reshapes the data from a wide format (with a column
 for each prediction variable) to a long format suitable for plotting with \code{ggplot2::facet_wrap()}.
 It automatically selects the appropriate geometry (\code{geom_tile()} for grids and \code{geom_sf()} for points) and conditional scales.
-Users can also add to the map other spatial vector layers or re-customize the plot using ggplot2 syntax if needed.
+Users can also add to the map other spatial vector layers or customize the plot using ggplot2 syntax if needed.
 }
 \examples{
 \dontrun{
