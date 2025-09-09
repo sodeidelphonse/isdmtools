@@ -41,5 +41,8 @@ plot(bg_sample2)
 
 }
 \seealso{
-\code{\link{print.BackgroundPoints}}
+Other bg_points: 
+\code{\link{print.BackgroundPoints}()},
+\code{\link{sample_bg_points}()}
 }
+\concept{bg_points}

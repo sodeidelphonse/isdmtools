@@ -41,8 +41,7 @@
 #' dim(bg_sample2$bg)
 #' plot(bg_sample2)
 #' }
-#'
-#' @seealso \code{\link{plot.BackgroundPoints}}, \code{\link{print.BackgroundPoints}}
+#' @family BackgroundPoints methods
 #'
 sample_bg_points <- function(mask, points = NULL, n = 500, method = "random", values = FALSE,
                              cells = FALSE, xy = TRUE, as.points = FALSE, ...) {
@@ -71,8 +70,6 @@ sample_bg_points <- function(mask, points = NULL, n = 500, method = "random", va
         stop(sprintf("'%s' sf object must contain only POINT geometries.", deparse(substitute(points))), call. = FALSE)
       }
       pts <- sf::st_coordinates(points)[, c("X", "Y")]
-    } else if (inherits(points, c("SpatialPoints", "SpatialPointsDataFrame"))) {
-      pts <- sp::coordinates(points)[, 1:2]
     } else if (is.matrix(points) || is.data.frame(points)) {
       if (ncol(points) < 2) {
         stop(sprintf("'%s' must have at least two columns (x and y).", deparse(substitute(points))), call. = FALSE)
@@ -118,10 +115,10 @@ sample_bg_points <- function(mask, points = NULL, n = 500, method = "random", va
 
 
 #--------------------------------------------
-#--- Useful S3 methods for BackgroundPoints
+#--- S3 methods for class BackgroundPoints
 #--------------------------------------------
 
-#--- Print method for BackgroundPoints class ---
+#--- Print method for BackgroundPoints
 
 #' @title Print method for the class `BackgroundPoints`
 #'
@@ -132,21 +129,17 @@ sample_bg_points <- function(mask, points = NULL, n = 500, method = "random", va
 #' @param ... Additional arguments (not used by this method).
 #'
 #' @return The object invisibly.
-#' @method print BackgroundPoints
 #' @export
-#' @seealso \code{\link{plot.BackgroundPoints}}
+#' @family BackgroundPoints methods
 #'
 print.BackgroundPoints <- function(x, ...) {
   cat("Generated Background Points:\n")
   print_bg(x$bg)
   cat("Modified Mask available in `$mask`.\n")
 
-  invisible(x)
 }
 
-
 #--- Plot method for BackgroundPoints objects ---
-
 #' @title Plot method for the class `BackgroundPoints`.
 #'
 #' @description
@@ -158,8 +151,6 @@ print.BackgroundPoints <- function(x, ...) {
 #' @param ... Additional arguments (not used by this method).
 #'
 #' @return The object invisibly.
-#' @method plot BackgroundPoints
-#'
 #' @export
 #' @importFrom graphics points
 #'
@@ -183,7 +174,7 @@ print.BackgroundPoints <- function(x, ...) {
 #' plot(bg_sample2)
 #' }
 #'
-#' @seealso \code{\link{print.BackgroundPoints}}
+#' @family BackgroundPoints methods
 #'
 plot.BackgroundPoints <- function(x, ...) {
 
@@ -200,8 +191,8 @@ plot.BackgroundPoints <- function(x, ...) {
   plot(x$mask, ...)
   graphics::points(pts, col = "red", pch = 20, cex = 0.8)
 
-  invisble(x)
 }
+
 
 #--- Helper function to print background points based on its type ----
 
