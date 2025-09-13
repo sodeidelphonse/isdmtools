@@ -8,7 +8,7 @@ You can install the development version of `isdmtools` directly from GitHub usin
 
 ```R
 install.packages("devtools") 
-devtools::install_github("your-github-username/isdmtools")
+devtools::install_github("sodeidelphonse/isdmtools")
 ```
 ### How can contributors manage the package dependencies?
 This project uses `renv` to manage package dependencies and ensure reproducibility. To install all the necessary packages for this project, simply follow these steps:
@@ -97,7 +97,7 @@ test_data_count <- splits_fold_3$test$count
 ```
 
 # Usage with Prediction Models
-The output of `isdmtools` is a set of clean sf objects, which makes it easy to integrate with various modeling tools. The extracted train and test data can be directly fed into your preferred modeling packages such as `inlabru`, `PointedSDMs`, `MCMC` software, or any `GLMs/GAMs` tools that can accommodate single or multiple responses. This ensures that your model predictions are validated using a robust spatial cross-validation approach.
+The output of `isdmtools` is a set of clean `sf` objects, which makes it easy to integrate with various modeling tools. The extracted train and test data can be directly fed into your preferred modeling packages such as `inlabru`, `PointedSDMs`, `MCMC` software, or any `GLMs/GAMs` tools that can accommodate single or multiple responses. This ensures that your model predictions are validated using a robust spatial cross-validation approach.
 
 # Contributing
 We welcome contributions! If you encounter an issue or have a feature request, please open an issue on the GitHub repository.
