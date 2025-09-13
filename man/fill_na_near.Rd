@@ -7,8 +7,8 @@
 fill_na_near(x, boundary = NULL, ...)
 }
 \arguments{
-\item{x}{A raster layer (\code{SpatRaster} or \code{rasterLayer}) in which missing cells will be imputed.
-For multiple rasters (\code{SpatRaster} or \code{rasterStack}), you can use the combination of \code{lapply()} and \code{rast()} functions along this function.}
+\item{x}{A raster layer (\code{SpatRaster} or \code{RasterLayer}) in which missing cells will be imputed.
+For multiple rasters (\code{SpatRaster} or \code{RasterStack}), you can use the combination of \code{lapply()} and \code{rast()} functions with this function.}
 
 \item{boundary}{A spatial polygon object (\code{spatVector} or \code{sf}) to be used to mask cells outside the study region, as the output layer is extended.
 It must have the same coordinates reference system with the input raster. Defaults to \code{NULL}.}
