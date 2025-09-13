@@ -78,11 +78,11 @@
 #'
 #' # Example 3: Compute both continuous and ROC-based metrics for a count model
 #' # The user must first generate a suitability index (prob_raster)
-#' from the linear scale prediction (pred_eta).
+#' # from the linear scale prediction (pred_eta).
 #' # expected_raster <- suitability_index(pred_eta, response.type = "count",
-#'   output.format = "response")
+#' #  output.format = "response")
 #' # suitability_raster <- suitability_index(pred_eta, response.type = "count",
-#'   output.format = "prob")
+#' #  output.format = "prob")
 #' # full_metrics <- compute_metrics(
 #' #   test_data = list(ds1 = my_count_sf),
 #' #   prob_raster = suitability_raster,
@@ -221,7 +221,7 @@ compute_metrics <- function(test_data,
     }
   }
 
-  # --- Initial validation of arguments for average composite scores ----
+  # --- Validation of arguments for the overall composite scores ----
   if (!all(metrics %in% master_allowed_metrics)) {
     stop(sprintf("Invalid metric(s) requested. Allowed metrics are: %s", paste(master_allowed_metrics, collapse = ", ")), call. = FALSE)
   }
