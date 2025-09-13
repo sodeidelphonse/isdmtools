@@ -24,7 +24,7 @@
 #' @param continuous_composite_metrics A character vector specifying a subset of continuous metrics to be used for the overall composite score (`TOT_ERROR_SCORE`). Allowed options are "rmse" (root mean squared error), "mae" (mean absolute error), and "mape" (mean absolute percentage error). If `NULL`, the default is "rmse" and "mae".
 #' @param prediction_is_rate A logical value. If `TRUE`, it indicates that `expected` count contains predictions at the intensity (per-unit-of-exposure) scale (typical for Bayesian models with offset from `inlabru`). If `FALSE`, it assumes predictions are at the original scale (e.g., counts). Default is `FALSE`.
 #' @param exposure A character string representing the column name in the `sf` objects that contains the exposure variable (offset). Only relevant for count data and must be standardized across all count datasets. If `prediction_is_rate` is `TRUE`, observed counts are rescaled by this exposure variable. Default is `NULL`.
-#' @param ... Additional arguments to be passed to internal functions, particularly \link[pROC]{coords}.
+#' @param ... Additional arguments to be passed to internal functions, particularly \link[pROC]{coords} function.
 #'
 #' @details The function handles three main data types and any combination thereof:
 #'

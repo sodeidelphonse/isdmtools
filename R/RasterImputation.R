@@ -7,13 +7,16 @@
 #' @title Fill NA cells with the nearest cells values
 #'
 #' @description
-#' Function to impute a raster object (`SpatRaster` or `rasterLayer`) for spatial modeling tools that cannot handle NAs.
+#' Function to impute a raster object for spatial modeling tools that cannot handle NA values in covariates.
 #' The function fill in NA cells with the nearest cells values using a moving window on missing cells.
-#' @param x A raster file of the covariate to impute. For multiple `SpatRaster` or `rasterStack`, use `lapply()` and `lapply()` methods along this function.
-#' @param boundary A spatial polygon object (`spatVector` or `sf`) to be used to mask cells outside the study region, as the output layer is extended. Defautls to `NULL`.
-#' @param ... Additional arguments passed to \link[terra]{focal}.
+#' It is an itarative version of the \link[terra]{focal} function in `terra` package.
+#' @param x A raster layer (`SpatRaster` or `rasterLayer`) in which missing cells will be imputed.
+#' For multiple rasters (`SpatRaster` or `rasterStack`), you can use the combination of `lapply()` and `rast()` functions along this function.
+#' @param boundary A spatial polygon object (`spatVector` or `sf`) to be used to mask cells outside the study region, as the output layer is extended.
+#' It must have the same coordinates reference system with the input raster. Defaults to `NULL`.
+#' @param ... Additional arguments passed to \link[terra]{focal} function.
 #'
-#' @return A `SpatRaster` object in which all NA cells are filled in by th nearest cells.
+#' @return A `SpatRaster` object in which all NA cells are filled in by the nearest cells.
 #' @export
 #'
 fill_na_near <- function(x, boundary = NULL, ...) {
@@ -46,7 +49,7 @@ fill_na_near <- function(x, boundary = NULL, ...) {
           stop(sprintf("'%s' sf object must contains only POLYGON geometries.", boundary), call. = FALSE)
         }
       } else {
-        stop(sprintf("Unsupported geometries. '%s' must be a polygon from sf or terra.", boundary), call. = FALSE)
+        stop(sprintf("Unsupported geometries. '%s' must be a spatial polygon from 'sf' or 'terra'.", boundary), call. = FALSE)
       }
       filled  <- terra::mask(filled, bndr)
     }

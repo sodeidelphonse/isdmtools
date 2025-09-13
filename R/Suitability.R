@@ -40,7 +40,7 @@
 #' }
 #'
 #' @export
-#' @family suitability mapping
+#' @family prediction analyses
 #'
 #' @examples
 #' \dontrun{
@@ -159,7 +159,7 @@ inv_cloglog <- function(eta, scaling = 1) {
 #'
 #' @return A `data.frame` for grid-based predictions or `sf` object for point-based predictions.
 #' @export
-#' @family suitability mapping
+#' @family prediction analyses
 #'
 prepare_predictions <- function(prediction_data, base_map = NULL) {
 
