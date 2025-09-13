@@ -22,8 +22,9 @@
 #' @param metrics A character vector of metric names to compute. If `NULL`, "auc" (area under the ROC curve), "tss" (true skill statistics), "accuracy", "F1" (F1 score), "precision", and "recall" are computed for ROC-based metrics while "rmse" and "mae" are computed for error-based metrics.
 #' @param roc_composite_metrics A character vector specifying a subset of ROC-based metrics to be used for the overall composite score (`TOT_ROC_SCORE`). Allowed options are "auc", "tss", "accuracy", and "F1". If `NULL`, the sensible default is "auc", "tss" and "accuracy".
 #' @param continuous_composite_metrics A character vector specifying a subset of continuous metrics to be used for the overall composite score (`TOT_ERROR_SCORE`). Allowed options are "rmse" (root mean squared error), "mae" (mean absolute error), and "mape" (mean absolute percentage error). If `NULL`, the default is "rmse" and "mae".
-#' @param prediction_is_rate A logical value. If `TRUE`, it indicates that `expected` count contains predictions at the intensity (per-unit-of-exposure) scale (typical for Bayesian models with offset from `inlabru`). If `FALSE`, it assumes predictions are at the original scale (e.g., counts). Default is `FALSE`.
-#' @param exposure A character string representing the column name in the `sf` objects that contains the exposure variable (offset). Only relevant for count data and must be standardized across all count datasets. If `prediction_is_rate` is `TRUE`, observed counts are rescaled by this exposure variable. Default is `NULL`.
+#' @param prediction_is_rate A logical value. If `TRUE`, it indicates that the `expected` count contains predictions at the intensity (per-unit-of-exposure) scale (typical for Bayesian models with offset from `inlabru`). If `FALSE`, it assumes predictions are at the original scale (e.g., counts). Default is `FALSE`.
+#' @param exposure A character string representing the column name in the `sf` objects that contains the exposure variable (offset). Only relevant for count (and sometimes presence-absence) data and must be standardized across all these types of datasets.
+#' If `prediction_is_rate` is `TRUE`, observed counts are rescaled by this exposure variable. Default is `NULL`.
 #' @param ... Additional arguments to be passed to internal functions, particularly \link[pROC]{coords} function.
 #'
 #' @details The function handles three main data types and any combination thereof:
@@ -144,7 +145,7 @@ compute_metrics <- function(test_data,
 
   has_roc_metrics <- any(roc_metrics %in% metrics)
   if (has_roc_metrics && is.null(prob_raster)) {
-    stop("ROC-based metrics were requested but 'prob_raster' was not provided. Please supply the suitability index.", call. = FALSE)
+    stop("ROC-based metrics were requested but 'prob_raster' (suitability index) was not provided.", call. = FALSE)
   }
 
   has_cont_metrics <- any(continuous_metrics %in% metrics)
@@ -251,7 +252,7 @@ compute_metrics <- function(test_data,
 
   if (is.null(continuous_composite_metrics)) {
     continuous_metrics_to_average <- c("rmse", "mae")
-    message(sprintf("No 'continuous_composite_metrics' specified. Overall error score will be computed for available metrics among: %s.",
+    message(sprintf("No 'continuous_composite_metrics' specified. Overall continuous-outcome score will be computed for available metrics among: %s.",
                     paste(toupper(continuous_metrics_to_average), collapse = ", ")))
   } else {
     if (!is.character(continuous_composite_metrics)) {
@@ -487,12 +488,10 @@ compute_metrics <- function(test_data,
       is_count_ds <- unlist(lapply(test_data, function(x) responseCounts %in% names(x)))
       names(is_count_ds) <- names(test_data)
       valid_indices <- !is.na(current_metric_values) &
-        !is.na(current_sample_sizes) &
-        current_sample_sizes > 0 & is_count_ds
+        !is.na(current_sample_sizes) & current_sample_sizes > 0 & is_count_ds
     } else {
       valid_indices <- !is.na(current_metric_values) &
-        !is.na(current_sample_sizes) &
-        current_sample_sizes > 0
+        !is.na(current_sample_sizes) & current_sample_sizes > 0
     }
 
     weighted_score <- NA_real_
@@ -529,7 +528,7 @@ compute_metrics <- function(test_data,
   if (length(available_relevant_cont_scores) > 0) {
     TOT_ERROR_SCORE <- sum(available_relevant_cont_scores) / length(available_relevant_cont_scores)
   } else {
-    message("Cannot compute an overall Error composite score as no relevant composite metrics were available or calculated.")
+    message("Cannot compute an overall continuous-outcome composite score as no relevant composite metrics were available or calculated.")
   }
 
   # --- Prepare the return list for metrics requested ---
@@ -550,7 +549,7 @@ compute_metrics <- function(test_data,
 }
 
 
-#--- 2) Functions to compute evaluation metrics for continuous data ----
+#--- 2) Functions to compute evaluation metrics for continuous-outcome responses ----
 
 # RMSE (root mean square error),
 rmse <- function(observed, predicted) {
