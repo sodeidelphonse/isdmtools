@@ -10,8 +10,8 @@
 #' Function to impute a raster object for spatial modeling tools that cannot handle NA values in covariates.
 #' The function fill in NA cells with the nearest cells values using a moving window on missing cells.
 #' It is an itarative version of the \link[terra]{focal} function in `terra` package.
-#' @param x A raster layer (`SpatRaster` or `rasterLayer`) in which missing cells will be imputed.
-#' For multiple rasters (`SpatRaster` or `rasterStack`), you can use the combination of `lapply()` and `rast()` functions along this function.
+#' @param x A raster layer (`SpatRaster` or `RasterLayer`) in which missing cells will be imputed.
+#' For multiple rasters (`SpatRaster` or `RasterStack`), you can use the combination of `lapply()` and `rast()` functions with this function.
 #' @param boundary A spatial polygon object (`spatVector` or `sf`) to be used to mask cells outside the study region, as the output layer is extended.
 #' It must have the same coordinates reference system with the input raster. Defaults to `NULL`.
 #' @param ... Additional arguments passed to \link[terra]{focal} function.

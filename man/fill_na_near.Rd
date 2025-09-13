@@ -7,16 +7,19 @@
 fill_na_near(x, boundary = NULL, ...)
 }
 \arguments{
-\item{x}{A raster file of the covariate to impute. For multiple \code{SpatRaster} or \code{rasterStack}, use \code{lapply()} and \code{lapply()} methods along this function.}
+\item{x}{A raster layer (\code{SpatRaster} or \code{rasterLayer}) in which missing cells will be imputed.
+For multiple rasters (\code{SpatRaster} or \code{rasterStack}), you can use the combination of \code{lapply()} and \code{rast()} functions along this function.}
 
-\item{boundary}{A spatial polygon object (\code{spatVector} or \code{sf}) to be used to mask cells outside the study region, as the output layer is extended. Defautls to \code{NULL}.}
+\item{boundary}{A spatial polygon object (\code{spatVector} or \code{sf}) to be used to mask cells outside the study region, as the output layer is extended.
+It must have the same coordinates reference system with the input raster. Defaults to \code{NULL}.}
 
-\item{...}{Additional arguments passed to \link[terra]{focal}.}
+\item{...}{Additional arguments passed to \link[terra]{focal} function.}
 }
 \value{
-A \code{SpatRaster} object in which all NA cells are filled in by th nearest cells.
+A \code{SpatRaster} object in which all NA cells are filled in by the nearest cells.
 }
 \description{
-Function to impute a raster object (\code{SpatRaster} or \code{rasterLayer}) for spatial modeling tools that cannot handle NAs.
+Function to impute a raster object for spatial modeling tools that cannot handle NA values in covariates.
 The function fill in NA cells with the nearest cells values using a moving window on missing cells.
+It is an itarative version of the \link[terra]{focal} function in \code{terra} package.
 }
