@@ -55,13 +55,14 @@ compute_metrics(
 
 \item{continuous_composite_metrics}{A character vector specifying a subset of continuous metrics to be used for the overall composite score (\code{TOT_ERROR_SCORE}). Allowed options are "rmse" (root mean squared error), "mae" (mean absolute error), and "mape" (mean absolute percentage error). If \code{NULL}, the default is "rmse" and "mae".}
 
-\item{prediction_is_rate}{A logical value. If \code{TRUE}, it indicates that \code{expected} count contains predictions at the intensity (per-unit-of-exposure) scale (typical for Bayesian models with offset from \code{inlabru}). If \code{FALSE}, it assumes predictions are at the original scale (e.g., counts). Default is \code{FALSE}.}
+\item{prediction_is_rate}{A logical value. If \code{TRUE}, it indicates that the \code{expected} count contains predictions at the intensity (per-unit-of-exposure) scale (typical for Bayesian models with offset from \code{inlabru}). If \code{FALSE}, it assumes predictions are at the original scale (e.g., counts). Default is \code{FALSE}.}
 
-\item{exposure}{A character string representing the column name in the \code{sf} objects that contains the exposure variable (offset). Only relevant for count data and must be standardized across all count datasets. If \code{prediction_is_rate} is \code{TRUE}, observed counts are rescaled by this exposure variable. Default is \code{NULL}.}
+\item{exposure}{A character string representing the column name in the \code{sf} objects that contains the exposure variable (offset). Only relevant for count (and sometimes presence-absence) data and must be standardized across all these types of datasets.
+If \code{prediction_is_rate} is \code{TRUE}, observed counts are rescaled by this exposure variable. Default is \code{NULL}.}
 
 \item{seed}{An integer for setting the seed for random number generation, used for pseudo-absence sampling to ensure reproducibility. Default is 25.}
 
-\item{...}{Additional arguments to be passed to internal functions, particularly \link[pROC]{coords}.}
+\item{...}{Additional arguments to be passed to internal functions, particularly \link[pROC]{coords} function.}
 }
 \value{
 A named \code{list} containing all requested metrics. The names follow a consistent convention:
