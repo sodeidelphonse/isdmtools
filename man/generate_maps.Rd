@@ -8,7 +8,6 @@ generate_maps(
   data_to_plot,
   vars_to_plot = c("mean", "sd"),
   base_map = NULL,
-  layer_map = NULL,
   color_gradient = rainbow(5),
   legend_title = NULL,
   panel_labels = NULL,
@@ -25,10 +24,8 @@ For grid-based data frame, it must contain columns named "X" and "Y" representin
 plotted on separate panels.}
 
 \item{base_map}{An \code{sf} object to be plotted as a base layer underneath the
-prediction data (e.g., a background simple polygon). Defaults to \code{NULL}.}
-
-\item{layer_map}{An optional \code{sf} object representing the additional layer (e.g. line or point geometry).
-It is plotted on top of the prediction maps for context. Defaults to \code{NULL}.}
+prediction data (e.g., a background simple polygon). Defaults to \code{NULL}.
+Users can add additional vector geometries if needed using a ggplot2 syntax.}
 
 \item{color_gradient}{A vector of colors to be used in the fill/color gradient.
 Defaults to \code{rainbow(5)}.}
@@ -78,7 +75,6 @@ generate_maps(
   data_to_plot = grid_data,
   vars_to_plot = c("mean", "sd"),
   base_map = boundary_sf,
-  layer_map = boundary_sf,
   color_gradient = c("white", "skyblue", "navy"),
   legend_title = "Prediction Value",
   panel_labels = c("Mean", "Standard Deviation"),
@@ -97,7 +93,6 @@ generate_maps(
   data_to_plot = points_sf,
   vars_to_plot = c("mean", "sd"),
   base_map = boundary_sf,
-  layer_map = boundary_sf,
   color_gradient = c("white", "orange", "red"),
   legend_title = "Prediction Value",
   panel_labels = c("Mean", "StDev"),

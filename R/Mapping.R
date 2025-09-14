@@ -21,8 +21,7 @@
 #'   plotted on separate panels.
 #' @param base_map An `sf` object to be plotted as a base layer underneath the
 #'   prediction data (e.g., a background simple polygon). Defaults to `NULL`.
-#' @param layer_map An optional `sf` object representing the additional layer (e.g. line or point geometry).
-#'   It is plotted on top of the prediction maps for context. Defaults to `NULL`.
+#'   Users can add additional vector geometries if needed using a ggplot2 syntax.
 #' @param color_gradient A vector of colors to be used in the fill/color gradient.
 #'   Defaults to `rainbow(5)`.
 #' @param legend_title A character string for the title of the color legend.
@@ -54,7 +53,6 @@
 #'   data_to_plot = grid_data,
 #'   vars_to_plot = c("mean", "sd"),
 #'   base_map = boundary_sf,
-#'   layer_map = boundary_sf,
 #'   color_gradient = c("white", "skyblue", "navy"),
 #'   legend_title = "Prediction Value",
 #'   panel_labels = c("Mean", "Standard Deviation"),
@@ -73,7 +71,6 @@
 #'   data_to_plot = points_sf,
 #'   vars_to_plot = c("mean", "sd"),
 #'   base_map = boundary_sf,
-#'   layer_map = boundary_sf,
 #'   color_gradient = c("white", "orange", "red"),
 #'   legend_title = "Prediction Value",
 #'   panel_labels = c("Mean", "StDev"),
@@ -88,7 +85,6 @@
 generate_maps <- function(data_to_plot,
                           vars_to_plot = c("mean", "sd"),
                           base_map = NULL,
-                          layer_map = NULL,
                           color_gradient = rainbow(5),
                           legend_title = NULL,
                           panel_labels = NULL,
@@ -126,10 +122,6 @@ generate_maps <- function(data_to_plot,
     stop("'base_map' must have polygon or multipolygon geometry.", call. = FALSE)
   }
 
-  if (!is.null(layer_map) && !inherits(layer_map, "sf")) {
-    stop("'layer_map' must be an sf object or NULL.", call. = FALSE)
-  }
-
   if (!is.character(color_gradient) || length(color_gradient) < 2) {
     stop("'color_gradient' must be a character vector of at least two colors.", call. = FALSE)
   }
@@ -144,7 +136,6 @@ generate_maps <- function(data_to_plot,
     }
   }
 
-  # sf vs data.frame input
   is_sf_data <- inherits(data_to_plot, "sf")
 
   if (is_sf_data) {
@@ -170,7 +161,6 @@ generate_maps <- function(data_to_plot,
     long_data$prediction_var <- factor(long_data$prediction_var, levels = vars_to_plot, labels = panel_labels)
   }
 
-  # Add the main data layer and the conditional scale
   p <- ggplot2::ggplot(base_map) + ggplot2::geom_sf()
 
   if (is_sf_data) {
@@ -181,17 +171,6 @@ generate_maps <- function(data_to_plot,
     p <- p +
       ggplot2::geom_tile(data = long_data, ggplot2::aes(x = X, y = Y, fill = value)) +
       ggplot2::scale_fill_gradientn(colours = color_gradient, name = legend_title)
-  }
-
-  # Add the common layers for all panels
-  geom_types <- sf::st_geometry_type(layer_map)
-
-  if (all(geom_types %in% c("POINT", "MULTIPOINT"))) {
-    p <- p + ggplot2::geom_sf(data = layer_map, fill = NA, color = "white", size = 1.5)
-  } else if (all(geom_types %in% c("LINESTRING", "MULTILINESTRING"))) {
-    p <- p + ggplot2::geom_sf(data = layer_map, fill = NA, color = "grey20", linewidth = 0.3)
-  } else {
-    warning(sprintf("`layer_map` has unhandled geometry type(s): %s. This layer is ignored.", paste(unique(geom_types), collapse = ", ")), call. = FALSE)
   }
 
   p <- p +
