@@ -2,7 +2,7 @@
 % Please edit documentation in R/Metrics.R
 \name{compute_metrics}
 \alias{compute_metrics}
-\title{Compute Evaluation Metrics for Integrated Spatial Models from Multiple Datasets}
+\title{Compute Evaluation Metrics for Integrated Spatial Models from Multisource Datasets}
 \usage{
 compute_metrics(
   test_data,
@@ -27,7 +27,7 @@ compute_metrics(
 )
 }
 \arguments{
-\item{test_data}{A named \code{list} of \code{sf} objects. Each \code{sf} object represents a different test dataset and must contain point geometries. The function will loop through each named dataset in the list. In particular, \code{test_data} can be a 'fold' of the 'test' set from the \code{extract_fold()} method output, if independent validation datasets are not available.}
+\item{test_data}{A named \code{list} of \code{sf} objects. Each \code{sf} object represents a different test dataset and must contain point geometries. The function will loop through each named dataset in the list. In particular, \code{test_data} can be a 'fold' of the 'test' set from \code{create_folds()} and \code{extract_fold()} outputs, if independent validation datasets are not available.}
 
 \item{prob_raster}{A \code{SpatRaster} object with unique layer containing the model's predictions on a probability scale (0-1). It represents a suitability index, and its values are used to compute all ROC-based metrics (e.g., AUC, TSS, F1 score). This argument is optional if only continuous-outcome metrics are requested for count data.}
 
@@ -53,7 +53,7 @@ compute_metrics(
 
 \item{roc_composite_metrics}{A character vector specifying a subset of ROC-based metrics to be used for the overall composite score (\code{TOT_ROC_SCORE}). Allowed options are "auc", "tss", "accuracy", and "F1". If \code{NULL}, the sensible default is "auc", "tss" and "accuracy".}
 
-\item{continuous_composite_metrics}{A character vector specifying a subset of continuous metrics to be used for the overall composite score (\code{TOT_ERROR_SCORE}). Allowed options are "rmse" (root mean squared error), "mae" (mean absolute error), and "mape" (mean absolute percentage error). If \code{NULL}, the default is "rmse" and "mae".}
+\item{continuous_composite_metrics}{A character vector specifying a subset of continuous outcome metrics to be used for the overall composite score (\code{TOT_ERROR_SCORE}). Allowed options are "rmse" (root mean squared error), "mae" (mean absolute error), and "mape" (mean absolute percentage error). If \code{NULL}, the default is "rmse" and "mae".}
 
 \item{prediction_is_rate}{A logical value. If \code{TRUE}, it indicates that the \code{expected} count contains predictions at the intensity (per-unit-of-exposure) scale (typical for Bayesian models with offset from \code{inlabru}). If \code{FALSE}, it assumes predictions are at the original scale (e.g., counts). Default is \code{FALSE}.}
 
@@ -144,8 +144,10 @@ A \verb{total composite score} (\code{TOT_ROC_SCORE} or \code{TOT_ERROR_SCORE}) 
 # )
 
 # Example 5: Compute dataset-specific and weighted composite metrics for a joint model
-# expected_raster  <- suitability_index(pred_eta, response.type = "count.pa", output.format = "response")
-# suitability_raster <- suitability_index(pred_eta, response.type = "count.pa", has.offset = FALSE)
+# expected_raster  <- suitability_index(pred_eta, response.type = "count.pa",
+#    output.format = "response")
+# suitability_raster <- suitability_index(pred_eta,
+#    response.type = "count.pa", has.offset = FALSE)
 # full_metrics <- compute_metrics(
 #   test_data = list(ds1 = my_count_sf, ds2 = my_pa_sf),
 #   prob_raster = suitability_raster,

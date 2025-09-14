@@ -3,11 +3,11 @@
 #--- Function to compute comprehensive evaluation metrics for integrated or standalone spatial models
 #--------------------------------------------------------------------------------------------------------
 
-#' @title Compute Evaluation Metrics for Integrated Spatial Models from Multiple Datasets
+#' @title Compute Evaluation Metrics for Integrated Spatial Models from Multisource Datasets
 #'
 #' @description This function computes a wide range of evaluation metrics for a single-layer raster of model predictions against a list of one or more point-based datasets. It is designed to handle different data types (presence-only, presence-absence, and count data) and provides individual metrics as well as dataset-weighted composite scores.
 #'
-#' @param test_data A named `list` of `sf` objects. Each `sf` object represents a different test dataset and must contain point geometries. The function will loop through each named dataset in the list. In particular, `test_data` can be a 'fold' of the 'test' set from the `extract_fold()` method output, if independent validation datasets are not available.
+#' @param test_data A named `list` of `sf` objects. Each `sf` object represents a different test dataset and must contain point geometries. The function will loop through each named dataset in the list. In particular, `test_data` can be a 'fold' of the 'test' set from `create_folds()` and `extract_fold()` outputs, if independent validation datasets are not available.
 #' @param prob_raster A `SpatRaster` object with unique layer containing the model's predictions on a probability scale (0-1). It represents a suitability index, and its values are used to compute all ROC-based metrics (e.g., AUC, TSS, F1 score). This argument is optional if only continuous-outcome metrics are requested for count data.
 #' @param expected A `SpatRaster` object containing the model's predictions on a continuous scale (i.e. counts or rate if offset used; see `suitability_index()`). Its values are used to compute all continuous-outcome metrics (e.g., RMSE, MAE, MAPE). This argument is required if a continuous-outcome metric is requested.
 #' @param xy_excluded An optional `SpatVector` or `sf` object representing locations where pseudo-absence points should not be sampled, such as occupied areas or known background points. Only relevant for presence-only (PO) data. Default is `NULL`.
@@ -21,7 +21,7 @@
 #' @param best_threshold_policy A character string specifying the policy for selecting a threshold when multiple thresholds yield the same 'best' value. Options are "first", "last", "max.prec" (max precision), "max.recall" (max recall), "max.accu" (max accuracy), or "max.f1" (max F1 score). Default is "first".
 #' @param metrics A character vector of metric names to compute. If `NULL`, "auc" (area under the ROC curve), "tss" (true skill statistics), "accuracy", "F1" (F1 score), "precision", and "recall" are computed for ROC-based metrics while "rmse" and "mae" are computed for error-based metrics.
 #' @param roc_composite_metrics A character vector specifying a subset of ROC-based metrics to be used for the overall composite score (`TOT_ROC_SCORE`). Allowed options are "auc", "tss", "accuracy", and "F1". If `NULL`, the sensible default is "auc", "tss" and "accuracy".
-#' @param continuous_composite_metrics A character vector specifying a subset of continuous metrics to be used for the overall composite score (`TOT_ERROR_SCORE`). Allowed options are "rmse" (root mean squared error), "mae" (mean absolute error), and "mape" (mean absolute percentage error). If `NULL`, the default is "rmse" and "mae".
+#' @param continuous_composite_metrics A character vector specifying a subset of continuous outcome metrics to be used for the overall composite score (`TOT_ERROR_SCORE`). Allowed options are "rmse" (root mean squared error), "mae" (mean absolute error), and "mape" (mean absolute percentage error). If `NULL`, the default is "rmse" and "mae".
 #' @param prediction_is_rate A logical value. If `TRUE`, it indicates that the `expected` count contains predictions at the intensity (per-unit-of-exposure) scale (typical for Bayesian models with offset from `inlabru`). If `FALSE`, it assumes predictions are at the original scale (e.g., counts). Default is `FALSE`.
 #' @param exposure A character string representing the column name in the `sf` objects that contains the exposure variable (offset). Only relevant for count (and sometimes presence-absence) data and must be standardized across all these types of datasets.
 #' If `prediction_is_rate` is `TRUE`, observed counts are rescaled by this exposure variable. Default is `NULL`.
@@ -102,8 +102,10 @@
 #' # )
 #'
 #' # Example 5: Compute dataset-specific and weighted composite metrics for a joint model
-#' # expected_raster  <- suitability_index(pred_eta, response.type = "count.pa", output.format = "response")
-#' # suitability_raster <- suitability_index(pred_eta, response.type = "count.pa", has.offset = FALSE)
+#' # expected_raster  <- suitability_index(pred_eta, response.type = "count.pa",
+#' #    output.format = "response")
+#' # suitability_raster <- suitability_index(pred_eta,
+#' #    response.type = "count.pa", has.offset = FALSE)
 #' # full_metrics <- compute_metrics(
 #' #   test_data = list(ds1 = my_count_sf, ds2 = my_pa_sf),
 #' #   prob_raster = suitability_raster,
@@ -166,7 +168,7 @@ compute_metrics <- function(test_data,
     }
   }
 
-  # --- Validation of main data ----
+  # --- Validation of the main data ----
   if (!is.logical(prediction_is_rate) || length(prediction_is_rate) != 1) {
     stop("'prediction_is_rate' must be a single logical value (TRUE or FALSE).", call. = FALSE)
   }
@@ -282,10 +284,8 @@ compute_metrics <- function(test_data,
   for (ds_name in names(test_data)) {
     current_data <- test_data[[ds_name]]
     current_sample_size <- nrow(current_data)
-
     loc <- sf::st_coordinates(current_data)[, c("X", "Y")]
 
-    # --- Initialize metrics list for current dataset ----
     metrics_ds <- list(sample_size = current_sample_size)
     for (m in metrics) {
       metrics_ds[[m]] <- NA_real_
@@ -300,7 +300,7 @@ compute_metrics <- function(test_data,
     is_count_data <- responseCounts %in% names(current_data)
     is_pa_data    <- responsePA %in% names(current_data)
 
-    # --- Conditional continuous metrics calculation ---
+    # --- Conditional continuous-outcome metrics calculation ---
     if (has_cont_metrics && responseCounts %in% names(current_data)) {
       raw_expected <- terra::extract(expected, loc)[, 1]
       valid_idx    <- is.finite(raw_expected)
@@ -323,7 +323,6 @@ compute_metrics <- function(test_data,
           observed <- current_data[[responseCounts]][valid_idx]
         }
 
-        # Compute and store each requested continuous metric
         if ("rmse" %in% metrics) metrics_ds$rmse <- rmse(observed, predicted)
         if ("mae" %in% metrics) metrics_ds$mae <- mae(observed, predicted)
         if ("mape" %in% metrics) metrics_ds$mape <- mape(observed, predicted)
@@ -405,7 +404,6 @@ compute_metrics <- function(test_data,
                                             best.method = best_method,
                                             transpose = FALSE, ...)
 
-          # --- Extraction and selection logic ---
           temp_metrics_values <- list()
           for (coord_metric_name in names(metric_map_for_coords)) {
             pROC_col_name <- metric_map_for_coords[coord_metric_name]
@@ -424,7 +422,7 @@ compute_metrics <- function(test_data,
 
           # Find row index for the chosen optimal threshold
           selected_idx <- 1
-          if (threshold_method == "best" && nrow(coords_results_df) > 1) { # Only applied to "best" and multiple thresholds
+          if (threshold_method == "best" && nrow(coords_results_df) > 1) {
             if (best_threshold_policy == "first") {
               selected_idx <- 1
             } else if (best_threshold_policy == "last") {
@@ -447,7 +445,6 @@ compute_metrics <- function(test_data,
             }
           }
 
-          # Assign selected values to metrics_ds, only if requested by the user
           for (metric_name_to_assign in names(temp_metrics_values)) {
             if (metric_name_to_assign %in% metrics) {
               metrics_ds[[metric_name_to_assign]] <- temp_metrics_values[[metric_name_to_assign]][selected_idx]
@@ -518,7 +515,7 @@ compute_metrics <- function(test_data,
     message("Cannot compute an overall ROC composite score as no relevant composite metrics were available or calculated.")
   }
 
-  # Overall Continuous-based Composite Score
+  # Overall Continuous-outcome Composite Score
   TOT_ERROR_SCORE <- NA_real_
   relevant_cont_scores_names <- paste0(toupper(continuous_metrics_to_average), "_Comp")
   available_relevant_cont_scores <- weighted_composite_scores[relevant_cont_scores_names]
@@ -531,7 +528,6 @@ compute_metrics <- function(test_data,
     message("Cannot compute an overall continuous-outcome composite score as no relevant composite metrics were available or calculated.")
   }
 
-  # --- Prepare the return list for metrics requested ---
   return_list <- list()
   for (ds_name in names(test_data)) {
     for (metric_name in metrics) {
