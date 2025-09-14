@@ -115,11 +115,13 @@ generate_maps <- function(data_to_plot,
                paste(missing_vars, collapse = ", ")), call. = FALSE)
   }
 
-  if (!inherits(base_map, "sf")) {
-    stop("'base_map' must be an sf object.", call. = FALSE)
-  }
-  if (!all(sf::st_geometry_type(base_map) %in% c("POLYGON", "MULTIPOLYGON"))) {
-    stop("'base_map' must have polygon or multipolygon geometry.", call. = FALSE)
+  if(!is.null(base_map)) {
+    if (!inherits(base_map, "sf")) {
+      stop("'base_map' must be an sf object.", call. = FALSE)
+    }
+    if (!all(sf::st_geometry_type(base_map) %in% c("POLYGON", "MULTIPOLYGON"))) {
+      stop("'base_map' must have polygon or multipolygon geometry.", call. = FALSE)
+    }
   }
 
   if (!is.character(color_gradient) || length(color_gradient) < 2) {
@@ -161,7 +163,11 @@ generate_maps <- function(data_to_plot,
     long_data$prediction_var <- factor(long_data$prediction_var, levels = vars_to_plot, labels = panel_labels)
   }
 
-  p <- ggplot2::ggplot(base_map) + ggplot2::geom_sf()
+  if(!is.null(base_map)) {
+    p <- ggplot2::ggplot(base_map) + ggplot2::geom_sf()
+  } else{
+    p <- ggplot2::ggplot()
+  }
 
   if (is_sf_data) {
     p <- p +
