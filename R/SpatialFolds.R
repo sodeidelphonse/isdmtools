@@ -49,13 +49,13 @@
 #' # Create a list of datasets
 #' datasets_list <- list(Presence = presence_data, Count = count_data)
 #'
-#' # Create a dummy polygon for the region
-#' ben_utm_coords <- matrix(c(0, 6, 4, 6, 4, 13, 0, 13, 0, 6), ncol = 2, byrow = TRUE)
-#' ben_utm <- st_sfc(st_polygon(list(ben_utm_coords)), crs = 4326)
-#' ben_utm <- st_sf(data.frame(name = "Benin"), ben_utm)
+#' # Create a dummy polygon for the region (e.g. Benin's minimum bounding rectangle)
+#' ben_coords <- matrix(c(0, 6, 4, 6, 4, 13, 0, 13, 0, 6), ncol = 2, byrow = TRUE)
+#' ben_sf <- st_sfc(st_polygon(list(ben_coords)), crs = 4326)
+#' ben_sf <- st_sf(data.frame(name = "Benin"), ben_sf)
 #'
 #' # Create a DataFolds object using the default 'cluster' method
-#' my_folds <- create_folds(datasets_list, ben_utm, k = 5)
+#' my_folds <- create_folds(datasets_list, ben_sf, k = 5)
 #' print(my_folds)
 #' }
 #'
@@ -105,11 +105,36 @@ create_folds <- function(datasets, region_polygon = NULL, k = 5, seed = 23, cv_m
 #' Each of these elements is a named list of `sf` objects, with names corresponding to the original datasets.
 #' @method extract_fold DataFolds
 #' @export
-#' @family spatial blocking
+#' @family spatial blocking methods
 #'
 #' @examples
 #' \dontrun{
-#' # Assuming `my_folds` is a DataFolds object created from the `create_folds` example
+#' # Create a list of some dummy sf data with different columns
+#' library(sf)
+#' set.seed(42)
+#' presence_data <- data.frame(
+#'   x = runif(100, 0, 4),
+#'   y = runif(100, 6, 13),
+#'   site = rbinom(100, 1, 0.6)
+#' ) %>% st_as_sf(coords = c("x", "y"), crs = 4326)
+#'
+#' count_data <- data.frame(
+#'   x = runif(50, 0, 4),
+#'   y = runif(50, 6, 13),
+#'   count = rpois(50, 5)
+#' ) %>% st_as_sf(coords = c("x", "y"), crs = 4326)
+#'
+#' datasets_list <- list(Presence = presence_data, Count = count_data)
+#'
+#' # Create a dummy polygon for the region
+#' ben_coords <- matrix(c(0, 6, 4, 6, 4, 13, 0, 13, 0, 6), ncol = 2, byrow = TRUE)
+#' ben_sf <- st_sfc(st_polygon(list(ben_coords)), crs = 4326)
+#' ben_sf <- st_sf(data.frame(name = "Benin"), ben_sf)
+#'
+#' # Create a DataFolds object with the default 'cluster' method
+#' my_folds <- create_folds(datasets_list, ben_sf, k = 5)
+#'
+#' # Extract the desired fold (e.g. third fold of k-fold cross-validation)
 #' splits_fold_3 <- extract_fold(my_folds, fold = 3)
 #'
 #' # Access the clean datasets for modeling
@@ -142,7 +167,7 @@ extract_fold.DataFolds <- function(object, fold, ...) {
 }
 
 # --- Generic method ---
-#' @title Generic method for DataFolds object
+#' @title Generic method for DataFolds objects
 #'
 #' @param object A `DataFolds` S3 object.
 #' @param ... Additional arguments (not used by this method).
@@ -150,7 +175,7 @@ extract_fold.DataFolds <- function(object, fold, ...) {
 #' @return A list containing two named elements: `train` and `test`.
 #' Each of these elements is a named list of `sf` objects, with names corresponding to the original datasets.
 #' @export
-#' @family spatial blocking
+#' @family spatial blocking methods
 #'
 extract_fold <- function(object, ...) {
   UseMethod("extract_fold")
@@ -176,7 +201,7 @@ extract_fold.default <- function(x) {
 #' @return The object invisibly.
 #' @method print DataFolds
 #' @export
-#' @family spatial blocking
+#' @family spatial blocking methods
 #'
 print.DataFolds <- function(x, ...) {
   cat("A DataFolds S3 object with", x$k, "folds.\n")
@@ -193,7 +218,7 @@ print.DataFolds <- function(x, ...) {
 }
 
 #--- Plot method ---
-#' @title Plot block cross-validation folds for multiple datasets
+#' @title Plot block cross-validation folds for multisource datasets
 #'
 #' @description
 #' A method to visualize the spatial blocks and the corresponding train/test
@@ -205,7 +230,7 @@ print.DataFolds <- function(x, ...) {
 #' @return A `ggplot2` object that can be printed or saved.
 #' @method plot DataFolds
 #' @export
-#' @family spatial blocking
+#' @family spatial blocking methods
 #'
 #' @examples
 #' \dontrun{
@@ -232,18 +257,18 @@ print.DataFolds <- function(x, ...) {
 #' datasets_list <- list(Presence = presence_data, Count = count_data)
 #'
 #' # Create a dummy polygon for the region (e.g., Benin)
-#' ben_utm_coords <- matrix(c(0, 6, 4, 6, 4, 13, 0, 13, 0, 6), ncol = 2, byrow = TRUE)
-#' ben_utm <- st_sfc(st_polygon(list(ben_utm_coords)), crs = 4326)
-#' ben_utm <- st_sf(data.frame(name = "Benin"), ben_utm)
+#' ben_coords <- matrix(c(0, 6, 4, 6, 4, 13, 0, 13, 0, 6), ncol = 2, byrow = TRUE)
+#' ben_sf <- st_sfc(st_polygon(list(ben_coords)), crs = 4326)
+#' ben_sf <- st_sf(data.frame(name = "Benin"), ben_sf)
 #'
 #' # Create a DataFolds object for the example
-#' my_folds <- create_folds(datasets_list, ben_utm, k = 5)
+#' my_folds <- create_folds(datasets_list, ben_sf, k = 5)
 #'
 #' # Now you can plot the object
 #' plot_cv <- plot(my_folds)
 #' print(plot_cv)
 #'
-#' # You can even customize the plot output by adjusting the axes breaks
+#' # You can even customize the plot output (e.g. adjusting the axes breaks)
 #' plot_cv <- plot_cv +
 #'   ggplot2::scale_x_continuous(breaks = seq(0, 4, 1)) +
 #'   ggplot2::scale_y_continuous(breaks = seq(6, 13, 2))
@@ -279,8 +304,9 @@ plot.DataFolds <- function(x, ...) {
       panel.grid.major = ggplot2::element_line(color = "grey80"),
       panel.grid.minor = ggplot2::element_line(color = "grey90")
     ) +
-    ggplot2::labs(title = "", # paste("Spatial Cross-Validation Folds")
-                  x = "Longitude", y = "Latitude") +
+    ggplot2::labs(title = paste("Spatial Cross-Validation Folds"),
+                  x = "Longitude",
+                  y = "Latitude") +
     ggspatial::annotation_north_arrow(location = "tl", height = grid::unit(0.6, "cm"), width = grid::unit(0.3, "cm")) +
     ggspatial::annotation_scale(location = "br", bar_cols = c("grey60", "white"))
 
