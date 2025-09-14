@@ -71,12 +71,12 @@ count_data <- data.frame(
 datasets_list <- list(Presence = presence_data, Count = count_data)
 
 # Define a dummy study region
-ben_utm_coords <- matrix(c(0, 6, 4, 6, 4, 13, 0, 13, 0, 6), ncol = 2, byrow = TRUE)
-ben_utm <- st_sfc(st_polygon(list(ben_utm_coords)), crs = 4326)
-ben_utm <- st_sf(data.frame(name = "Region"), ben_utm)
+ben_coords <- matrix(c(0, 6, 4, 6, 4, 13, 0, 13, 0, 6), ncol = 2, byrow = TRUE)
+ben_sf <- st_sfc(st_polygon(list(ben_coords)), crs = 4326)
+ben_sf <- st_sf(data.frame(name = "Region"), ben_sf)
 
 # Create the DataFolds object
-my_folds <- create_folds(datasets_list, ben_utm, k = 5, seed = 23)
+my_folds <- create_folds(datasets_list, ben_sf, k = 5, seed = 23)
 
 # Print a summary of the object
 print(my_folds)
@@ -85,7 +85,7 @@ print(my_folds)
 plot_cv <- plot(my_folds)
 print(plot_cv)
 
-# Extract a specific fold (e.g., Fold 3) for modeling
+# Extract a specific fold (e.g., Fold 3) for modeling and evaluation
 splits_fold_3 <- extract_fold(my_folds, fold = 3)
 
 # You now have two clean lists of `sf` objects for training and testing
@@ -97,7 +97,7 @@ test_data_count <- splits_fold_3$test$count
 ```
 
 # Usage with Prediction Models
-The output of `isdmtools` is a set of clean `sf` objects, which makes it easy to integrate with various modeling tools. The extracted train and test data can be directly fed into your preferred modeling packages such as `inlabru`, `PointedSDMs`, `MCMC` software, or any `GLMs/GAMs` tools that can accommodate single or multiple responses. This ensures that your model predictions are validated using a robust spatial cross-validation approach.
+The output of `isdmtools` is a set of clean `sf` objects, which makes it easy to integrate with various modeling tools. The extracted train and test data can be directly fed into your preferred modeling packages such as `inlabru`, `PointedSDMs`, `MCMC` software, or any `GLMs/GAMs` tools that can accommodate single or multisource datasets. This ensures that your model predictions are validated using a robust spatial cross-validation approach.
 
 # Contributing
 We welcome contributions! If you encounter an issue or have a feature request, please open an issue on the GitHub repository.
