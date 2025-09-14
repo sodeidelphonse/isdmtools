@@ -62,13 +62,13 @@ count_data <- data.frame(
 # Create a list of datasets
 datasets_list <- list(Presence = presence_data, Count = count_data)
 
-# Create a dummy polygon for the region
-ben_utm_coords <- matrix(c(0, 6, 4, 6, 4, 13, 0, 13, 0, 6), ncol = 2, byrow = TRUE)
-ben_utm <- st_sfc(st_polygon(list(ben_utm_coords)), crs = 4326)
-ben_utm <- st_sf(data.frame(name = "Benin"), ben_utm)
+# Create a dummy polygon for the region (e.g. Benin's minimum bounding rectangle)
+ben_coords <- matrix(c(0, 6, 4, 6, 4, 13, 0, 13, 0, 6), ncol = 2, byrow = TRUE)
+ben_sf <- st_sfc(st_polygon(list(ben_coords)), crs = 4326)
+ben_sf <- st_sf(data.frame(name = "Benin"), ben_sf)
 
 # Create a DataFolds object using the default 'cluster' method
-my_folds <- create_folds(datasets_list, ben_utm, k = 5)
+my_folds <- create_folds(datasets_list, ben_sf, k = 5)
 print(my_folds)
 }
 
@@ -77,12 +77,5 @@ print(my_folds)
 Roberts DR, Bahn V, Ciuti S, Boyce MS, Elith J, Guillera-Arroita G, Hauenstein S, Lahoz-Monfort JJ, Schröder B, Thuiller W, et al. Cross-validation strategies for data with temporal, spatial, hierarchical, or phylogenetic structure. \emph{Ecography} (2017) 40:913–929. \doi{10.1111/ecog.02881}
 
 Valavi R, Elith J, Lahoz-Monfort JJ, Guillera-Arroita G. blockCV: an R package for generating spatially or environmentally separated folds for k-fold cross-validation of species distribution models. \emph{bioRxiv} (2018)357798. \doi{10.1101/357798}
-}
-\seealso{
-Other spatial blocking: 
-\code{\link{extract_fold}()},
-\code{\link{extract_fold.DataFolds}()},
-\code{\link{plot.DataFolds}()},
-\code{\link{print.DataFolds}()}
 }
 \concept{spatial blocking}

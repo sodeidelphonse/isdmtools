@@ -24,7 +24,32 @@ its original columns, avoiding \code{NA} values from the binding process.
 }
 \examples{
 \dontrun{
-# Assuming `my_folds` is a DataFolds object created from the `create_folds` example
+# Create a list of some dummy sf data with different columns
+library(sf)
+set.seed(42)
+presence_data <- data.frame(
+  x = runif(100, 0, 4),
+  y = runif(100, 6, 13),
+  site = rbinom(100, 1, 0.6)
+) \%>\% st_as_sf(coords = c("x", "y"), crs = 4326)
+
+count_data <- data.frame(
+  x = runif(50, 0, 4),
+  y = runif(50, 6, 13),
+  count = rpois(50, 5)
+) \%>\% st_as_sf(coords = c("x", "y"), crs = 4326)
+
+datasets_list <- list(Presence = presence_data, Count = count_data)
+
+# Create a dummy polygon for the region
+ben_coords <- matrix(c(0, 6, 4, 6, 4, 13, 0, 13, 0, 6), ncol = 2, byrow = TRUE)
+ben_sf <- st_sfc(st_polygon(list(ben_coords)), crs = 4326)
+ben_sf <- st_sf(data.frame(name = "Benin"), ben_sf)
+
+# Create a DataFolds object with the default 'cluster' method
+my_folds <- create_folds(datasets_list, ben_sf, k = 5)
+
+# Extract the desired fold (e.g. third fold of k-fold cross-validation)
 splits_fold_3 <- extract_fold(my_folds, fold = 3)
 
 # Access the clean datasets for modeling
@@ -38,10 +63,9 @@ names(test_data_count)
 
 }
 \seealso{
-Other spatial blocking: 
-\code{\link{create_folds}()},
+Other spatial blocking methods: 
 \code{\link{extract_fold}()},
 \code{\link{plot.DataFolds}()},
 \code{\link{print.DataFolds}()}
 }
-\concept{spatial blocking}
+\concept{spatial blocking methods}

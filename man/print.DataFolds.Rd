@@ -20,10 +20,9 @@ number of folds, the datasets included, and a breakdown of individuals per
 dataset across all folds.
 }
 \seealso{
-Other spatial blocking: 
-\code{\link{create_folds}()},
+Other spatial blocking methods: 
 \code{\link{extract_fold}()},
 \code{\link{extract_fold.DataFolds}()},
 \code{\link{plot.DataFolds}()}
 }
-\concept{spatial blocking}
+\concept{spatial blocking methods}

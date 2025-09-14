@@ -2,7 +2,7 @@
 % Please edit documentation in R/SpatialFolds.R
 \name{plot.DataFolds}
 \alias{plot.DataFolds}
-\title{Plot block cross-validation folds for multiple datasets}
+\title{Plot block cross-validation folds for multisource datasets}
 \usage{
 \method{plot}{DataFolds}(x, ...)
 }
@@ -43,18 +43,18 @@ count_data <- data.frame(
 datasets_list <- list(Presence = presence_data, Count = count_data)
 
 # Create a dummy polygon for the region (e.g., Benin)
-ben_utm_coords <- matrix(c(0, 6, 4, 6, 4, 13, 0, 13, 0, 6), ncol = 2, byrow = TRUE)
-ben_utm <- st_sfc(st_polygon(list(ben_utm_coords)), crs = 4326)
-ben_utm <- st_sf(data.frame(name = "Benin"), ben_utm)
+ben_coords <- matrix(c(0, 6, 4, 6, 4, 13, 0, 13, 0, 6), ncol = 2, byrow = TRUE)
+ben_sf <- st_sfc(st_polygon(list(ben_coords)), crs = 4326)
+ben_sf <- st_sf(data.frame(name = "Benin"), ben_sf)
 
 # Create a DataFolds object for the example
-my_folds <- create_folds(datasets_list, ben_utm, k = 5)
+my_folds <- create_folds(datasets_list, ben_sf, k = 5)
 
 # Now you can plot the object
 plot_cv <- plot(my_folds)
 print(plot_cv)
 
-# You can even customize the plot output by adjusting the axes breaks
+# You can even customize the plot output (e.g. adjusting the axes breaks)
 plot_cv <- plot_cv +
   ggplot2::scale_x_continuous(breaks = seq(0, 4, 1)) +
   ggplot2::scale_y_continuous(breaks = seq(6, 13, 2))
@@ -63,10 +63,9 @@ print(plot_cv)
 
 }
 \seealso{
-Other spatial blocking: 
-\code{\link{create_folds}()},
+Other spatial blocking methods: 
 \code{\link{extract_fold}()},
 \code{\link{extract_fold.DataFolds}()},
 \code{\link{print.DataFolds}()}
 }
-\concept{spatial blocking}
+\concept{spatial blocking methods}
