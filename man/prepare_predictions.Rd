@@ -23,6 +23,7 @@ using \code{expand.grid(x, y)} function, where 'x' and 'y' are geographical coor
 }
 \seealso{
 Other prediction analyses: 
+\code{\link{generate_maps}()},
 \code{\link{suitability_index}()}
 }
 \concept{prediction analyses}
