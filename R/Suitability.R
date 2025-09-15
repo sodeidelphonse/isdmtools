@@ -44,6 +44,7 @@
 #'
 #' @examples
 #' \dontrun{
+#' library(terra)
 #' # Simulate a sample data.frame with X, Y, and a linear predictor
 #' set.seed(42)
 #' x <- expand.grid(X = seq(0, 50, 1), Y = seq(0, 50, 1))
@@ -56,6 +57,9 @@
 #'   response.type = "pa"
 #' )
 #' plot(pa_probability)
+#'
+#' # Generate a binary map using a fixed threshold
+#' binary_map <- app(pa_probability, function(x) ifelse(x < 0.5, 0, 1))
 #'
 #' # Generate an expected mean for a Count model
 #' count_expected_mean <- suitability_index(
