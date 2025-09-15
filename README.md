@@ -1,5 +1,5 @@
-# Presentation of isdmtools
-`isdmtools` is an R package designed to streamline the process of preparing, evaluating and visualizing spatial data for biodiversity species distribution modeling, with a specific focus on **integrated species distribution models (ISDMs)** with multi-source geospatial datasets within a Bayesian framework. It provides a robust and reproducible workflow for block cross-validation, data management and visualization, and model evaluation, leveraging the power of _sf_, _terra_, _dplyr_, _purrr_, and _ggplot2_ packages.
+# isdmtools
+`isdmtools` is an R package designed to streamline the process of preparing, evaluating and visualizing spatial data for biodiversity species distribution modeling, with a specific focus on **integrated species distribution models (ISDMs)** with multi-source geospatial datasets within a Bayesian framework. It provides a set of tools for producing robust and reproducible workflows for block cross-validation, data management and visualization, and model evaluation, leveraging the power of `sf`, `dplyr`, `purrr`, and `ggplot2` packages.
 
 # Installation
 
@@ -32,7 +32,7 @@ The package provides a set of core functions to handle common data preparation a
 
 **Suitability Analysis**: Standardize model predictions for consistent mapping and compute a final habitat suitability index. The `suitability_index()` function transforms raw integrated model predictions into a suitability score using the inverse of the generalized complementary log-log transform (`cloglog`).
 
-**Model Evaluation**: Compute comprehensive evaluation metrics, including ROC-based and continuous-outcome metrics through the `compute_metrics()` function. The package also handles *dataset-weighted composite scores*, providing a holistic view of model performance.
+**Model Evaluation**: Compute comprehensive evaluation metrics, including ROC-based and continuous-outcome metrics through the `compute_metrics()` function. The package also handles *dataset-weighted composite scores* (`"<METRIC>_Comp"`), providing a holistic view of model performance.
 
 **Mapping & Visualization**: Visualize model predictions and final habitat suitability maps. The plotting method `generate_maps()` is designed with `ggplot2` to be clear and informative and visualize multiple variables of model predictions (e.g. mean, median, standard deviation or quantiles), providing an easy way to interpret models' results. Users can customize the final plot if needed.
 
@@ -61,7 +61,7 @@ presence_data <- data.frame(
 ) %>%
   st_as_sf(coords = c("x", "y"), crs = 4326)
 
-# Count data (e.g. species count in a structured design)
+# Count data (e.g. species count from a structured design)
 count_data <- data.frame(
   x = runif(50, 0, 4),
   y = runif(50, 6, 13),
@@ -79,8 +79,6 @@ ben_sf <- st_sf(data.frame(name = "Region"), ben_sf)
 
 # Create the DataFolds object
 my_folds <- create_folds(datasets_list, ben_sf, k = 5, seed = 23)
-
-# Print a summary of the object
 print(my_folds)
 
 # Visualize the folds
@@ -102,14 +100,14 @@ splits_fold_3 <- extract_fold(my_folds, fold = 3)
  test_data <- splits_fold_3$test
 ```
 ## Usage with Prediction Models
-This first output of `isdmtools` is a set of clean `sf` objects, which makes it easy to integrate with various spatial modeling tools using block cross-validation techniques. The extracted train and test data can be directly fed into your preferred modeling packages such as `inlabru`, `PointedSDMs`, `MCMC` software, or any 'GLMs/GAMs' tools that can accommodate multisource spatial datasets. This ensures that your model predictions are validated using a robust spatial cross-validation approach and comprehensive evaluation metrics. 
+This first output above from the `isdmtools` package is a set of clean `sf` objects, which makes it easy to integrate with various spatial modeling tools using block cross-validation techniques. The extracted train and test data can be directly fed into your preferred modeling packages such as `inlabru`and `PointedSDMs` packages, 'MCMC' software, or any 'GLMs/GAMs' tools that can accommodate multisource spatial datasets. This ensures that your model predictions are validated using a robust spatial cross-validation approach and comprehensive evaluation metrics. 
 
-### Step 1: Fitting a Bayesian spatial model with `inlabru` package
+### Step 1: Fitting a Bayesian spatial model with the `inlabru` package
 
 The "inlabru" package is a wrapper for the `R-INLA` package which is designed for Bayesian Latent Gaussian Modelling using INLA (Integrated Laplace Nested Approximations) and Extensions. Let's develop a Bayesian model with the fake data above.
 
 ```R
-# String for the coordinates reference system (CRS) of the data
+# The coordinates reference system (CRS) of the data
 projection <- "+proj=longlat +ellps=WGS84 +datum=WGS84"
  
  if (requireNamespace("INLA", quietly = TRUE) &&
@@ -211,7 +209,7 @@ As you can see, the estimated _spatial range_ is higher than we expected. This i
                                projection = projection)
  plot(jt_count)
  ```
-### Step 3: Model Performance Evaluation using with-held data
+### Step 3: Model Performance Evaluation using test data
 
 ```R
  xy_observed <- rbind(st_coordinates(datasets_list$Presence)[, c("X","Y")], 
