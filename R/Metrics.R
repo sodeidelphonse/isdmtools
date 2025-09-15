@@ -21,7 +21,8 @@
 #' @param best_threshold_policy A character string specifying the policy for selecting a threshold when multiple thresholds yield the same 'best' value. Options are "first", "last", "max.prec" (max precision), "max.recall" (max recall), "max.accu" (max accuracy), or "max.f1" (max F1 score). Default is "first".
 #' @param metrics A character vector of metric names to compute. If `NULL`, "auc" (area under the ROC curve), "tss" (true skill statistics), "accuracy", "F1" (F1 score), "precision", and "recall" are computed for ROC-based metrics while "rmse" and "mae" are computed for error-based metrics.
 #' @param roc_composite_metrics A character vector specifying a subset of ROC-based metrics to be used for the overall composite score (`TOT_ROC_SCORE`). Allowed options are "auc", "tss", "accuracy", and "F1". If `NULL`, the sensible default is "auc", "tss" and "accuracy".
-#' @param continuous_composite_metrics A character vector specifying a subset of continuous outcome metrics to be used for the overall composite score (`TOT_ERROR_SCORE`). Allowed options are "rmse" (root mean squared error), "mae" (mean absolute error), and "mape" (mean absolute percentage error). If `NULL`, the default is "rmse" and "mae".
+#' @param continuous_composite_metrics A character vector specifying a subset of continuous outcome metrics to be used for the overall composite score (`TOT_ERROR_SCORE`).
+#' Allowed options are "rmse" (root mean squared error), "mae" (mean absolute error), "mape" (mean absolute percentage error) and "r2" (pseudo R-squared). If `NULL`, the default is "rmse" and "mae".
 #' @param prediction_is_rate A logical value. If `TRUE`, it indicates that the `expected` count contains predictions at the intensity (per-unit-of-exposure) scale (typical for Bayesian models with offset from `inlabru`). If `FALSE`, it assumes predictions are at the original scale (e.g., counts). Default is `FALSE`.
 #' @param exposure A character string representing the column name in the `sf` objects that contains the exposure variable (offset). Only relevant for count (and sometimes presence-absence) data and must be standardized across all these types of datasets.
 #' If `prediction_is_rate` is `TRUE`, observed counts are rescaled by this exposure variable. Default is `NULL`.
@@ -35,8 +36,8 @@
 #'   \item \strong{Presence-Only (PO) Data:} The function uses the presence points from the `sf` object (`xy_excluded`) and samples `n` pseudo-absence points from the study background (excluding `xy_excluded`) to create a presence-absence dataset for ROC-based metric calculations.
 #' }
 #'
-#' For models based on count data, if a user wants to compute both continuous and ROC-based metrics, `expected` raster must be supplied for the continuous metrics and `prob_raster` must also be supplied for the ROC-based metrics.
-#' The `prob_raster` can be obtained by converting a continuous prediction (e.g., `linear predictor`) to a suitability index using the \link[isdmtools]{suitability_index} function.
+#' For models based on count data, if a user wants to compute both continuous-outcome and ROC-based metrics, `expected` raster must be supplied for the continuous metrics and `prob_raster` must also be supplied for the ROC-based metrics.
+#' The `prob_raster` can be obtained by converting a continuous prediction (e.g., `linear predictor`) to a suitability index using the \link{suitability_index} function.
 #'
 #' The available continuous-outcome metrics are given as follows:
 #' \itemize{
@@ -46,6 +47,18 @@
 #'    \deqn{MAE = \frac{1}{n}\sum_{i=1}^{n}|\hat{y_i} - y_i|}.
 #' \item **Mean Absolute Percentage Error (MAPE)**: A measure of prediction accuracy as a percentage. It is calculated as the average of the absolute percentage errors for each observation. It can be useful for comparing performance across different datasets or models.
 #'    \deqn{MAPE = \frac{100\%}{n}\sum_{i=1}^{n}|\frac{\hat{y_i} - y_i}{y_i}|}.
+#' \item **Pseudo R-squared (\eqn{R^2})**: A measure of the proportion of variance in the observed data explained by the model's predictions.
+#'    \deqn{R^2 = 1 - \frac{SS_{res}}{SS_{tot}}}
+#'    Where:
+#'   \itemize{
+#'   \item \eqn{y_i} is the observed continuous value at location \eqn{i}.
+#'   \item \eqn{\hat{y}_i} is the predicted value from the model at location \eqn{i} (e.g., the posterior mean of the predictions).
+#'   \item \eqn{\bar{y}} is the mean of all observed values.
+#'   \item \eqn{SS_{res}} is the residual sum of squares, which measures the discrepancy between the observed and predicted values:
+#'     \deqn{SS_{res} = \sum_{i=1}^{n}(y_i - \hat{y}_i)^2}
+#'   \item \eqn{SS_{tot}} is the total sum of squares, which measures the total variance in the observed data:
+#'     \deqn{SS_{tot} = \sum_{i=1}^{n}(y_i - \bar{y})^2}
+#'   }
 #' }
 #'
 #' A `weighted composite score` (`<METRIC>_Comp`) is computed for each requested metric by taking the sample-size-weighted average across all datasets where the metric was successfully calculated.
@@ -114,7 +127,7 @@
 #' # )
 #' }
 #' @export
-#' @seealso \code{\link{extract_fold.DataFolds}}, \code{\link{suitability_index}}
+#' @seealso \code{\link{extract_fold}}, \code{\link{suitability_index}}
 #'
 compute_metrics <- function(test_data,
                             prob_raster = NULL,
@@ -135,7 +148,7 @@ compute_metrics <- function(test_data,
                             seed = 25, ...) {
 
   # Master list of allowed metrics
-  continuous_metrics <- c("rmse", "mae", "mape")
+  continuous_metrics <- c("rmse", "mae", "mape", "r2")
   roc_metrics <- c("auc", "tss", "accuracy", "precision", "recall", "specificity",
                    "npv", "fpr", "fnr", "fdr", "F1", "threshold", "tpr", "tnr")
   master_allowed_metrics <- c(roc_metrics, continuous_metrics)
@@ -326,7 +339,7 @@ compute_metrics <- function(test_data,
         if ("rmse" %in% metrics) metrics_ds$rmse <- rmse(observed, predicted)
         if ("mae" %in% metrics) metrics_ds$mae <- mae(observed, predicted)
         if ("mape" %in% metrics) metrics_ds$mape <- mape(observed, predicted)
-
+        if ("r2" %in% metrics) metrics_ds$r2 <- r_squared(observed, predicted)
       } else {
         message(sprintf("Skipping continuous-outcome metrics for '%s' due to no valid predictions after filtering.", ds_name))
       }
@@ -565,4 +578,10 @@ mape <- function(observed, predicted) {
   100*mean(abs(observed - predicted)/observed, na.rm = TRUE)
 }
 
-
+# Pseudo R-squared
+r_squared <- function(observed, predicted) {
+  stopifnot(length(observed) == length(predicted))
+  ss_res <- sum((observed - predicted)^2, na.rm = TRUE)
+  ss_tot <- sum((observed - mean(observed, na.rm = TRUE))^2, na.rm = TRUE)
+  1 - ss_res/ss_tot
+}

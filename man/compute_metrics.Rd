@@ -53,7 +53,8 @@ compute_metrics(
 
 \item{roc_composite_metrics}{A character vector specifying a subset of ROC-based metrics to be used for the overall composite score (\code{TOT_ROC_SCORE}). Allowed options are "auc", "tss", "accuracy", and "F1". If \code{NULL}, the sensible default is "auc", "tss" and "accuracy".}
 
-\item{continuous_composite_metrics}{A character vector specifying a subset of continuous outcome metrics to be used for the overall composite score (\code{TOT_ERROR_SCORE}). Allowed options are "rmse" (root mean squared error), "mae" (mean absolute error), and "mape" (mean absolute percentage error). If \code{NULL}, the default is "rmse" and "mae".}
+\item{continuous_composite_metrics}{A character vector specifying a subset of continuous outcome metrics to be used for the overall composite score (\code{TOT_ERROR_SCORE}).
+Allowed options are "rmse" (root mean squared error), "mae" (mean absolute error), "mape" (mean absolute percentage error) and "r2" (pseudo R-squared). If \code{NULL}, the default is "rmse" and "mae".}
 
 \item{prediction_is_rate}{A logical value. If \code{TRUE}, it indicates that the \code{expected} count contains predictions at the intensity (per-unit-of-exposure) scale (typical for Bayesian models with offset from \code{inlabru}). If \code{FALSE}, it assumes predictions are at the original scale (e.g., counts). Default is \code{FALSE}.}
 
@@ -85,8 +86,8 @@ The function handles three main data types and any combination thereof:
 \item \strong{Presence-Only (PO) Data:} The function uses the presence points from the \code{sf} object (\code{xy_excluded}) and samples \code{n} pseudo-absence points from the study background (excluding \code{xy_excluded}) to create a presence-absence dataset for ROC-based metric calculations.
 }
 
-For models based on count data, if a user wants to compute both continuous and ROC-based metrics, \code{expected} raster must be supplied for the continuous metrics and \code{prob_raster} must also be supplied for the ROC-based metrics.
-The \code{prob_raster} can be obtained by converting a continuous prediction (e.g., \verb{linear predictor}) to a suitability index using the \link[isdmtools]{suitability_index} function.
+For models based on count data, if a user wants to compute both continuous-outcome and ROC-based metrics, \code{expected} raster must be supplied for the continuous metrics and \code{prob_raster} must also be supplied for the ROC-based metrics.
+The \code{prob_raster} can be obtained by converting a continuous prediction (e.g., \verb{linear predictor}) to a suitability index using the \link{suitability_index} function.
 
 The available continuous-outcome metrics are given as follows:
 \itemize{
@@ -96,6 +97,18 @@ The available continuous-outcome metrics are given as follows:
 \deqn{MAE = \frac{1}{n}\sum_{i=1}^{n}|\hat{y_i} - y_i|}.
 \item \strong{Mean Absolute Percentage Error (MAPE)}: A measure of prediction accuracy as a percentage. It is calculated as the average of the absolute percentage errors for each observation. It can be useful for comparing performance across different datasets or models.
 \deqn{MAPE = \frac{100\%}{n}\sum_{i=1}^{n}|\frac{\hat{y_i} - y_i}{y_i}|}.
+\item \strong{Pseudo R-squared (\eqn{R^2})}: A measure of the proportion of variance in the observed data explained by the model's predictions.
+\deqn{R^2 = 1 - \frac{SS_{res}}{SS_{tot}}}
+Where:
+\itemize{
+\item \eqn{y_i} is the observed continuous value at location \eqn{i}.
+\item \eqn{\hat{y}_i} is the predicted value from the model at location \eqn{i} (e.g., the posterior mean of the predictions).
+\item \eqn{\bar{y}} is the mean of all observed values.
+\item \eqn{SS_{res}} is the residual sum of squares, which measures the discrepancy between the observed and predicted values:
+\deqn{SS_{res} = \sum_{i=1}^{n}(y_i - \hat{y}_i)^2}
+\item \eqn{SS_{tot}} is the total sum of squares, which measures the total variance in the observed data:
+\deqn{SS_{tot} = \sum_{i=1}^{n}(y_i - \bar{y})^2}
+}
 }
 
 A \verb{weighted composite score} (\verb{<METRIC>_Comp}) is computed for each requested metric by taking the sample-size-weighted average across all datasets where the metric was successfully calculated.
@@ -157,5 +170,5 @@ A \verb{total composite score} (\code{TOT_ROC_SCORE} or \code{TOT_ERROR_SCORE}) 
 }
 }
 \seealso{
-\code{\link{extract_fold.DataFolds}}, \code{\link{suitability_index}}
+\code{\link{extract_fold}}, \code{\link{suitability_index}}
 }
