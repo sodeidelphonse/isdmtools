@@ -1,5 +1,5 @@
 # Presentation of isdmtools
-`isdmtools` is an R package designed to streamline the process of preparing, evaluating and visualizing spatial data for biodiversity species distribution modeling, with a specific focus on **integrated species distribution models (ISDMs)** with multi-source geospatial datasets within a Bayesian framework. It provides a robust and reproducible workflow for block cross-validation, data management, and model evaluation, leveraging the power of sf, terra, dplyr, purrr, and ggplot2 packages.
+`isdmtools` is an R package designed to streamline the process of preparing, evaluating and visualizing spatial data for biodiversity species distribution modeling, with a specific focus on **integrated species distribution models (ISDMs)** with multi-source geospatial datasets within a Bayesian framework. It provides a robust and reproducible workflow for block cross-validation, data management and visualization, and model evaluation, leveraging the power of _sf_, _terra_, _dplyr_, _purrr_, and _ggplot2_ packages.
 
 # Installation
 
@@ -41,18 +41,16 @@ The package provides a set of core functions to handle common data preparation a
 **sample_bg_points()**: A constructor function for generating background points for presence-only data with `print()` and `plot()` methods for the `BackgroundPoints` class.
 
 # Getting Started: A Complete Worked Example
-The core workflow of "isdmtools" involves creating a DataFolds object and then extracting specific folds for your modeling pipeline.
+The core workflow of "isdmtools" involves creating a DataFolds object and then extracting specific folds for a modeling pipeline.
 
 ## Data preparation
-Let's load the package and set up some dummy data for a hypothetical study region.
+First, let's load the package and create some dummy data for a hypothetical study region.
 
 ```R
 library(isdmtools)
 library(sf)
 library(ggplot2)
 library(dplyr)
-
-# Create dummy presence-only and count data
 set.seed(42)
 
 # Presence-only data (e.g. Citizen science data)
@@ -104,7 +102,7 @@ splits_fold_3 <- extract_fold(my_folds, fold = 3)
  test_data <- splits_fold_3$test
 ```
 ## Usage with Prediction Models
-This first output of `isdmtools` is a set of clean `sf` objects, which makes it easy to integrate with various spatial modeling tools using block cross-validation techniques. The extracted train and test data can be directly fed into your preferred modeling packages such as `inlabru`, `PointedSDMs`, `MCMC` software, or any `GLMs/GAMs` tools that can accommodate multisource spatial datasets. This ensures that your model predictions are validated using a robust spatial cross-validation approach and comprehensive evaluation metrics. Let's develop a Bayesian model with the fake data above.
+This first output of `isdmtools` is a set of clean `sf` objects, which makes it easy to integrate with various spatial modeling tools using block cross-validation techniques. The extracted train and test data can be directly fed into your preferred modeling packages such as `inlabru`, `PointedSDMs`, `MCMC` software, or any 'GLMs/GAMs' tools that can accommodate multisource spatial datasets. This ensures that your model predictions are validated using a robust spatial cross-validation approach and comprehensive evaluation metrics. Let's develop a Bayesian model with the fake data above.
 
 ### Step 1: Fitting a Bayesian spatial model with `inlabru` package
 
@@ -132,14 +130,14 @@ projection <- "+proj=longlat +ellps=WGS84 +datum=WGS84"
      inlabru::gg(train_data$Presence) +
      inlabru::gg(train_data$Count, col = "blue") 
    
-   # Set PC-prior for the SPDE model: we guess a longer range value as no spatial 
-   # autocorrelation was defined in the generated data
+   # Set the PC-prior for the SPDE model. We estimate a longer range value as no spatial 
+   # autocorrelation was defined in the generated data:
    pcmatern <- INLA::inla.spde2.pcmatern(mesh,
                                        prior.range = c(2, 0.1), # P(spatial range < 2) = 0.1
                                        prior.sigma = c(1, 0.1)  # P(sigma > 1) = 0.1
               )
    
-   # Assuming a shared spatial latent (spde)
+   # Assuming a shared spatial latent (denoted by 'spde')
    jcmp <- ~ -1 + Presence_intercept(1) + Count_intercept(1) +
                   spde(geometry, model = pcmatern)
    
@@ -175,11 +173,11 @@ projection <- "+proj=longlat +ellps=WGS84 +datum=WGS84"
  #> Presence_intercept -0.05060088 0.6680780   -1.36001 -0.05060088   1.258808 -0.05060088   0
    
  jfit$summary.hyperpar
- #> mean            sd      0.025quant  0.5quant 0.975quant     mode
- #> Range for spde 3.551056 1.2224526   1.836691 3.329475   6.578244 2.909072
- #> Stdev for spde 1.206941 0.3212041   0.711045 1.161888   1.966190 1.072183
+ #>                mean        sd      0.025quant 0.5quant  0.975quant  mode
+ #> Range for spde 3.551056 1.2224526   1.836691  3.329475   6.578244  2.909072
+ #> Stdev for spde 1.206941 0.3212041   0.711045  1.161888   1.966190  1.072183
  ```
-As you can see, the estimated spatial range is higher than we expected. This is because there is no spatial autocorrelation in the simulated data.
+As you can see, the estimated _spatial range_ is higher than we expected. This is because there is no spatial autocorrelation in the simulated data.
  
 ### Step 2: Model prediction 
  
@@ -254,14 +252,14 @@ TOT_ERROR_SCORE   2.0316114
 
 ### Step 4: Prediction mapping 
 ```R
-p <- generate_maps (jt_prob, 
-                    vars_to_plot = c("q0.025", "mean", "q0.975"), 
-                    base_map = ben_sf,
-                    legend_title = "suitability",  
-                    panel_labels = c("(a) q2.5%", "(b) Mean", "(c) q97.5%"),
-                    x_axis_breaks = seq(0, 4, 1),
-                    y_axis_breaks = seq(6, 13, 2)
-                    )
+p <- generate_maps(jt_prob, 
+                   vars_to_plot = c("q0.025", "mean", "q0.975"), 
+                   base_map = ben_sf,
+                   legend_title = "suitability",  
+                   panel_labels = c("(a) q2.5%", "(b) Mean", "(c) q97.5%"),
+                   x_axis_breaks = seq(0, 4, 1),
+                   y_axis_breaks = seq(6, 13, 2)
+                   )
 print(p)
 ```
 ![This is the prediction map for the sptial fold 3 data.](docs/prediction_map_readme.png)
