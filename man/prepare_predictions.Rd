@@ -16,7 +16,7 @@ The prediction can be on the response or linear predictor scale, depending on wh
 A \code{data.frame} for grid-based predictions or \code{sf} object for point-based predictions.
 }
 \description{
-Function to transform a prediction data from various spatial models (e.g., \code{inlabru}, \code{PointedSDMs} or \verb{GLMs tools})
+Function to transform a prediction data from various spatial models (e.g., \code{inlabru}, \code{PointedSDMs} or \code{GLMs} tools)
 into an sf object if it is from points predictions (e.g., \link[fmesher]{fm_vertices}) or a data.frame with
 the corresponding locations if it is from pixel grids (see \link[fmesher]{fm_pixels}). Spatial prediction data can also be obtained across a given region
 using \code{expand.grid(x, y)} function, where 'x' and 'y' are geographical coordinates of the grids locations.

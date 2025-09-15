@@ -148,7 +148,7 @@ inv_cloglog <- function(eta, scaling = 1) {
 #--- Convert spatial predictions into a formatted output ---------------------
 
 #' @title Obtain a formatted output from spatial predictions.
-#' @description Function to transform a prediction data from various spatial models (e.g., `inlabru`, `PointedSDMs` or `GLMs tools`)
+#' @description Function to transform a prediction data from various spatial models (e.g., `inlabru`, `PointedSDMs` or `GLMs` tools)
 #' into an sf object if it is from points predictions (e.g., \link[fmesher]{fm_vertices}) or a data.frame with
 #' the corresponding locations if it is from pixel grids (see \link[fmesher]{fm_pixels}). Spatial prediction data can also be obtained across a given region
 #' using \code{expand.grid(x, y)} function, where 'x' and 'y' are geographical coordinates of the grids locations.
