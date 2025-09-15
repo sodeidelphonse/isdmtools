@@ -102,4 +102,9 @@ generate_maps(
 }
 
 }
-\concept{mapping methods}
+\seealso{
+Other prediction analyses: 
+\code{\link{prepare_predictions}()},
+\code{\link{suitability_index}()}
+}
+\concept{prediction analyses}

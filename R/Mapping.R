@@ -81,7 +81,7 @@
 #'
 #' @importFrom terra map.pal
 #' @importFrom grid unit
-#' @family mapping methods
+#' @family prediction analyses
 #'
 generate_maps <- function(data_to_plot,
                           vars_to_plot = c("mean", "sd"),
