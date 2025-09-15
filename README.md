@@ -102,11 +102,11 @@ splits_fold_3 <- extract_fold(my_folds, fold = 3)
  test_data <- splits_fold_3$test
 ```
 ## Usage with Prediction Models
-This first output of `isdmtools` is a set of clean `sf` objects, which makes it easy to integrate with various spatial modeling tools using block cross-validation techniques. The extracted train and test data can be directly fed into your preferred modeling packages such as `inlabru`, `PointedSDMs`, `MCMC` software, or any 'GLMs/GAMs' tools that can accommodate multisource spatial datasets. This ensures that your model predictions are validated using a robust spatial cross-validation approach and comprehensive evaluation metrics. Let's develop a Bayesian model with the fake data above.
+This first output of `isdmtools` is a set of clean `sf` objects, which makes it easy to integrate with various spatial modeling tools using block cross-validation techniques. The extracted train and test data can be directly fed into your preferred modeling packages such as `inlabru`, `PointedSDMs`, `MCMC` software, or any 'GLMs/GAMs' tools that can accommodate multisource spatial datasets. This ensures that your model predictions are validated using a robust spatial cross-validation approach and comprehensive evaluation metrics. 
 
 ### Step 1: Fitting a Bayesian spatial model with `inlabru` package
 
-The "inlabru" package is a wrapper for the `R-INLA` package which is designed for Bayesian Latent Gaussian Modelling using INLA (Integrated Laplace Nested Approximations) and Extensions.
+The "inlabru" package is a wrapper for the `R-INLA` package which is designed for Bayesian Latent Gaussian Modelling using INLA (Integrated Laplace Nested Approximations) and Extensions. Let's develop a Bayesian model with the fake data above.
 
 ```R
 # String for the coordinates reference system (CRS) of the data
@@ -249,6 +249,7 @@ TOT_ROC_SCORE     0.8403752
 TOT_ERROR_SCORE   2.0316114
 
 ```
+As you will have noticed, continuous-outcome metrics such as MAE (mean absolute error) and RMSE (root mean squared error) are not available for presence-only data, which makes sense.
 
 ### Step 4: Prediction mapping 
 ```R
