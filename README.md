@@ -107,6 +107,8 @@ The output of `isdmtools` is a set of clean `sf` objects, which makes it easy to
 
 ### Step 2: Bayesian spatial modeling with `inlabru` package
 
+The "inlabru" package is a wrapper for the `R-INLA` package which is designed for Bayesian Latent Gaussian Modelling using INLA (Integrated Laplace Nested Approximations) and Extensions.
+
 ```R
 projection <- "+proj=longlat +ellps=WGS84 +datum=WGS84"
  
@@ -139,6 +141,7 @@ projection <- "+proj=longlat +ellps=WGS84 +datum=WGS84"
    jcmp <- ~ -1 + Presence_intercept(1) + Count_intercept(1) +
                   spde(geometry, model = pcmatern)
    
+   # The observation models
    lik_count <- inlabru::like(
      formula = count ~  + Count_intercept + spde,
      family = "poisson",
@@ -153,6 +156,7 @@ projection <- "+proj=longlat +ellps=WGS84 +datum=WGS84"
      samplers = ben_sf
    )
    
+   # Model fit
    system.time(jfit <- inlabru::bru(jcmp, lik_count, lik_pp,
                         options = list(control.inla = list(int.strategy = "eb"),
                                        bru_max_iter = 15)
@@ -181,13 +185,13 @@ As you can see, the estimated spatial range is higher than we expected. This is 
  # Define the predictions grids
  grids <- fmesher::fm_pixels(mesh, mask = ben_sf)
  
- # Joint habiatat suitability (can exclude dataset-specific intercepts)
+ # Joint habitat suitability (can exclude dataset-specific intercepts)
  jpred <- predict(jfit, newdata = grids, 
                 formula = ~ spde + Presence_intercept + Count_intercept,
                 n.samples = 500, seed = 24)
  jpred   <- prepare_predictions(jpred) 
    
- jt_prob <- suitability_index (jpred, 
+ jt_prob <- suitability_index(jpred, 
                                post.stat = c("q0.025", "mean", "q0.975"), 
                                output.format = "prob",
                                response.type = "count",
@@ -200,14 +204,14 @@ As you can see, the estimated spatial range is higher than we expected. This is 
                     n.samples = 500, seed = 24)
  jpred_count <- prepare_predictions(jpred_count)
    
- jt_count <- suitability_index (jpred_count, 
-                                  post.stat = c("q0.025", "mean", "q0.975"), 
-                                  output.format = "response",
-                                  response.type = "count",
-                                  projection = projection)
+ jt_count <- suitability_index(jpred_count, 
+                               post.stat = c("q0.025", "mean", "q0.975"), 
+                               output.format = "response",
+                               response.type = "count",
+                               projection = projection)
  plot(jt_count)
  ```
-### Step 4: Model Evaluation
+### Step 4: Model Performance Evaluation
 
 ```R
  xy_observed <- rbind(st_coordinates(datasets_list$Presence)[, c("X","Y")], 
@@ -258,6 +262,8 @@ p <- generate_maps (jt_prob,
                     )
 print(p)
 ```
+![This is the prediction map for the sptial fold 3 data.](docs/prediction_map_readme.png)
+
 Next, you can iterate through all five spatial folds to obtain an average model performance.
 Finally, a model can be run on the entire 'datasets_list' to obtain the final prediction.
  
