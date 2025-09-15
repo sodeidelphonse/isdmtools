@@ -55,7 +55,7 @@
 #'   base_map = boundary_sf,
 #'   color_gradient = c("white", "skyblue", "navy"),
 #'   legend_title = "Prediction Value",
-#'   panel_labels = c("Mean", "Standard Deviation"),
+#'   panel_labels = c("Mean", "StDev"),
 #'   nrow = 1
 #' )
 #'
@@ -65,6 +65,7 @@
 #' set.seed(123)
 #' points_sf <- st_as_sf(grid_data[sample(1:10000, 1000), ],
 #'                      coords = c("X", "Y"), crs = 32631) # UTM CRS
+#' points_sf <- prepare_predictions(points_sf)
 #'
 #' # Generate the map
 #' generate_maps(
@@ -74,25 +75,25 @@
 #'   color_gradient = c("white", "orange", "red"),
 #'   legend_title = "Prediction Value",
 #'   panel_labels = c("Mean", "StDev"),
-#'   nrow = 2
+#'   nrow = 1
 #' )
 #' }
 #'
-#' @importFrom grDevices colorRampPalette rainbow terrain.colors topo.colors
+#' @importFrom terra map.pal
 #' @importFrom grid unit
 #' @family mapping methods
 #'
 generate_maps <- function(data_to_plot,
                           vars_to_plot = c("mean", "sd"),
                           base_map = NULL,
-                          color_gradient = rainbow(5),
+                          color_gradient = map.pal("viridis", 100),
                           legend_title = NULL,
                           panel_labels = NULL,
                           nrow = NULL,
                           x_axis_breaks = NULL,
                           y_axis_breaks = NULL) {
 
-  if (!is.data.frame(data_to_plot) && !inherits(data_to_plot, "sf") && !inherits(data_to_plot, "SpatRaster")) {
+  if (!inherits(data_to_plot, c("data.frame", "sf", "SpatRaster"))) {
     stop("'data_to_plot' must be a data.frame, an sf object, or a SpatRaster.", call. = FALSE)
   }
 
@@ -100,8 +101,7 @@ generate_maps <- function(data_to_plot,
     data_to_plot <- as.data.frame(data_to_plot, xy = TRUE)
     data_to_plot <- data_to_plot %>% dplyr::rename(X = x, Y = y)
   }
-
-  if (is.data.frame(data_to_plot) && !all(c("X", "Y") %in% names(data_to_plot))) {
+  if (is.data.frame(data_to_plot) && !inherits(data_to_plot, "sf") && !all(c("X", "Y") %in% names(data_to_plot))) {
     stop("'data_to_plot' is a data.frame but is missing 'X' and 'Y' coordinate columns.", call. = FALSE)
   }
 
