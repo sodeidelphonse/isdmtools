@@ -43,7 +43,8 @@ The package provides a set of core functions to handle common data preparation a
 # Getting Started: A Complete Worked Example
 The core workflow of "isdmtools" involves creating a DataFolds object and then extracting specific folds for your modeling pipeline.
 
-### Step 1: First, let's load the package and set up some dummy data for a hypothetical study region.
+## Data preparation
+Let's load the package and set up some dummy data for a hypothetical study region.
 
 ```R
 library(isdmtools)
@@ -102,10 +103,10 @@ splits_fold_3 <- extract_fold(my_folds, fold = 3)
  train_data <- splits_fold_3$train
  test_data <- splits_fold_3$test
 ```
-# Usage with Prediction Models
+## Usage with Prediction Models
 This first output of `isdmtools` is a set of clean `sf` objects, which makes it easy to integrate with various spatial modeling tools using block cross-validation techniques. The extracted train and test data can be directly fed into your preferred modeling packages such as `inlabru`, `PointedSDMs`, `MCMC` software, or any `GLMs/GAMs` tools that can accommodate multisource spatial datasets. This ensures that your model predictions are validated using a robust spatial cross-validation approach and comprehensive evaluation metrics. Let's develop a Bayesian model with the fake data above.
 
-### Step 2: Bayesian spatial modeling with `inlabru` package
+### Step 1: Fitting a Bayesian spatial model with `inlabru` package
 
 The "inlabru" package is a wrapper for the `R-INLA` package which is designed for Bayesian Latent Gaussian Modelling using INLA (Integrated Laplace Nested Approximations) and Extensions.
 
@@ -180,7 +181,7 @@ projection <- "+proj=longlat +ellps=WGS84 +datum=WGS84"
  ```
 As you can see, the estimated spatial range is higher than we expected. This is because there is no spatial autocorrelation in the simulated data.
  
-### Step 3: Model prediction
+### Step 2: Model prediction 
  
  ```R
  # Define the predictions grids
@@ -212,7 +213,7 @@ As you can see, the estimated spatial range is higher than we expected. This is 
                                projection = projection)
  plot(jt_count)
  ```
-### Step 4: Model Performance Evaluation
+### Step 3: Model Performance Evaluation using with-held data
 
 ```R
  xy_observed <- rbind(st_coordinates(datasets_list$Presence)[, c("X","Y")], 
@@ -251,7 +252,7 @@ TOT_ERROR_SCORE   2.0316114
 
 ```
 
-### Step 5: Prediction mapping 
+### Step 4: Prediction mapping 
 ```R
 p <- generate_maps (jt_prob, 
                     vars_to_plot = c("q0.025", "mean", "q0.975"), 
