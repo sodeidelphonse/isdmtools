@@ -9,7 +9,8 @@ Authors@R: person(given = "Akoeugnigan Idelphonse",
                  comment = "Maintainer of the package")
 Date: 2025-09-08
 Maintainer: <sdidelphonse@gmail.com>
-Description: A suite of tools for spatial data manipulation, visualization, block cross-validation, and evaluation metrics, designed to assist with building and analyzing Integrated Species Distribution Models (ISDMs).
+Description: A suite of tools for spatial data manipulation, visualization, block cross-validation, and evaluation metrics calculation. 
+    It is designed to assist with building and analyzing Integrated Species Distribution Models (ISDMs) with multisource point spatial datasets.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: false
@@ -25,8 +26,7 @@ Imports:
     ggplot2 (>= 4.0.0),
     ggspatial (>= 1.1.10),
     magrittr (>= 2.0.4),
-    pROC (>= 1.19.0.1),
-    grDevices (>= 4.4.1)
+    pROC (>= 1.19.0.1)
 Suggests: 
     testthat (>= 3.0.0), inlabru(>= 2.11.1), fmesher(>= 0.2.0), INLA(>= 24.06.2)
 Config/testthat/edition: 3
