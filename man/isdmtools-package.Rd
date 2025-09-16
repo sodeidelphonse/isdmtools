@@ -11,6 +11,14 @@ It is designed to help users to prepare multisource spatial point datasets, in p
 analyse the habitat suitability from joint model predictions and map the results. It also help to compute a comprehensive evaluation metrics of the joint model
 performance using both ROC-based and continuous weighted composite scores providing a holistic view of model performance.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/sodeidelphonse/isdmtools}
+  \item Report bugs at \url{https://github.com/sodeidelphonse/isdmtools/issues}
+}
+
+}
 \author{
 \strong{Maintainer}: Akoeugnigan Idelphonse SODE \email{sdidelphonse@gmail.com} (Maintainer of the package)
 

@@ -16,13 +16,8 @@ A list containing two named elements: \code{train} and \code{test}.
 Each of these elements is a named list of \code{sf} objects, with names corresponding to the original datasets.
 }
 \description{
-extract_fold
+Extract a specific fold from a DataFolds object. This is a generic method.
 }
-\section{Functions}{
-\itemize{
-\item \code{extract_fold()}: a specific fold from a DataFolds object. This is a generic method.
-
-}}
 \seealso{
 Other spatial blocking methods: 
 \code{\link{extract_fold.DataFolds}()},
