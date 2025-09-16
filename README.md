@@ -209,7 +209,7 @@ As you can see, the estimated _spatial range_ is higher than we expected. This i
               st_coordinates(datasets_list$Count)[datasets_list$Count$count > 0, c("X","Y")])
    
  metrics <- c("auc", "tss", "accuracy", "rmse", "mae")
- eval_metrics <- compute_metrics(test.data, 
+ eval_metrics <- compute_metrics(test_data, 
                                 prob.raster = jt_prob$mean, 
                                 xy.excluded = xy_observed, 
                                 metrics = metrics,
