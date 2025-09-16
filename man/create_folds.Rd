@@ -33,14 +33,12 @@ fold information, and the original datasets.
 }
 \description{
 A constructor function for the \code{DataFolds} S3 class. It binds multiple \code{sf} datasets
-into a single object and generates spatially/environmentally-separated cross-validation folds using
-the \code{blockCV} package.
+into a single object and generates spatially or environmentally-separated cross-validation folds.
 }
 \details{
-This function first binds all datasets into a single \code{sf} object. It then
-applies the chosen \code{blockCV} method to create spatial folds. The fold IDs are
-added to the combined data object, and the original datasets and other
-relevant information are stored in the returned \code{DataFolds} object.
+This function first binds all datasets into a single \code{sf} object. It then applies the chosen blocking method to create spatial folds.
+The fold IDs are added to the combined data object, and the original datasets and other relevant information are
+stored in the returned \code{DataFolds} object.
 }
 \examples{
 \dontrun{

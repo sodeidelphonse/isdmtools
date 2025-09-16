@@ -2,21 +2,30 @@
 % Please edit documentation in R/SpatialFolds.R
 \name{extract_fold}
 \alias{extract_fold}
-\title{extract_fold}
+\title{Extract a specific fold from a data partition}
 \usage{
 extract_fold(object, ...)
 }
 \arguments{
-\item{object}{A \code{DataFolds} S3 object.}
+\item{object}{An object from which a spatial fold can be extracted (e.g. \code{DataFolds} object)}
 
-\item{...}{Additional arguments (not used by this method).}
+\item{...}{Additional arguments passed to specific methods.}
 }
 \value{
 A list containing two named elements: \code{train} and \code{test}.
-Each of these elements is a named list of \code{sf} objects, with names corresponding to the original datasets.
+The structure of these elements depends on the specific method used.
+For the \code{DataFolds} class, each element is a named list of \code{sf} objects,
+with names corresponding to the original datasets.
 }
 \description{
-Extract a specific fold from a DataFolds object. This is a generic method.
+A generic method to extract a specific fold from an object that contains
+data partitions, for use in cross-validation.
+}
+\details{
+This function is generic, meaning it provides a consistent interface for
+different types of objects. The method dispatched depends on the class of the \code{object} argument.
+The primary purpose is to abstract the process of accessing training and testing data for a given fold,
+making it easier to write generic cross-validation loops.
 }
 \seealso{
 Other spatial blocking methods: 

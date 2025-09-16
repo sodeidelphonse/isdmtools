@@ -7,8 +7,7 @@
 #'
 #' @description
 #' A constructor function for the `DataFolds` S3 class. It binds multiple `sf` datasets
-#' into a single object and generates spatially/environmentally-separated cross-validation folds using
-#' the `blockCV` package.
+#' into a single object and generates spatially or environmentally-separated cross-validation folds.
 #'
 #' @param datasets A named list of `sf` objects. Each list element should be a
 #'   spatial dataset with its name corresponding to the list element's name.
@@ -19,10 +18,9 @@
 #' @param ... Additional arguments to be passed to the underlying blocking function (see \link[blockCV]{cv_cluster} or \link[blockCV]{cv_spatial}).
 #'
 #' @details
-#' This function first binds all datasets into a single `sf` object. It then
-#' applies the chosen `blockCV` method to create spatial folds. The fold IDs are
-#' added to the combined data object, and the original datasets and other
-#' relevant information are stored in the returned `DataFolds` object.
+#' This function first binds all datasets into a single `sf` object. It then applies the chosen blocking method to create spatial folds.
+#' The fold IDs are added to the combined data object, and the original datasets and other relevant information are
+#' stored in the returned `DataFolds` object.
 #'
 #' @return An S3 object of class `DataFolds` containing the combined data,
 #' fold information, and the original datasets.
@@ -167,14 +165,26 @@ extract_fold.DataFolds <- function(object, fold, ...) {
 }
 
 # --- Generic method ---
-#' @title extract_fold
+#' @title Extract a specific fold from a data partition
 #'
-#' @description Extract a specific fold from a DataFolds object. This is a generic method.
-#' @param object A `DataFolds` S3 object.
-#' @param ... Additional arguments (not used by this method).
+#' @description
+#' A generic method to extract a specific fold from an object that contains
+#' data partitions, for use in cross-validation.
+#'
+#' @param object An object from which a spatial fold can be extracted (e.g. `DataFolds` object)
+#' @param ... Additional arguments passed to specific methods.
+#'
+#' @details
+#' This function is generic, meaning it provides a consistent interface for
+#' different types of objects. The method dispatched depends on the class of the `object` argument.
+#' The primary purpose is to abstract the process of accessing training and testing data for a given fold,
+#' making it easier to write generic cross-validation loops.
 #'
 #' @return A list containing two named elements: `train` and `test`.
-#' Each of these elements is a named list of `sf` objects, with names corresponding to the original datasets.
+#' The structure of these elements depends on the specific method used.
+#' For the `DataFolds` class, each element is a named list of `sf` objects,
+#' with names corresponding to the original datasets.
+#'
 #' @export
 #' @family spatial blocking methods
 #'
@@ -328,7 +338,7 @@ plot.DataFolds <- function(x, ...) {
 #'
 bind_datasets <- function(datasets) {
   if (!is.list(datasets) || is.null(names(datasets))) {
-    stop("Input must be a named list of data.frame objects.", call. = FALSE)
+    stop("Input must be a named list of 'sf' objects.", call. = FALSE)
   }
   datasets_labeled <- purrr::map2(datasets, names(datasets), ~ .x %>% dplyr::mutate(datasetName = .y))
   bound_data <- dplyr::bind_rows(datasets_labeled)
@@ -342,8 +352,8 @@ bind_datasets <- function(datasets) {
 #'
 #' @description
 #' `isdmtools` provides a set of tools for preparing, analyzing and visualizing spatial data for integrated species distribution models (ISDMs).
-#' It is designed to help users to prepare multisource spatial point datasets, particularly for spatial cross-validation using blocking techniques,
-#' analyse the habitat suitability from joint model predictions and map the results. The software also provides a holistic view of model performance
+#' It is designed to help users to prepare multisource spatial point datasets, particularly for spatial cross-validation using blocking techniques.
+#' It also analyse the habitat suitability from joint model predictions and map the results. The software also provides a holistic view of model performance
 #' by computing a comprehensive evaluation metrics for the joint model, particularly ROC-based and continuous-outcome weighted composite scores.
 #'
 #' @name isdmtools-package
