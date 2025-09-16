@@ -5,61 +5,61 @@
 \title{Compute Evaluation Metrics for Integrated Spatial Models from Multisource Datasets}
 \usage{
 compute_metrics(
-  test_data,
-  prob_raster = NULL,
-  xy_excluded = NULL,
-  expected = NULL,
-  n_background = 1000,
+  test.data,
+  prob.raster = NULL,
+  xy.excluded = NULL,
+  expected.response = NULL,
+  n.background = 1000,
   responseCounts = "counts",
   responsePA = "present",
-  threshold_method = c("best", "fixed"),
-  best_method = c("youden", "closest.topleft"),
-  fixed_threshold = NA_real_,
-  best_threshold_policy = c("first", "last", "max.prec", "max.recall", "max.accu",
+  threshold.method = c("best", "fixed"),
+  best.method = c("youden", "closest.topleft"),
+  fixed.threshold = NA_real_,
+  best.threshold.policy = c("first", "last", "max.prec", "max.recall", "max.accu",
     "max.f1"),
   metrics = NULL,
-  roc_composite_metrics = NULL,
-  continuous_composite_metrics = NULL,
-  prediction_is_rate = FALSE,
+  overall.roc.metrics = NULL,
+  overall.error.metrics = NULL,
+  is.pred.rate = FALSE,
   exposure = NULL,
   seed = 25,
   ...
 )
 }
 \arguments{
-\item{test_data}{A named \code{list} of \code{sf} objects. Each \code{sf} object represents a different test dataset and must contain point geometries. The function will loop through each named dataset in the list. In particular, \code{test_data} can be a 'fold' of the 'test' set from \code{create_folds()} and \code{extract_fold()} outputs, if independent validation datasets are not available.}
+\item{test.data}{A named \code{list} of \code{sf} objects. Each \code{sf} object represents a different test dataset and must contain point geometries. The function will loop through each named dataset in the list. In particular, \code{test.data} can be a 'fold' of the 'test' set from \code{create_folds()} and \code{extract_fold()} outputs, if independent validation datasets are not available.}
 
-\item{prob_raster}{A \code{SpatRaster} object with unique layer containing the model's predictions on a probability scale (0-1). It represents a suitability index, and its values are used to compute all ROC-based metrics (e.g., AUC, TSS, F1 score). This argument is optional if only continuous-outcome metrics are requested for count data.}
+\item{prob.raster}{A \code{SpatRaster} object with unique layer containing the model's predictions on a probability scale (0-1). It represents a suitability index, and its values are used to compute all ROC-based metrics (e.g., AUC, TSS, F1 score). This argument is optional if only continuous-outcome metrics are requested for count data.}
 
-\item{xy_excluded}{An optional \code{SpatVector} or \code{sf} object representing locations where pseudo-absence points should not be sampled, such as occupied areas or known background points. Only relevant for presence-only (PO) data. Default is \code{NULL}.}
+\item{xy.excluded}{An optional \code{SpatVector} or \code{sf} object representing locations where pseudo-absence points should not be sampled, such as occupied areas or known background points. Only relevant for presence-only (PO) data. Default is \code{NULL}.}
 
-\item{expected}{A \code{SpatRaster} object containing the model's predictions on a continuous scale (i.e. counts or rate if offset used; see \code{suitability_index()}). Its values are used to compute all continuous-outcome metrics (e.g., RMSE, MAE, MAPE). This argument is required if a continuous-outcome metric is requested.}
+\item{expected.response}{A \code{SpatRaster} object containing the model's predictions on a continuous scale (i.e. counts or rate if offset used; see \code{suitability_index()}). Its values are used to compute all continuous-outcome metrics (e.g., RMSE, MAE, MAPE). This argument is required if a continuous-outcome metric is requested.}
 
-\item{n_background}{An integer specifying the number of pseudo-absence points to sample for presence-only data. Default is 1000 (see \link{sample_bg_points}).}
+\item{n.background}{An integer specifying the number of pseudo-absence points to sample for presence-only data. Default is 1000 (see \link{sample_bg_points}).}
 
 \item{responseCounts}{A character string representing the column name in the \code{sf} objects that contains observed counts. Default is 'counts' and must be standardized across all count data sets.}
 
 \item{responsePA}{A character string representing the column name in the \code{sf} objects that contains presence-absence data (1 for presence, 0 for absence). Default is 'present' and must be standardized across all PA data sets.}
 
-\item{threshold_method}{A character string specifying how to select the threshold for converting probabilities to binary outcomes. Options are 'best' (using \code{best_method}) or 'fixed'. Default is "best".}
+\item{threshold.method}{A character string specifying how to select the threshold for converting probabilities to binary outcomes. Options are 'best' (using \code{best.method}) or 'fixed'. Default is "best".}
 
-\item{best_method}{A character string specifying the method for selecting the best threshold when \code{threshold_method} is 'best'. Options are 'youden' or 'closest.topleft'. Default is "youden" criterion which maximizes the sensitivity and specificity.}
+\item{best.method}{A character string specifying the method for selecting the best threshold when \code{threshold.method} is 'best'. Options are 'youden' or 'closest.topleft'. Default is "youden" criterion which maximizes the sensitivity and specificity.}
 
-\item{fixed_threshold}{A numeric value (0-1) to use as the fixed threshold when \code{threshold_method} is 'fixed'. Default is \code{NA_real_}.}
+\item{fixed.threshold}{A numeric value (0-1) to use as the fixed threshold when \code{threshold.method} is 'fixed'. Default is \code{NA_real_}.}
 
-\item{best_threshold_policy}{A character string specifying the policy for selecting a threshold when multiple thresholds yield the same 'best' value. Options are "first", "last", "max.prec" (max precision), "max.recall" (max recall), "max.accu" (max accuracy), or "max.f1" (max F1 score). Default is "first".}
+\item{best.threshold.policy}{A character string specifying the policy for selecting a threshold when multiple thresholds yield the same 'best' value. Options are "first", "last", "max.prec" (max precision), "max.recall" (max recall), "max.accu" (max accuracy), or "max.f1" (max F1 score). Default is "first".}
 
 \item{metrics}{A character vector of metric names to compute. If \code{NULL}, "auc" (area under the ROC curve), "tss" (true skill statistics), "accuracy", "F1" (F1 score), "precision", and "recall" are computed for ROC-based metrics while "rmse" and "mae" are computed for error-based metrics.}
 
-\item{roc_composite_metrics}{A character vector specifying a subset of ROC-based metrics to be used for the overall composite score (\code{TOT_ROC_SCORE}). Allowed options are "auc", "tss", "accuracy", and "F1". If \code{NULL}, the sensible default is "auc", "tss" and "accuracy".}
+\item{overall.roc.metrics}{A character vector specifying a subset of ROC-based metrics to be used for the overall composite score (\code{TOT_ROC_SCORE}). Allowed options are "auc", "tss", "accuracy", and "F1". If \code{NULL}, the sensible default is "auc", "tss" and "accuracy".}
 
-\item{continuous_composite_metrics}{A character vector specifying a subset of continuous outcome metrics to be used for the overall composite score (\code{TOT_ERROR_SCORE}).
+\item{overall.error.metrics}{A character vector specifying a subset of continuous outcome metrics to be used for the overall composite score (\code{TOT_ERROR_SCORE}).
 Allowed options are "rmse" (root mean squared error), "mae" (mean absolute error), "mape" (mean absolute percentage error) and "r2" (pseudo R-squared). If \code{NULL}, the default is "rmse" and "mae".}
 
-\item{prediction_is_rate}{A logical value. If \code{TRUE}, it indicates that the \code{expected} count contains predictions at the intensity (per-unit-of-exposure) scale (typical for Bayesian models with offset from \code{inlabru}). If \code{FALSE}, it assumes predictions are at the original scale (e.g., counts). Default is \code{FALSE}.}
+\item{is.pred.rate}{A logical value. If \code{TRUE}, it indicates that the \code{expected.response} contains predictions at the intensity (per-unit-of-exposure) scale (typical for Bayesian models with offset from \code{inlabru}). If \code{FALSE}, it assumes predictions are at the original scale (e.g., counts). Default is \code{FALSE}.}
 
 \item{exposure}{A character string representing the column name in the \code{sf} objects that contains the exposure variable (offset). Only relevant for count (and sometimes presence-absence) data and must be standardized across all these types of datasets.
-If \code{prediction_is_rate} is \code{TRUE}, observed counts are rescaled by this exposure variable. Default is \code{NULL}.}
+If \code{is.pred.rate} is \code{TRUE}, observed counts are rescaled by this exposure variable. Default is \code{NULL}.}
 
 \item{seed}{An integer for setting the seed for random number generation, used for pseudo-absence sampling to ensure reproducibility. Default is 25.}
 
@@ -70,8 +70,8 @@ A named \code{list} containing all requested metrics. The names follow a consist
 \itemize{
 \item \code{"<METRIC>_<DATASET_NAME>"}: Individual metric score for each dataset.
 \item \code{"<METRIC>_Comp"}: The sample-size-weighted composite score for a given metric across all valid datasets.
-\item \code{"TOT_ROC_SCORE"}: The overall ROC-based composite score, averaged across the selected \code{roc_composite_metrics}.
-\item \code{"TOT_ERROR_SCORE"}: The overall error-based composite score, averaged across \code{continuous_composite_metrics}.
+\item \code{"TOT_ROC_SCORE"}: The overall ROC-based composite score, averaged across the selected \code{overall.roc.metrics}.
+\item \code{"TOT_ERROR_SCORE"}: The overall error-based composite score, averaged across \code{overall.error.metrics}.
 }
 }
 \description{
@@ -81,13 +81,13 @@ This function computes a wide range of evaluation metrics for a single-layer ras
 The function handles three main data types and any combination thereof:
 
 \itemize{
-\item \strong{Presence-Absence (PA) Data:} The function uses the \code{responsePA} column and \code{prob_raster} to calculate all ROC-based metrics (see \link[pROC]{coords}, for more details on available metrics).
-\item \strong{Count Data:} The function uses \code{expected} to calculate continuous-outcome metrics and can optionally use \code{prob_raster} to calculate ROC-based metrics.
-\item \strong{Presence-Only (PO) Data:} The function uses the presence points from the \code{sf} object (\code{xy_excluded}) and samples \code{n} pseudo-absence points from the study background (excluding \code{xy_excluded}) to create a presence-absence dataset for ROC-based metric calculations.
+\item \strong{Presence-Absence (PA) Data:} The function uses the \code{responsePA} column and \code{prob.raster} to calculate all ROC-based metrics (see \link[pROC]{coords}, for more details on available metrics).
+\item \strong{Count Data:} The function uses \code{expected.response} to calculate continuous-outcome metrics and can optionally use \code{prob.raster} to calculate ROC-based metrics.
+\item \strong{Presence-Only (PO) Data:} The function uses the presence points from the \code{sf} object (\code{xy.excluded}) and samples \code{n} pseudo-absence points from the study background (excluding \code{xy.excluded}) to create a presence-absence dataset for ROC-based metric calculations.
 }
 
-For models based on count data, if a user wants to compute both continuous-outcome and ROC-based metrics, \code{expected} raster must be supplied for the continuous metrics and \code{prob_raster} must also be supplied for the ROC-based metrics.
-The \code{prob_raster} can be obtained by converting a continuous prediction (e.g., \verb{linear predictor}) to a suitability index using the \link{suitability_index} function.
+For models based on count data, if a user wants to compute both continuous-outcome and ROC-based metrics, \code{expected.response} raster must be supplied for the continuous metrics and \code{prob.raster} must also be supplied for the ROC-based metrics.
+The \code{prob.raster} can be obtained by converting a continuous prediction (e.g., \verb{linear predictor}) to a suitability index using the \link{suitability_index} function.
 
 The available continuous-outcome metrics are given as follows:
 \itemize{
@@ -112,22 +112,24 @@ Where:
 }
 
 A \verb{weighted composite score} (\verb{<METRIC>_Comp}) is computed for each requested metric by taking the sample-size-weighted average across all datasets where the metric was successfully calculated.
-A \verb{total composite score} (\code{TOT_ROC_SCORE} or \code{TOT_ERROR_SCORE}) is also computed by averaging the selected metrics in the corresponding \verb{_composite_metrics}. It can be viewed as a \emph{multi-criterion decision metric} for several models comparison.
+A \verb{total composite score} (\code{TOT_ROC_SCORE} or \code{TOT_ERROR_SCORE}) is also computed by averaging the selected metrics in the corresponding \verb{overall metrics} character vector.
+It can be viewed as a quick \emph{multi-criterion decision metric} for several models comparison.
 }
 \examples{
 \dontrun{
-# Assuming you have dummy rasters and a list of sf objects with 'counts' and 'present' columns.
+# Assuming you have dummy rasters and a list of sf objects
+# with 'counts' and 'present' columns.
 
 # Example 1: Compute metrics for a presence-absence model
 # my_metrics <- compute_metrics(
-#   test_data = list(ds1 = my_pa_sf),
-#   prob_raster = my_prob_raster  # compulsory prob_raster
+#   test.data = list(ds1 = my_pa_sf),
+#   prob.raster = my_prob_raster  # compulsory prob.raster
 # )
 
 # Example 2: Compute continuous-outcome metrics for a count-based model
 # cont_metrics <- compute_metrics(
-#   test_data = list(ds1 = my_count_sf),
-#   expected = expected_raster,    # prediction raster on count scale
+#   test.data = list(ds1 = my_count_sf),
+#   expected.response = expected_raster, # prediction raster on count scale
 #   metrics = c("rmse", "mae", "mape")
 # )
 
@@ -135,36 +137,36 @@ A \verb{total composite score} (\code{TOT_ROC_SCORE} or \code{TOT_ERROR_SCORE}) 
 # The user must first generate a suitability index (prob_raster)
 # from the linear scale prediction (pred_eta).
 # expected_raster <- suitability_index(pred_eta, response.type = "count",
-#  output.format = "response")
+#                    output.format = "response")
 # suitability_raster <- suitability_index(pred_eta, response.type = "count",
-#  output.format = "prob")
+#                        output.format = "prob")
 # full_metrics <- compute_metrics(
-#   test_data = list(ds1 = my_count_sf),
-#   prob_raster = suitability_raster,
-#   expected = expected_raster,
+#   test.data = list(ds1 = my_count_sf),
+#   prob.raster = suitability_raster,
+#   expected.response = expected_raster,
 #   metrics = c("rmse", "mae", "auc", "tss")
 # )
 
 # Example 4: Handle an inlabru-like model with an offset term
-# The `expected` raster is at the intensity scale (rate).
+# The `expected.response` raster is at the intensity scale (rate).
 # cont_metrics <- compute_metrics(
-#   test_data = list(ds1 = my_count_sf),
-#   prob_raster = suitability_raster,
-#   expected = expected_raster,
+#   test.data = list(ds1 = my_count_sf),
+#   prob.raster = suitability_raster,
+#   expected.response = expected_raster,
 #   metrics = c("rmse", "auc", "tss"),
-#   prediction_is_rate = TRUE,
+#   is.pred.rate = TRUE,
 #   exposure = "exposure_col"
 # )
 
 # Example 5: Compute dataset-specific and weighted composite metrics for a joint model
 # expected_raster  <- suitability_index(pred_eta, response.type = "count.pa",
-#    output.format = "response")
+#                  output.format = "response")
 # suitability_raster <- suitability_index(pred_eta,
-#    response.type = "count.pa", has.offset = FALSE)
+#                    response.type = "count.pa", has.offset = FALSE)
 # full_metrics <- compute_metrics(
-#   test_data = list(ds1 = my_count_sf, ds2 = my_pa_sf),
-#   prob_raster = suitability_raster,
-#   expected = expected_raster,
+#   test.data = list(ds1 = my_count_sf, ds2 = my_pa_sf),
+#   prob.raster = suitability_raster,
+#   expected.response = expected_raster,
 #   metrics = c("rmse", "mae", "auc", "tss", "accuracy")
 # )
 }
