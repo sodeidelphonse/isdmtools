@@ -6,10 +6,10 @@
 \alias{isdmtools}
 \title{A Toolkit for Integrated Species Distribution Models}
 \description{
-The \code{isdmtools} package provides a set of tools for preparing, evaluating and visualizing spatial data for integrated species distribution models (ISDMs).
-It is designed to help users to prepare multisource spatial point datasets, in particular the spatial blocking techniques for spatial cross-validation, and
-analyse the habitat suitability from joint model predictions and map the results. It also help to compute a comprehensive evaluation metrics of the joint model
-performance using both ROC-based and continuous weighted composite scores providing a holistic view of model performance.
+\code{isdmtools} provides a set of tools for preparing, analyzing and visualizing spatial data for integrated species distribution models (ISDMs).
+It is designed to help users to prepare multisource spatial point datasets, particularly for spatial cross-validation using blocking techniques.
+It also analyse the habitat suitability from joint model predictions and map the results. The software also provides a holistic view of model performance
+by computing a comprehensive evaluation metrics for the joint model, particularly ROC-based and continuous-outcome weighted composite scores.
 }
 \seealso{
 Useful links:

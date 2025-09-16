@@ -352,9 +352,9 @@ bind_datasets <- function(datasets) {
 #'
 #' @description
 #' `isdmtools` provides a set of tools for preparing, analyzing and visualizing spatial data for integrated species distribution models (ISDMs).
-#' It is designed to help users to prepare multisource spatial point datasets, particularly for spatial cross-validation using blocking techniques.
+#' It is designed to help users prepare multisource spatial point datasets for spatial cross-validation using blocking techniques, with a focus on Bayesian inference.
 #' It also analyse the habitat suitability from joint model predictions and map the results. The software also provides a holistic view of model performance
-#' by computing a comprehensive evaluation metrics for the joint model, particularly ROC-based and continuous-outcome weighted composite scores.
+#' by computing a comprehensive evaluation metrics for the joint model, including ROC-based and continuous-outcome weighted composite scores.
 #'
 #' @name isdmtools-package
 #' @aliases isdmtools
