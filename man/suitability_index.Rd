@@ -64,21 +64,24 @@ set.seed(42)
 x <- expand.grid(X = seq(0, 50, 1), Y = seq(0, 50, 1))
 x$eta <- rnorm(nrow(x), mean = 0, sd = 1)
 
+# Create a simple raster object
+x_rast <- rast(x)
+
 # Generate a suitability index for a Presence-Absence model
 pa_probability <- suitability_index(
-  x,
+  x_rast,
   post.stat = "eta",
   response.type = "pa"
 )
 plot(pa_probability)
 
-# Generate a binary map using a fixed threshold
+# Create a binary map using a fixed threshold
 binary_map <- app(pa_probability, function(x) ifelse(x < 0.5, 0, 1))
 plot(binary_map)
 
-# Generate an expected mean for a Count model
+# Generate an expected mean (assume "eta" is from a count model)
 count_expected_mean <- suitability_index(
-  x,
+  x_rast,
   post.stat = "eta",
   response.type = "count",
   output.format = "response"
