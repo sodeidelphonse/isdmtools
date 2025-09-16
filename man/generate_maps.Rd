@@ -5,45 +5,45 @@
 \title{Generate Multi-panel Maps from Spatial Model Predictions}
 \usage{
 generate_maps(
-  data_to_plot,
-  vars_to_plot = c("mean", "sd"),
-  base_map = NULL,
-  color_gradient = map.pal("viridis", 100),
-  legend_title = NULL,
-  panel_labels = NULL,
+  data,
+  var.names = c("mean", "sd"),
+  base.map = NULL,
+  color.gradient = map.pal("viridis", 100),
+  legend.title = NULL,
+  panel.labels = NULL,
   nrow = NULL,
-  x_axis_breaks = NULL,
-  y_axis_breaks = NULL
+  xaxis.breaks = NULL,
+  yaxis.breaks = NULL
 )
 }
 \arguments{
-\item{data_to_plot}{A data frame, \code{sf} or \code{SpatRaster} object containing the prediction data.
+\item{data}{A data frame, \code{sf} or \code{SpatRaster} object containing the prediction data.
 For grid-based data frame, it must contain columns named "X" and "Y" representing pixels' coordinates.}
 
-\item{vars_to_plot}{A character vector of column names in \code{data_to_plot} to be
+\item{var.names}{A character vector of column names in \code{data} to be
 plotted on separate panels.}
 
-\item{base_map}{An \code{sf} object to be plotted as a base layer underneath the
+\item{base.map}{An \code{sf} object to be plotted as a base layer underneath the
 prediction data (e.g., a background simple polygon). Defaults to \code{NULL}.
 Users can add additional vector geometries if needed using a ggplot2 syntax.}
 
-\item{color_gradient}{A vector of colors to be used in the fill/color gradient.
-Defaults to \code{rainbow(5)}.}
+\item{color.gradient}{A vector of valid colors to be used in the fill/color gradient.
+Defaults to \code{map.pal("viridis", 100)}.}
 
-\item{legend_title}{A character string for the title of the color legend.}
+\item{legend.title}{A character string for the title of the color legend.}
 
-\item{panel_labels}{An optional character vector of labels for the facet panels.
-The order should correspond to \code{vars_to_plot}.}
+\item{panel.labels}{An optional character vector of labels for the facet panels.
+The order should correspond to \code{var.names}.}
 
 \item{nrow}{The number of rows for \code{ggplot2::facet_wrap()}. Defaults to an
 optimal layout chosen by \code{ggplot2}.}
 
-\item{x_axis_breaks}{A numeric vector specifying the breaks for the x-axis.}
+\item{xaxis.breaks}{A numeric vector specifying the breaks for the x-axis.}
 
-\item{y_axis_breaks}{A numeric vector specifying the breaks for the y-axis.}
+\item{yaxis.breaks}{A numeric vector specifying the breaks for the y-axis.}
 }
 \value{
-A \code{ggplot} object representing the multi-panel plot that be customized by the user.
+A \code{ggplot} object representing the multi-panel plot that can be customized by the user.
 }
 \description{
 This function creates a multi-panel map for visualizing multiple prediction
@@ -72,12 +72,12 @@ boundary_sf <- st_sf(data.frame(id = 1), geometry = boundary)
 
 # Generate the map
 generate_maps(
-  data_to_plot = grid_data,
-  vars_to_plot = c("mean", "sd"),
-  base_map = boundary_sf,
-  color_gradient = c("white", "skyblue", "navy"),
-  legend_title = "Prediction Value",
-  panel_labels = c("Mean", "StDev"),
+  data = grid_data,
+  var.names = c("mean", "sd"),
+  base.map = boundary_sf,
+  color.gradient = c("white", "skyblue", "navy"),
+  legend.title = "Prediction Value",
+  panel.labels = c("Mean", "StDev"),
   nrow = 1
 )
 
@@ -91,12 +91,12 @@ points_sf <- prepare_predictions(points_sf)
 
 # Generate the map
 generate_maps(
-  data_to_plot = points_sf,
-  vars_to_plot = c("mean", "sd"),
-  base_map = boundary_sf,
-  color_gradient = c("white", "orange", "red"),
-  legend_title = "Prediction Value",
-  panel_labels = c("Mean", "StDev"),
+  data = points_sf,
+  var.names = c("mean", "sd"),
+  base.map = boundary_sf,
+  color.gradient = c("white", "orange", "red"),
+  legend.title = "Prediction Value",
+  panel.labels = c("Mean", "StDev"),
   nrow = 1
 )
 }
