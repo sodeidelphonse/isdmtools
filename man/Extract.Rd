@@ -2,7 +2,7 @@
 % Please edit documentation in R/SpatialFolds.R
 \name{extract_fold}
 \alias{extract_fold}
-\title{Generic method for DataFolds objects}
+\title{extract_fold}
 \usage{
 extract_fold(object, ...)
 }
@@ -16,8 +16,13 @@ A list containing two named elements: \code{train} and \code{test}.
 Each of these elements is a named list of \code{sf} objects, with names corresponding to the original datasets.
 }
 \description{
-Generic method for DataFolds objects
+extract_fold
 }
+\section{Functions}{
+\itemize{
+\item \code{extract_fold()}: a specific fold from a DataFolds object. This is a generic method.
+
+}}
 \seealso{
 Other spatial blocking methods: 
 \code{\link{extract_fold.DataFolds}()},
