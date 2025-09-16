@@ -1,5 +1,5 @@
 # isdmtools
-`isdmtools` is an R package designed to streamline the process of preparing, evaluating and visualizing spatial data for biodiversity species distribution modeling, with a specific focus on **integrated species distribution models (ISDMs)** with multi-source geospatial datasets within a Bayesian framework. It provides a set of tools for producing robust and reproducible workflows for block cross-validation, data management and visualization, and model evaluation, leveraging the power of `sf`, `dplyr`, `purrr`, and `ggplot2` packages.
+`isdmtools` is an R package designed to streamline the process of preparing, evaluating and visualizing spatial data for biodiversity species distribution modeling, with a specific focus on **integrated species distribution models (ISDMs)** with multisource geospatial datasets (i.e. presence-only, count and presence-absence) within a Bayesian framework. It provides a set of tools for producing robust and reproducible workflows for block cross-validation, data management and visualization, and model evaluation, leveraging the power of `sf`, `dplyr`, `purrr`, and `ggplot2` packages.
 
 # Installation
 
@@ -85,16 +85,9 @@ print(my_folds)
 plot_cv <- plot(my_folds)
 print(plot_cv)
 
-# Customize the plot (e.g. adjusting the axes breaks)
- plot_cv <- plot_cv +
-   scale_x_continuous(breaks = seq(0, 4, 1)) +
-   scale_y_continuous(breaks = seq(6, 13, 2)) 
- print(plot_cv)
-
 # Extract a specific fold (e.g., Fold 3) for modeling and evaluation
 splits_fold_3 <- extract_fold(my_folds, fold = 3)
 
-# You now have two clean lists of `sf` objects for training and testing
 # One can access both 'Presence' and "count" responses in the train/test set
  train_data <- splits_fold_3$train
  test_data <- splits_fold_3$test
@@ -139,13 +132,14 @@ projection <- "+proj=longlat +ellps=WGS84 +datum=WGS84"
    jcmp <- ~ -1 + Presence_intercept(1) + Count_intercept(1) +
                   spde(geometry, model = pcmatern)
    
-   # The observation models
+   # Count observation model
    lik_count <- inlabru::like(
      formula = count ~  + Count_intercept + spde,
      family = "poisson",
      data = train_data$Count
    )
    
+   # Presence-only observation model (LGCP)
    lik_pp <- inlabru::like(
      formula = geometry ~ Presence_intercept + spde,
      family = "cp",
@@ -155,11 +149,10 @@ projection <- "+proj=longlat +ellps=WGS84 +datum=WGS84"
    )
    
    # Model fit
-   system.time(jfit <- inlabru::bru(jcmp, lik_count, lik_pp,
+   jfit <- inlabru::bru(jcmp, lik_count, lik_pp,
                         options = list(control.inla = list(int.strategy = "eb"),
                                        bru_max_iter = 15)
                        )
-   )
  } else {
    message("'INLA', 'fmesher', and 'inlabru' is required to run this example.")
  }
@@ -216,12 +209,12 @@ As you can see, the estimated _spatial range_ is higher than we expected. This i
               st_coordinates(datasets_list$Count)[datasets_list$Count$count > 0, c("X","Y")])
    
  metrics <- c("auc", "tss", "accuracy", "rmse", "mae")
- eval_metrics <- compute_metrics(test_data, 
-                                prob_raster = jt_prob$mean, 
-                                xy_excluded = xy_observed, 
+ eval_metrics <- compute_metrics(test.data, 
+                                prob.raster = jt_prob$mean, 
+                                xy.excluded = xy_observed, 
                                 metrics = metrics,
-                                roc_composite_metrics = c("auc", "tss", "accuracy"),
-                                expected = jt_count,
+                                overall.roc.metrics = c("auc", "tss", "accuracy"),
+                                expected.response = jt_count,
                                 responseCounts = "count"
                                 )
 metrics_result <- do.call(rbind, eval_metrics)
@@ -252,16 +245,16 @@ As you will have noticed, continuous-outcome metrics such as MAE (mean absolute 
 ### Step 4: Prediction mapping 
 ```R
 p <- generate_maps(jt_prob, 
-                   vars_to_plot = c("q0.025", "mean", "q0.975"), 
-                   base_map = ben_sf,
-                   legend_title = "suitability",  
-                   panel_labels = c("(a) q2.5%", "(b) Mean", "(c) q97.5%"),
-                   x_axis_breaks = seq(0, 4, 1),
-                   y_axis_breaks = seq(6, 13, 2)
+                   var.names = c("q0.025", "mean", "q0.975"), 
+                   base.map = ben_sf,
+                   legend.title = "suitability",  
+                   panel.labels = c("(a) q2.5%", "(b) Mean", "(c) q97.5%"),
+                   xaxis.breaks = seq(0, 4, 1),
+                   yaxis.breaks = seq(6, 13, 2)
                    )
 print(p)
 ```
-![This is the prediction map for the sptial fold 3 data.](docs/prediction_map_readme.png)
+![This is the prediction map for the sptial fold 3 data.](man/figures/prediction_map_readme.png)
 
 Next, you can iterate through all five spatial folds to obtain an average model performance.
 Finally, a model can be run on the entire 'datasets_list' to obtain the final prediction.
