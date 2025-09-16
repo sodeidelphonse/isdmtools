@@ -263,7 +263,7 @@ Finally, a model can be run on the entire 'datasets_list' to obtain the final pr
 We welcome contributions! If you encounter an issue or have a feature request, please open an issue on the GitHub repository.
 
 # Citation
-To cite this package in your research work, please run the command below which will give both the plain text and `LaTex` version of the citation in your R session: 
+To cite this package in your research work, run the following command in your R session to generate the plain text and `BiTex` entry of the citation:
 
 ```R
 citation("isdmtools")
