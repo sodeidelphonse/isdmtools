@@ -140,14 +140,14 @@ projection <- "+proj=longlat +ellps=WGS84 +datum=WGS84"
                   spde(geometry, model = pcmatern)
    
    # Count observation model
-   lik_count <- inlabru::like(
+   lik_count <- inlabru::bru_obs(
      formula = count ~  + Count_intercept + spde,
      family = "poisson",
      data = train_data$Count
    )
    
    # Presence-only observation model (LGCP)
-   lik_pp <- inlabru::like(
+   lik_pp <- inlabru::bru_obs(
      formula = geometry ~ Presence_intercept + spde,
      family = "cp",
      data = train_data$Presence,
