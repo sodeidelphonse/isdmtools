@@ -15,9 +15,9 @@
 The object invisibly.
 }
 \description{
-A method to visualize the background points generated in \code{BackgroundPoints} object for model evaluation,
-including the \code{points} locations that have been excluded from the sample (white color) if they are
-provided to \code{sample_bg_points()} function.
+A method to visualize the background points generated in \code{BackgroundPoints} object for model evaluation.
+The plot shows cells with NA values or those of the locations excluded from the sample (white color) if the
+\code{points} argument is provided to \code{sample_background} constructor. The background points generated are colored red.
 }
 \examples{
 \dontrun{
@@ -29,12 +29,12 @@ pts <- spatSample(r, size = 100, xy = TRUE, values = FALSE)
 
 # Requesting few points with their x and y coordinates
 set.seed(235)
-bg_sample1 <- sample_bg_points(r, points = pts, n = 500, xy = TRUE, cells = FALSE)
+bg_sample1 <- sample_background(r, points = pts, n = 500, xy = TRUE, cells = FALSE)
 plot(bg_sample1)
 print(bg_sample1)
 
 # Requesting points more than available non-NA cells
-bg_sample2 <- sample_bg_points(r, points = pts, n = 10000, xy =TRUE, cells = FALSE)
+bg_sample2 <- sample_background(r, points = pts, n = 10000, xy =TRUE, cells = FALSE)
 dim(bg_sample2$bg)
 plot(bg_sample2)
 }
@@ -43,6 +43,6 @@ plot(bg_sample2)
 \seealso{
 Other BackgroundPoints methods: 
 \code{\link{print.BackgroundPoints}()},
-\code{\link{sample_bg_points}()}
+\code{\link{sample_background}()}
 }
 \concept{BackgroundPoints methods}

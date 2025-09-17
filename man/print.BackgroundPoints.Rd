@@ -20,6 +20,6 @@ A method to print the Background points generated from \code{BackgroundPoints} o
 \seealso{
 Other BackgroundPoints methods: 
 \code{\link{plot.BackgroundPoints}()},
-\code{\link{sample_bg_points}()}
+\code{\link{sample_background}()}
 }
 \concept{BackgroundPoints methods}

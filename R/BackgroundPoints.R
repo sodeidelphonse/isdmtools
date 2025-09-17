@@ -9,16 +9,17 @@
 #' It exclude NA cells from the sample, and eventually the observed locations if needed.
 #'
 #' Inputs:
-#' @param mask A raster object (e.g. `spatRaster`) to be used as mask (preferably, the predicted intensity or habitat suitability).
+#' @param mask A raster object (e.g. `SpatRaster`) to be used as mask (preferably, the predicted intensity or habitat suitability).
 #' @param points Spatial points (`data.frame`, `sf` or `SpatVector` objects) that would be excluded from the background sample.
-#' @param method The sampling technique to select pixels from the raster mask (see \link[terra]{spatSample}), defaulted to `random`.
-#' @param n An integer specifying the number of pseudo-absence points to sample for presence-only data. Default is 1000.
-#' @param cells A logical value indicating whether sampled cells numbers will be returned.
-#' @param xy A logical value indicating whether the locations of sampled cells will be returned.
-#' @param as.points A logical value indicating whether spatial points object will be returned.
-#' @param ... Additional arguments passed to \link[terra]{spatSample}.
+#' @param method The sampling technique to select pixels from the raster mask (see \link[terra]{spatSample}). It defaults to `random`.
+#' @param n An integer specifying the number of pseudo-absence points to sample for presence-only data. The default is 1000.
+#' @param cells Logical.  If `TRUE`, sampled cells numbers will be returned. The default is `FALSE`.
+#' @param xy Logical. If `TRUE`, the locations of sampled cells will be returned. The default is `TRUE`.
+#' @param as.points Logical. If `TRUE`, spatial points object will be returned. The default is `FALSE`.
+#' @param na.rm Logical. If `TRUE`, NA values will be excluded from the raster mask. It defaults to `TRUE`.
+#' @param ... Additional arguments passed to the internal \link[terra]{spatSample} function.
 #'
-#' @return A list object containing a `spatRaster` object (with `points` excluded if not `NULL`) and the background points.
+#' @return An S3 object with class `BackgroundPoints`, containing the modified `SpatRaster` object and the generated background points.
 #' @export
 #' @family BackgroundPoints methods
 #'
@@ -32,17 +33,17 @@
 #'
 #' # Requesting few points with their x and y coordinates
 #' set.seed(235)
-#' bg_sample1 <- sample_bg_points(r, points = pts, n = 500, xy = TRUE, cells = FALSE)
+#' bg_sample1 <- sample_background(r, points = pts, n = 500, xy = TRUE, cells = FALSE)
 #' plot(bg_sample1)
 #' print(bg_sample1)
 #'
 #' # Requesting points more than available non-NA cells
-#' bg_sample2 <- sample_bg_points(r, points = pts, n = 10000, xy =TRUE, cells = FALSE)
+#' bg_sample2 <- sample_background(r, points = pts, n = 10000, xy =TRUE, cells = FALSE)
 #' dim(bg_sample2$bg)
 #' plot(bg_sample2)
 #' }
 #'
-sample_bg_points <- function(mask, points = NULL, n = 500, method = "random", cells = FALSE,
+sample_background <- function(mask, points = NULL, n = 500, method = "random", cells = FALSE,
                               xy = TRUE, as.points = FALSE, na.rm = TRUE, ...) {
 
   if (!any(c(cells, xy, as.points))) {
@@ -142,9 +143,9 @@ print.BackgroundPoints <- function(x, ...) {
 #' @title Plot method for the class `BackgroundPoints`
 #'
 #' @description
-#' A method to visualize the background points generated in `BackgroundPoints` object for model evaluation,
-#' including the `points` locations that have been excluded from the sample (white color) if they are
-#' provided to `sample_bg_points()` function.
+#' A method to visualize the background points generated in `BackgroundPoints` object for model evaluation.
+#' The plot shows cells with NA values or those of the locations excluded from the sample (white color) if the
+#' `points` argument is provided to `sample_background` constructor. The background points generated are colored red.
 #'
 #' @param x A `BackgroundPoints` S3 object.
 #' @param ... Additional arguments (not used by this method).
@@ -165,12 +166,12 @@ print.BackgroundPoints <- function(x, ...) {
 #'
 #' # Requesting few points with their x and y coordinates
 #' set.seed(235)
-#' bg_sample1 <- sample_bg_points(r, points = pts, n = 500, xy = TRUE, cells = FALSE)
+#' bg_sample1 <- sample_background(r, points = pts, n = 500, xy = TRUE, cells = FALSE)
 #' plot(bg_sample1)
 #' print(bg_sample1)
 #'
 #' # Requesting points more than available non-NA cells
-#' bg_sample2 <- sample_bg_points(r, points = pts, n = 10000, xy =TRUE, cells = FALSE)
+#' bg_sample2 <- sample_background(r, points = pts, n = 10000, xy =TRUE, cells = FALSE)
 #' dim(bg_sample2$bg)
 #' plot(bg_sample2)
 #' }
