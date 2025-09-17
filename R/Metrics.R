@@ -37,7 +37,7 @@
 #' }
 #'
 #' For models based on count data, if a user wants to compute both continuous-outcome and ROC-based metrics, `expected.response` raster must be supplied for the continuous metrics and `prob.raster` must also be supplied for the ROC-based metrics.
-#' The `prob.raster` can be obtained by converting a continuous prediction (e.g., `linear predictor`) to a suitability index using the \link{suitability_index} function.
+#' The `prob.raster` can be obtained by converting the continuous-outcome prediction (e.g., `linear predictor`) to a suitability index using the \link{suitability_index} function.
 #'
 #' The available continuous-outcome metrics are given as follows:
 #' \itemize{

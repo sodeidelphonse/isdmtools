@@ -87,7 +87,7 @@ The function handles three main data types and any combination thereof:
 }
 
 For models based on count data, if a user wants to compute both continuous-outcome and ROC-based metrics, \code{expected.response} raster must be supplied for the continuous metrics and \code{prob.raster} must also be supplied for the ROC-based metrics.
-The \code{prob.raster} can be obtained by converting a continuous prediction (e.g., \verb{linear predictor}) to a suitability index using the \link{suitability_index} function.
+The \code{prob.raster} can be obtained by converting the continuous-outcome prediction (e.g., \verb{linear predictor}) to a suitability index using the \link{suitability_index} function.
 
 The available continuous-outcome metrics are given as follows:
 \itemize{
