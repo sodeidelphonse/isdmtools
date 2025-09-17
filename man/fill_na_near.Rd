@@ -31,7 +31,7 @@ that are NA in the input raster are filled.}
 \item{na.rm}{Logical. If \code{TRUE}, NA values in the neighborhood are ignored when computing
 the focal function. The default is \code{TRUE}.}
 
-\item{start.window}{An integer specifying the starting size of the square focal window.
+\item{start.window}{A positive odd integer specifying the starting size of the square focal window.
 The window will be \verb{(2w+1) x (2w+1)}. The default is \code{1}, which corresponds to a 3x3 start window.}
 
 \item{...}{Additional arguments passed to the internal \link[terra]{focal} function.
@@ -55,11 +55,11 @@ r <- terra::rast(nrows = 10, ncols = 10, res = 1, xmin = 0, ymin = 0)
 r[] <- 1:100
 r[c(10, 25, 50, 75, 90)] <- NA
 
-# Fill the NAs using the default mean function with 3x3 start.window
+# Fill the NAs using the default mean function with 3x3 window
 r_filled <- fill_na_near(r)
 
 # Start the filling with a larger 5x5 window
-r_filled_large_start <- fill_na_near(r, start.window = 2)
+r_filled_large_start <- fill_na_near(r, start.window = 3)
 
 plot(r, main = "Original raster")
 plot(r_filled, main = "Filled with mean (3x3 start)")
