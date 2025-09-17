@@ -9,14 +9,14 @@
 #' It exclude NA cells from the sample, and eventually the observed locations if needed.
 #'
 #' Inputs:
-#' @param mask A raster object (e.g. `SpatRaster`) to be used as mask (preferably, the predicted intensity or habitat suitability).
+#' @param mask `SpatRaster` object to be used as mask (preferably, the predicted intensity or habitat suitability).
 #' @param points Spatial points (`data.frame`, `sf` or `SpatVector` objects) that would be excluded from the background sample.
-#' @param method The sampling technique to select pixels from the raster mask (see \link[terra]{spatSample}). It defaults to `random`.
-#' @param n An integer specifying the number of pseudo-absence points to sample for presence-only data. The default is 1000.
-#' @param cells Logical.  If `TRUE`, sampled cells numbers will be returned. The default is `FALSE`.
-#' @param xy Logical. If `TRUE`, the locations of sampled cells will be returned. The default is `TRUE`.
-#' @param as.points Logical. If `TRUE`, spatial points object will be returned. The default is `FALSE`.
-#' @param na.rm Logical. If `TRUE`, NA values will be excluded from the raster mask. It defaults to `TRUE`.
+#' @param method character. The sampling technique to select pixels from the raster mask (see \link[terra]{spatSample}). It defaults to `random`.
+#' @param n integer. The number of pseudo-absence points to sample for presence-only data. The default is 1000.
+#' @param cells logical.  If `TRUE`, sampled cells numbers will be returned. The default is `FALSE`.
+#' @param xy logical. If `TRUE`, the locations of sampled cells will be returned. The default is `TRUE`.
+#' @param as.points logical. If `TRUE`, spatial points object will be returned. The default is `FALSE`.
+#' @param na.rm logical. If `TRUE`, NA values will be excluded from the raster mask. It defaults to `TRUE`.
 #' @param ... Additional arguments passed to the internal \link[terra]{spatSample} function.
 #'
 #' @return An S3 object with class `BackgroundPoints`, containing the modified `SpatRaster` object and the generated background points.
