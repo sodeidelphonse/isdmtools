@@ -1,5 +1,9 @@
+---
+output:
+  html_document: default
+---
 # isdmtools
-`isdmtools` is an R package designed to streamline the process of preparing, evaluating and visualizing spatial data for biodiversity species distribution modeling, with a specific focus on **integrated species distribution models (ISDMs)** with multisource geospatial datasets (i.e. presence-only, count and presence-absence) within a Bayesian framework. It provides a set of tools for producing robust and reproducible workflows for block cross-validation, data management and visualization, and model evaluation, leveraging the power of `sf`, `dplyr`, `purrr`, and `ggplot2` packages.
+`isdmtools` is an R package designed to streamline the process of preparing, evaluating and visualizing spatial data for biodiversity distribution modeling, with a specific focus on **integrated species distribution models (ISDMs)** with multisource geospatial datasets within a Bayesian framework. This includes presence-only, count and presence-absence data. It provides a set of tools for producing robust and reproducible workflows for block cross-validation, data management and visualization, and model evaluation, leveraging the power of `sf`, `dplyr`, `purrr`, and `ggplot2` packages.
 
 # Installation
 
@@ -26,22 +30,20 @@ renv::restore()
 ```
 
 # Key Features
-The package provides a set of core functions to handle common data preparation and evaluation tasks:
+The package provides a set of core functions and classes to handle common tasks of data preparation, visualization and model evaluation:
 
-**Data Preparation**: Create DataFolds objects that bind multiple `sf` datasets and generate spatially-separated cross-validation folds using the constructor function `create_folds()` developed with the `blockCV` package. This ensures the resulting models are robust to spatial autocorrelation. The `fill_na_near()` function can be used to impute NA cells in raster covariates for modelling tools that do not handle NAs properly.
+**Data Preparation**: Create DataFolds objects that bind multiple `sf` datasets and generate spatially-separated cross-validation folds using the constructor function `create_folds()`. This ensures the resulting models are robust to spatial autocorrelation. The `fill_na_near()` function can be used to efficiently impute missing values in raster covariates for modelling tools that cannot handle missing values properly.
 
 **Suitability Analysis**: Standardize model predictions for consistent mapping and compute a final habitat suitability index. The `suitability_index()` function transforms raw integrated model predictions into a suitability score using the inverse of the generalized complementary log-log transform (`cloglog`).
 
-**Model Evaluation**: Compute comprehensive evaluation metrics, including ROC-based and continuous-outcome metrics through the `compute_metrics()` function. The package also handles *dataset-weighted composite scores* (`"<METRIC>_Comp"`), providing a holistic view of model performance.
+**Model Evaluation**: Compute comprehensive evaluation metrics, including ROC-based and continuous-outcome metrics for each dataset using the `compute_metrics()` function. The package also handles *dataset-weighted composite scores* (`"<METRIC>_Comp"`), providing a holistic view of model performance. Although, the `sample_bg_points()` constructor is called internally with the default random seeds to sample pseudo-absences for presence-only data, users can run it externally to store, print and visualize the points generated in the `BackgroundPoints` object.
 
-**Mapping & Visualization**: Visualize model predictions and final habitat suitability maps. The plotting method `generate_maps()` is designed with `ggplot2` to be clear and informative and visualize multiple variables of model predictions (e.g. mean, median, standard deviation or quantiles), providing an easy way to interpret models' results. Users can customize the final plot if needed.
+**Mapping & Visualization**: Visualize model predictions and final habitat suitability maps. The plotting method `generate_maps()` is designed to provide a clear and informative map by visualizing multiple variables of model predictions (e.g. mean, median, standard deviation or quantiles), providing an easy way to interpret models' results. Users can customize the final `ggplot2` object if needed.
 
-**S3 Methods**: The package includes `print()` and `plot()` methods for the `DataFolds` class, providing a concise summary and a clear visualization of the cross-validation partitions.
-
-**sample_bg_points()**: A constructor function for generating background points for presence-only data with `print()` and `plot()` methods for the `BackgroundPoints` class.
+**S3 Methods**: The package includes `print()` and `plot()` methods for the `DataFolds` class, providing a concise summary and a clear visualization of the cross-validation partitions. 
 
 # Getting Started: A Complete Worked Example
-The core workflow of "isdmtools" involves creating a DataFolds object and then extracting specific folds for a modeling pipeline.
+The core workflow of `isdmtools` involves creating a DataFolds object and then extracting specific folds for a modeling pipeline.
 
 ## Data preparation
 First, let's load the package and create some dummy data for a hypothetical study region.
@@ -51,13 +53,14 @@ library(isdmtools)
 library(sf)
 library(ggplot2)
 library(dplyr)
+
+# Set the random seed for reproducibility
 set.seed(42)
 
 # Presence-only data (e.g. Citizen science data)
 presence_data <- data.frame(
   x = runif(100, 0, 4),
   y = runif(100, 6, 13),
-  site = rbinom(100, 1, 0.6)
 ) %>%
   st_as_sf(coords = c("x", "y"), crs = 4326)
 
@@ -88,16 +91,26 @@ print(plot_cv)
 # Extract a specific fold (e.g., Fold 3) for modeling and evaluation
 splits_fold_3 <- extract_fold(my_folds, fold = 3)
 
-# One can access both 'Presence' and "count" responses in the train/test set
+# You can access both 'train' and "test" sets and their corresponding datasets
  train_data <- splits_fold_3$train
  test_data <- splits_fold_3$test
 ```
 ## Usage with Prediction Models
-This first output above from the `isdmtools` package is a set of clean `sf` objects, which makes it easy to integrate with various spatial modeling tools using block cross-validation techniques. The extracted train and test data can be directly fed into your preferred modeling packages such as `inlabru`and `PointedSDMs` packages, 'MCMC' software, or any 'GLMs/GAMs' tools that can accommodate multisource spatial datasets. This ensures that your model predictions are validated using a robust spatial cross-validation approach and comprehensive evaluation metrics. 
+This first output above from the `isdmtools` package is a set of clean `sf` objects, which makes it easy to integrate with various spatial modeling tools using block cross-validation techniques. The extracted train and test data can be directly fed into your preferred modeling packages such as `inlabru`and `PointedSDMs` packages, 'MCMC' or any 'GLMs/GAMs' tools that can accommodate multisource spatial datasets. This ensures that your model predictions are validated using a robust spatial cross-validation approach and comprehensive evaluation metrics. 
 
 ### Step 1: Fitting a Bayesian spatial model with the `inlabru` package
 
-The "inlabru" package is a wrapper for the `R-INLA` package which is designed for Bayesian Latent Gaussian Modelling using INLA (Integrated Laplace Nested Approximations) and Extensions. Let's develop a Bayesian model with the fake data above.
+The `inlabru` package is a wrapper for the `R-INLA` package which is designed for Bayesian Latent Gaussian Modelling using INLA (Integrated Laplace Nested Approximations) and Extensions. Let's develop a Bayesian model with the fake data above. We assume the following basic joint model with a shared latent signal $\xi(.)$ (i.e. a Gaussian random field):
+
+$$
+ \begin{gather} 
+ Y_{\mathrm{count},i}|\xi(.) \sim \mathrm{Pois} \left(\mu_i \right), \quad i = 1,\ldots,n,\\
+ \log(\mu_i) = \beta_{0,\mathrm{count}} + \xi(\mathbf{s}_i)\\[3mm]
+ X_{\mathrm{presence}}|\xi(.) \sim \mathrm{IPP} \left(\lambda(\mathbf{s}) \right),\\
+\log (\lambda(\mathbf{s})) = \beta_{0,\mathrm{presence}} + \xi(\mathbf{s})\\
+\end{gather}
+$$
+where $\mathrm{IPP}$ means a _Inhomogeneous Poisson Process_ and $\mathbf{s}$ the vector of a location coordinates. 
 
 ```R
 # The coordinates reference system (CRS) of the data
@@ -107,7 +120,7 @@ projection <- "+proj=longlat +ellps=WGS84 +datum=WGS84"
      requireNamespace("fmesher", quietly = TRUE) &&
      requireNamespace("inlabru", quietly = TRUE)) {
 
-   # Create a mesh
+   # Create a "mesh" for the latent field 
    mesh <- fmesher::fm_mesh_2d(
      boundary = ben_sf,
      max.edge = c(0.3, 0.5),
@@ -116,10 +129,8 @@ projection <- "+proj=longlat +ellps=WGS84 +datum=WGS84"
      crs = "epsg:4326"
    )
    
-   # Visualize the mesh with the train data
-   ggplot() + inlabru::gg(mesh) +
-     inlabru::gg(train_data$Presence) +
-     inlabru::gg(train_data$Count, col = "blue") 
+   # Visualize the mesh
+   ggplot() + inlabru::gg(mesh)
    
    # Set the PC-prior for the SPDE model. We estimate a longer range value as no spatial 
    # autocorrelation was defined in the generated data:
@@ -128,7 +139,7 @@ projection <- "+proj=longlat +ellps=WGS84 +datum=WGS84"
                                        prior.sigma = c(1, 0.1)  # P(sigma > 1) = 0.1
               )
    
-   # Assuming a shared spatial latent (denoted by 'spde')
+   # The shared spatial latent component is denoted by 'spde'
    jcmp <- ~ -1 + Presence_intercept(1) + Count_intercept(1) +
                   spde(geometry, model = pcmatern)
    
@@ -202,7 +213,7 @@ As you can see, the estimated _spatial range_ is higher than we expected. This i
                                projection = projection)
  plot(jt_count)
  ```
-### Step 3: Model Performance Evaluation using test data
+### Step 3: Model Performance Evaluation using the test data
 
 ```R
  xy_observed <- rbind(st_coordinates(datasets_list$Presence)[, c("X","Y")], 
@@ -254,13 +265,13 @@ p <- generate_maps(jt_prob,
                    )
 print(p)
 ```
-![This is the prediction map for the sptial fold 3 data.](man/figures/prediction_map_readme.png)
+![This is the prediction map for the third spatial block data.](man/figures/prediction_map_readme.png)
 
 Next, you can iterate through all five spatial folds to obtain an average model performance.
 Finally, a model can be run on the entire 'datasets_list' to obtain the final prediction.
  
 # Contributing
-We welcome contributions! If you encounter an issue or have a feature request, please open an issue on the GitHub repository.
+We welcome contributions! If you encounter an issue or have a feature request, please open an issue on the GitHub repository [here](https://github.com/sodeidelphonse/isdmtools/issues).
 
 # Citation
 To cite this package in your research work, run the following command in your R session to generate the plain text and `BiTex` entry of the citation:
