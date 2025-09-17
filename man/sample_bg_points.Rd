@@ -9,10 +9,10 @@ sample_bg_points(
   points = NULL,
   n = 500,
   method = "random",
-  values = FALSE,
   cells = FALSE,
   xy = TRUE,
   as.points = FALSE,
+  na.rm = TRUE,
   ...
 )
 }
@@ -24,8 +24,6 @@ sample_bg_points(
 \item{n}{An integer specifying the number of pseudo-absence points to sample for presence-only data. Default is 1000.}
 
 \item{method}{The sampling technique to select pixels from the raster mask (see \link[terra]{spatSample}), defaulted to \code{random}.}
-
-\item{values}{A logical value indicating whether sampled cells values will be returned or not.}
 
 \item{cells}{A logical value indicating whether sampled cells numbers will be returned.}
 

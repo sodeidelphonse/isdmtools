@@ -13,7 +13,6 @@
 #' @param points Spatial points (`data.frame`, `sf` or `SpatVector` objects) that would be excluded from the background sample.
 #' @param method The sampling technique to select pixels from the raster mask (see \link[terra]{spatSample}), defaulted to `random`.
 #' @param n An integer specifying the number of pseudo-absence points to sample for presence-only data. Default is 1000.
-#' @param values A logical value indicating whether sampled cells values will be returned or not.
 #' @param cells A logical value indicating whether sampled cells numbers will be returned.
 #' @param xy A logical value indicating whether the locations of sampled cells will be returned.
 #' @param as.points A logical value indicating whether spatial points object will be returned.
@@ -43,10 +42,10 @@
 #' plot(bg_sample2)
 #' }
 #'
-sample_bg_points <- function(mask, points = NULL, n = 500, method = "random", values = FALSE,
-                             cells = FALSE, xy = TRUE, as.points = FALSE, ...) {
+sample_bg_points <- function(mask, points = NULL, n = 500, method = "random", cells = FALSE,
+                              xy = TRUE, as.points = FALSE, na.rm = TRUE, ...) {
 
-  if (!any(c(cells, xy, as.points)) && values) {
+  if (!any(c(cells, xy, as.points))) {
     stop("At least one of 'cells', 'xy', or 'as.points' must be TRUE.")
   }
 
@@ -97,8 +96,7 @@ sample_bg_points <- function(mask, points = NULL, n = 500, method = "random", va
       mask_modified,
       size = n,
       method = method,
-      na.rm = TRUE,
-      values = values,
+      na.rm = na.rm,
       cells = cells,
       xy = xy,
       as.points = as.points,
