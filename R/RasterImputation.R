@@ -1,60 +1,100 @@
 
 
-#---------------------------------------------------------------------------------------
-#--- Imputing NA cells in SpatRaster with the nearest values using a moving window
-#---------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------
+#--- Imputing missing values in SpatRaster with the nearest values using a moving window
+#-----------------------------------------------------------------------------------------
 
 #' @title Fill NA cells with the nearest cells values
 #'
 #' @description
-#' Function to impute a raster object for spatial modeling tools that cannot handle NA values in covariates.
+#' Function to impute a raster object for spatial modeling tools that cannot handle missing values in covariates.
 #' The function fill in NA cells with the nearest cells values using a moving window on missing cells.
-#' It is an itarative version of the \link[terra]{focal} function in `terra` package.
-#' @param x A raster layer (`SpatRaster` or `RasterLayer`) in which missing cells will be imputed.
-#' For multiple rasters (`SpatRaster` or `RasterStack`), you can use the combination of `lapply()` and `rast()` functions with this function.
-#' @param boundary A spatial polygon object (`spatVector` or `sf`) to be used to mask cells outside the study region, as the output layer is extended.
-#' It must have the same coordinates reference system with the input raster. Defaults to `NULL`.
-#' @param ... Additional arguments passed to \link[terra]{focal} function.
+#' It is an iterative version of the \link[terra]{focal} function of `terra` to handle incomplete filling
+#' due to isolated NA cells surrounded by other NAs.
 #'
-#' @return A `SpatRaster` object in which all NA cells are filled in by the nearest cells.
+#' @param x A raster layer (`SpatRaster` or `RasterLayer`) with missing values to fill in.
+#' For multiple rasters (`SpatRaster` or `RasterStack`), you can use the combination of `lapply()` and `rast()` functions with this function.
+#' @param boundary A optional spatial polygon object (`spatVector` or `sf`) to be used to mask extra cells outside the study region.
+#' It must have the same coordinates reference system (CRS) with the input raster. Defaults to `NULL`.
+#' @param fun A function to compute a value for a cell based on the values of its neighbors. The default is `mean`.
+#' This function must take a vector of values and return a single value (e.g., mean, modal, min or max) or multiple values (e.g., quantile).
+#' @param na.policy Character. Specifies which cells to fill. Must be one of "all" (compute for all cells),
+#' "only" (only for cells that are NA) or "omit" (skip cells that are NA). The default `"only"` ensures that only cells
+#' that are NA in the input raster are filled.
+#' @param na.rm Logical. If `TRUE`, NA values in the neighborhood are ignored when computing
+#' the focal function. The default is `TRUE`.
+#' @param start.window An integer specifying the starting size of the square focal window.
+#' The window will be `(2w+1) x (2w+1)`. The default is `1`, which corresponds to a 3x3 start window.
+#' @param ... Additional arguments passed to the internal \link[terra]{focal} function.
+#' This includes arguments like `expand`, `silent`, `filename`, etc. Note that a custom `w` (e.g., a weights matrix)
+#' cannot be passed via `...` as this function's logic is built around an iterative square window.
+#'
+#' @return A `SpatRaster` object that has all of its NA cells filled in.
 #' @export
 #'
-fill_na_near <- function(x, boundary = NULL, ...) {
+#' @examples
+#' \dontrun{
+#' library(terra)
+#' # Create a sample raster with some NA values
+#' r <- terra::rast(nrows = 10, ncols = 10, res = 1, xmin = 0, ymin = 0)
+#' r[] <- 1:100
+#' r[c(10, 25, 50, 75, 90)] <- NA
+#'
+#' # Fill the NAs using the default mean function with 3x3 start.window
+#' r_filled <- fill_na_near(r)
+#'
+#' # Start the filling with a larger 5x5 window
+#' r_filled_large_start <- fill_na_near(r, start.window = 2)
+#'
+#' plot(r, main = "Original raster")
+#' plot(r_filled, main = "Filled with mean (3x3 start)")
+#' plot(r_filled_large_start, main = "Filled with mean (5x5 start)")
+#' }
+#'
+fill_na_near <- function(x, boundary = NULL, fun = mean, na.policy = "only", na.rm = TRUE,
+                          start.window = 1, ...) {
 
   if(!inherits(x, c("SpatRaster", "RasterLayer"))) {
     stop(sprintf("'%' must be a 'SpatRaster' or 'RasterLayer' object.", deparse(substitute(x))), call. = FALSE)
-  } else {
-    if(inherits(x, "RasterLayer")) {
-      message(sprintf("Converting '%s' into a 'spatRaster' object.", deparse(substitute(x))))
-      filled <- terra::rast(x)
-    } else {
-      filled  <- x
-    }
-    w       <- 1
-    to_fill <- terra::global(filled, function(x) any(is.na(x)))[,1]
-    while(to_fill) {
-      w       <- w + 2
-      filled  <- terra::focal(filled, w = w, fun = mean, na.policy = "only", na.rm = TRUE, ...)
-      to_fill <- terra::global(filled, function(x) any(is.na(x)))[,1]
-    }
-
-    if(!is.null(boundary)) {
-      bndr <- boundary
-      if (inherits(boundary, "SpatVector")) {
-        if (terra::geomtype(boundary) != "polygons") {
-          stop(sprintf("'%s' SpatVector must contain only polygons geometries.", boundary), call. = FALSE)
-        }
-      } else if (inherits(boundary, "sf")) {
-        if (!all(sf::st_geometry_type(boundary) %in% c("POLYGON", "MULTIPOLYGON"))) {
-          stop(sprintf("'%s' sf object must contains only POLYGON geometries.", boundary), call. = FALSE)
-        }
-      } else {
-        stop(sprintf("Unsupported geometries. '%s' must be a spatial polygon from 'sf' or 'terra'.", boundary), call. = FALSE)
-      }
-      filled  <- terra::mask(filled, bndr)
-    }
   }
-  names(filled) <- names(x)
+
+  if(inherits(x, "RasterLayer")) {
+    message(sprintf("Converting '%s' into a 'spatRaster' object.", deparse(substitute(x))))
+    filled <- terra::rast(x)
+  } else {
+    filled <- x
+  }
+
+  extra_args <- list(...)
+  if ("w" %in% names(extra_args)) {
+    stop("The 'w' argument cannot be set explicitly via '...'. Use the 'start_window' to control the starting window size.", call. = FALSE)
+  }
+
+  w <- start.window
+  to_fill <- TRUE
+  while(to_fill) {
+    w <- w + 2
+    list_args <- list(x = filled, w = w, fun = fun, na.policy = na.policy, na.rm = na.rm)
+    filled    <- do.call(terra::focal, c(list_args, extra_args))
+    to_fill   <- terra::global(filled, function(x) any(is.na(x)))[,1]
+  }
+
+  if(!is.null(boundary)) {
+    bndr <- boundary
+    if (inherits(boundary, "SpatVector")) {
+      if (terra::geomtype(boundary) != "polygons") {
+        stop(sprintf("'%s' SpatVector must contain only polygons geometries.", boundary), call. = FALSE)
+      }
+    } else if (inherits(boundary, "sf")) {
+      if (!all(sf::st_geometry_type(boundary) %in% c("POLYGON", "MULTIPOLYGON"))) {
+        stop(sprintf("'%s' sf object must contains only POLYGON geometries.", boundary), call. = FALSE)
+      }
+    } else {
+      stop(sprintf("Unsupported geometries. '%s' must be a spatial polygon from 'sf' or 'terra'.", boundary), call. = FALSE)
+    }
+    filled  <- terra::mask(filled, bndr)
+    names(filled) <- names(x)
+  }
 
   return(filled)
 }
