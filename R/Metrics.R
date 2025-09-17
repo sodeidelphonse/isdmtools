@@ -11,7 +11,7 @@
 #' @param prob.raster A `SpatRaster` object with unique layer containing the model's predictions on a probability scale (0-1). It represents a suitability index, and its values are used to compute all ROC-based metrics (e.g., AUC, TSS, F1 score). This argument is optional if only continuous-outcome metrics are requested for count data.
 #' @param expected.response A `SpatRaster` object containing the model's predictions on a continuous scale (i.e. counts or rate if offset used; see `suitability_index()`). Its values are used to compute all continuous-outcome metrics (e.g., RMSE, MAE, MAPE). This argument is required if a continuous-outcome metric is requested.
 #' @param xy.excluded An optional `SpatVector` or `sf` object representing locations where pseudo-absence points should not be sampled, such as occupied areas or known background points. Only relevant for presence-only (PO) data. Default is `NULL`.
-#' @param n.background An integer specifying the number of pseudo-absence points to sample for presence-only data. Default is 1000 (see \link{sample_bg_points}).
+#' @param n.background An integer specifying the number of pseudo-absence points to sample for presence-only data. Default is 1000 (see \link{sample_background}).
 #' @param responseCounts A character string representing the column name in the `sf` objects that contains observed counts. Default is 'counts' and must be standardized across all count data sets.
 #' @param responsePA A character string representing the column name in the `sf` objects that contains presence-absence data (1 for presence, 0 for absence). Default is 'present' and must be standardized across all PA data sets.
 #' @param seed An integer for setting the seed for random number generation, used for pseudo-absence sampling to ensure reproducibility. Default is 25.
@@ -129,7 +129,7 @@
 #' # )
 #' }
 #' @export
-#' @seealso \code{\link{extract_fold}}, \code{\link{suitability_index}}
+#' @seealso \code{\link{extract_fold}}, \code{\link{suitability_index}}, \code{\link{sample_background}}
 #'
 compute_metrics <- function(test.data,
                             prob.raster = NULL,
@@ -361,7 +361,7 @@ compute_metrics <- function(test.data,
         eval_resp_roc <- current_data[[responsePA]][valid_idx]
         metrics_ds$sample_size <- length(prob_roc)
       } else {
-        bg_points_po <- sample_bg_points(mask = prob.raster, points = xy.excluded, n = n.background, xy = TRUE)
+        bg_points_po <- sample_background(mask = prob.raster, points = xy.excluded, n = n.background, xy = TRUE)
         if (!is.null(bg_points_po$bg)) {
           prob_bg_po <- terra::extract(prob.raster, bg_points_po$bg)[, 1]
           prob_bg_po <- prob_bg_po[is.finite(prob_bg_po)]

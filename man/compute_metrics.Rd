@@ -35,7 +35,7 @@ compute_metrics(
 
 \item{expected.response}{A \code{SpatRaster} object containing the model's predictions on a continuous scale (i.e. counts or rate if offset used; see \code{suitability_index()}). Its values are used to compute all continuous-outcome metrics (e.g., RMSE, MAE, MAPE). This argument is required if a continuous-outcome metric is requested.}
 
-\item{n.background}{An integer specifying the number of pseudo-absence points to sample for presence-only data. Default is 1000 (see \link{sample_bg_points}).}
+\item{n.background}{An integer specifying the number of pseudo-absence points to sample for presence-only data. Default is 1000 (see \link{sample_background}).}
 
 \item{responseCounts}{A character string representing the column name in the \code{sf} objects that contains observed counts. Default is 'counts' and must be standardized across all count data sets.}
 
@@ -172,5 +172,5 @@ It can be viewed as a quick \emph{multi-criterion decision metric} for several m
 }
 }
 \seealso{
-\code{\link{extract_fold}}, \code{\link{suitability_index}}
+\code{\link{extract_fold}}, \code{\link{suitability_index}}, \code{\link{sample_background}}
 }
