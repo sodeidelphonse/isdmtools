@@ -361,7 +361,8 @@ compute_metrics <- function(test.data,
         eval_resp_roc <- current_data[[responsePA]][valid_idx]
         metrics_ds$sample_size <- length(prob_roc)
       } else {
-        bg_points_po <- sample_background(mask = prob.raster, points = xy.excluded, n = n.background, xy = TRUE)
+        bg_points_po <- sample_background(mask = prob.raster, points = xy.excluded,
+                                          n = n.background, xy = TRUE, values = FALSE)
         if (!is.null(bg_points_po$bg)) {
           prob_bg_po <- terra::extract(prob.raster, bg_points_po$bg)[, 1]
           prob_bg_po <- prob_bg_po[is.finite(prob_bg_po)]
