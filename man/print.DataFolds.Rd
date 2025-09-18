@@ -21,6 +21,7 @@ dataset across all folds.
 }
 \seealso{
 Other spatial blocking methods: 
+\code{\link{create_folds}()},
 \code{\link{extract_fold}()},
 \code{\link{extract_fold.DataFolds}()},
 \code{\link{plot.DataFolds}()}

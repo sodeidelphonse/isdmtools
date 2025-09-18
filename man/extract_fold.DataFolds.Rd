@@ -64,6 +64,7 @@ names(test_data_count)
 }
 \seealso{
 Other spatial blocking methods: 
+\code{\link{create_folds}()},
 \code{\link{extract_fold}()},
 \code{\link{plot.DataFolds}()},
 \code{\link{print.DataFolds}()}

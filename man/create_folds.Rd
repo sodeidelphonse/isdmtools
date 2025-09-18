@@ -9,7 +9,7 @@ create_folds(
   region_polygon = NULL,
   k = 5,
   seed = 23,
-  cv_method = "cluster",
+  cv.method = "cluster",
   ...
 )
 }
@@ -17,15 +17,15 @@ create_folds(
 \item{datasets}{A named list of \code{sf} objects. Each list element should be a
 spatial dataset with its name corresponding to the list element's name.}
 
-\item{region_polygon}{An \code{sf} object representing the study area polygon.}
-
 \item{k}{An integer specifying the number of folds (k-fold cross-validation).}
 
 \item{seed}{An integer for reproducibility.}
 
-\item{cv_method}{A character string specifying the spatial cross-validation method to use. Options are \code{"cluster"} (default) or \code{"spatial"}.}
+\item{cv.method}{A character string specifying the spatial cross-validation method to use. Options are \code{"cluster"} (default) or \code{"spatial"}.}
 
 \item{...}{Additional arguments to be passed to the underlying blocking function (see \link[blockCV]{cv_cluster} or \link[blockCV]{cv_spatial}).}
+
+\item{region.polygon}{An \code{sf} object representing the study area polygon.}
 }
 \value{
 An S3 object of class \code{DataFolds} containing the combined data,
@@ -76,4 +76,11 @@ Roberts DR, Bahn V, Ciuti S, Boyce MS, Elith J, Guillera-Arroita G, Hauenstein S
 
 Valavi R, Elith J, Lahoz-Monfort JJ, Guillera-Arroita G. blockCV: an R package for generating spatially or environmentally separated folds for k-fold cross-validation of species distribution models. \emph{bioRxiv} (2018)357798. \doi{10.1101/357798}
 }
-\concept{spatial blocking}
+\seealso{
+Other spatial blocking methods: 
+\code{\link{extract_fold}()},
+\code{\link{extract_fold.DataFolds}()},
+\code{\link{plot.DataFolds}()},
+\code{\link{print.DataFolds}()}
+}
+\concept{spatial blocking methods}

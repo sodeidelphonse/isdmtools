@@ -64,6 +64,7 @@ print(plot_cv)
 }
 \seealso{
 Other spatial blocking methods: 
+\code{\link{create_folds}()},
 \code{\link{extract_fold}()},
 \code{\link{extract_fold.DataFolds}()},
 \code{\link{print.DataFolds}()}

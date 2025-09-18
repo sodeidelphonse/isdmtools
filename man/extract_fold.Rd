@@ -29,6 +29,7 @@ making it easier to write generic cross-validation loops.
 }
 \seealso{
 Other spatial blocking methods: 
+\code{\link{create_folds}()},
 \code{\link{extract_fold.DataFolds}()},
 \code{\link{plot.DataFolds}()},
 \code{\link{print.DataFolds}()}
