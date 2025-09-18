@@ -5,8 +5,7 @@ Version: 0.1.0
 Authors@R: person(given = "Akoeugnigan Idelphonse",
                  family = "SODE",
                  role = c("cre", "aut"),
-                 email = "sdidelphonse@gmail.com",
-                 comment = "Maintainer of the package")
+                 email = "sdidelphonse@gmail.com")
 Date: 2025-09-08
 Maintainer: <sdidelphonse@gmail.com>
 Description: A suite of tools for for manipulating and visualising spatial data, as well as for block cross-validation and evaluating spatial models with multisource point datasets. 
@@ -29,7 +28,6 @@ Imports:
     reshape2 (>= 0.8.10),
     ggplot2 (>= 4.0.0),
     ggspatial (>= 1.1.10),
-    magrittr (>= 2.0.4),
     pROC (>= 1.19.0.1)
 Suggests: 
     testthat (>= 3.0.0), inlabru(>= 2.11.1), fmesher(>= 0.2.0)

@@ -20,7 +20,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Akoeugnigan Idelphonse SODE \email{sdidelphonse@gmail.com} (Maintainer of the package)
+\strong{Maintainer}: Akoeugnigan Idelphonse SODE \email{sdidelphonse@gmail.com}
 
 }
 \keyword{internal}
