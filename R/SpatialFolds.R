@@ -63,7 +63,7 @@
 #' Valavi R, Elith J, Lahoz-Monfort JJ, Guillera-Arroita G. blockCV: an R package for generating spatially or environmentally separated folds for k-fold cross-validation of species distribution models. _bioRxiv_ (2018)357798. \doi{10.1101/357798}
 #'
 #'
-create_folds <- function(datasets, region_polygon = NULL, k = 5, seed = 23, cv.method = "cluster", ...) {
+create_folds <- function(datasets, region.polygon = NULL, k = 5, seed = 23, cv.method = "cluster", ...) {
 
   xy_all <- bind_datasets(datasets)
   set.seed(seed)
@@ -236,6 +236,8 @@ print.DataFolds <- function(x, ...) {
 #' partitions for each fold of a `DataFolds` object.
 #'
 #' @param x A `DataFolds` S3 object.
+#' @param nrow An integer specifying the number of rows needed for the panel plot.
+#' The default is 1.
 #' @param ... Additional arguments (not used by this method).
 #'
 #' @return A `ggplot2` object that can be printed or saved.
@@ -286,7 +288,7 @@ print.DataFolds <- function(x, ...) {
 #' print(plot_cv)
 #' }
 #'
-plot.DataFolds <- function(x, ...) {
+plot.DataFolds <- function(x, nrow = 1, ...) {
 
   num_datasets <- length(x$dataset_names)
   shapes <- c(16, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)[1:num_datasets]
@@ -307,7 +309,9 @@ plot.DataFolds <- function(x, ...) {
     ggspatial::geom_sf(ggplot2::aes(color = Set, shape = datasetName), size = 1.2) +
     ggplot2::scale_color_manual(name = "Partition", values = c("Train" = "blue", "Test" = "orange")) +
     ggplot2::scale_shape_manual(name = "Dataset", values = shapes) +
-    ggplot2::facet_wrap(~ fold_panel, labeller = ggplot2::labeller(fold_panel = function(x) paste("Fold", x)), nrow = 1) +
+    ggplot2::facet_wrap(~ fold_panel,
+                        labeller = ggplot2::labeller(fold_panel = function(x) paste("Fold", x)),
+                        nrow = nrow) +
     ggplot2::theme_bw(base_size = 12) +
     ggplot2::theme(
       legend.position = "right",
@@ -315,10 +319,11 @@ plot.DataFolds <- function(x, ...) {
       panel.grid.major = ggplot2::element_line(color = "grey80"),
       panel.grid.minor = ggplot2::element_line(color = "grey90")
     ) +
-    ggplot2::labs(title = paste("Spatial Cross-Validation Folds"),
+    ggplot2::labs(title = paste("Block Cross-Validation Folds"),
                   x = "Longitude",
                   y = "Latitude") +
-    ggspatial::annotation_north_arrow(location = "tl", height = grid::unit(0.6, "cm"), width = grid::unit(0.3, "cm")) +
+    ggspatial::annotation_north_arrow(location = "tl", height = grid::unit(0.6, "cm"),
+                                      width = grid::unit(0.3, "cm")) +
     ggspatial::annotation_scale(location = "br", bar_cols = c("grey60", "white"))
 
   return(plot_cv)
@@ -346,17 +351,3 @@ bind_datasets <- function(datasets) {
 
   return(bound_data)
 }
-
-# --- Package documentation ---
-#' @title A Toolkit for Integrated Species Distribution Models
-#'
-#' @description
-#' `isdmtools` provides a set of tools for preparing, analyzing and visualizing spatial data for integrated species distribution models (ISDMs).
-#' It is designed to help users prepare multisource spatial point datasets for spatial cross-validation using blocking techniques, with a focus on Bayesian inference.
-#' It also analyse the habitat suitability from joint model predictions and map the results. The software also provides a holistic view of model performance
-#' by computing a comprehensive evaluation metrics for the joint model, including ROC-based and continuous-outcome weighted composite scores.
-#'
-#' @name isdmtools-package
-#' @aliases isdmtools
-#' @keywords internal
-"_PACKAGE"

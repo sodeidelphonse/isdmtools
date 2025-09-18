@@ -4,10 +4,13 @@
 \alias{plot.DataFolds}
 \title{Plot block cross-validation folds for multisource datasets}
 \usage{
-\method{plot}{DataFolds}(x, ...)
+\method{plot}{DataFolds}(x, nrow = 1, ...)
 }
 \arguments{
 \item{x}{A \code{DataFolds} S3 object.}
+
+\item{nrow}{An integer specifying the number of rows needed for the panel plot.
+The default is 1.}
 
 \item{...}{Additional arguments (not used by this method).}
 }
