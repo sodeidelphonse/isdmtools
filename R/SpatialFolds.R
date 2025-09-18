@@ -11,10 +11,10 @@
 #'
 #' @param datasets A named list of `sf` objects. Each list element should be a
 #'   spatial dataset with its name corresponding to the list element's name.
-#' @param region_polygon An `sf` object representing the study area polygon.
+#' @param region.polygon An `sf` object representing the study area polygon.
 #' @param k An integer specifying the number of folds (k-fold cross-validation).
 #' @param seed An integer for reproducibility.
-#' @param cv_method A character string specifying the spatial cross-validation method to use. Options are `"cluster"` (default) or `"spatial"`.
+#' @param cv.method A character string specifying the spatial cross-validation method to use. Options are `"cluster"` (default) or `"spatial"`.
 #' @param ... Additional arguments to be passed to the underlying blocking function (see \link[blockCV]{cv_cluster} or \link[blockCV]{cv_spatial}).
 #'
 #' @details
@@ -25,7 +25,7 @@
 #' @return An S3 object of class `DataFolds` containing the combined data,
 #' fold information, and the original datasets.
 #' @export
-#' @family spatial blocking
+#' @family spatial blocking methods
 #'
 #' @examples
 #' \dontrun{
@@ -63,14 +63,14 @@
 #' Valavi R, Elith J, Lahoz-Monfort JJ, Guillera-Arroita G. blockCV: an R package for generating spatially or environmentally separated folds for k-fold cross-validation of species distribution models. _bioRxiv_ (2018)357798. \doi{10.1101/357798}
 #'
 #'
-create_folds <- function(datasets, region_polygon = NULL, k = 5, seed = 23, cv_method = "cluster", ...) {
+create_folds <- function(datasets, region_polygon = NULL, k = 5, seed = 23, cv.method = "cluster", ...) {
 
   xy_all <- bind_datasets(datasets)
   set.seed(seed)
-  folds_cv <- switch(cv_method,
+  folds_cv <- switch(cv.method,
                      "cluster" = blockCV::cv_cluster(x = xy_all, k = k, biomod2 = FALSE, ...),
                      "spatial" = blockCV::cv_spatial(x = xy_all, k = k, biomod2 = FALSE, ...),
-                     stop("Invalid `cv_method`. Must be 'cluster' or 'spatial'.")
+                     stop("Invalid `cv.method`. Must be 'cluster' or 'spatial'.")
   )
 
   xy_all$folds_ids <- folds_cv$folds_ids
@@ -81,7 +81,7 @@ create_folds <- function(datasets, region_polygon = NULL, k = 5, seed = 23, cv_m
     folds_info = folds_cv,
     dataset_names = names(datasets),
     k = k,
-    region_polygon = region_polygon
+    region_polygon = region.polygon
   )
   class(object) <- "DataFolds"
   return(object)
