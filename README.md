@@ -1,5 +1,5 @@
 # isdmtools
-`isdmtools` is an R package designed to streamline the process of preparing, evaluating and visualizing spatial data for biodiversity distribution modeling, with a specific focus on **integrated species distribution models (ISDMs)** with multisource geospatial datasets within a Bayesian framework. This includes presence-only, count and presence-absence data. It provides a set of tools for producing robust and reproducible workflows for block cross-validation, data management and visualization, and model evaluation, leveraging the power of `sf`, `dplyr`, `purrr`, and `ggplot2` packages.
+`isdmtools` is an R package designed to streamline the process of preparing, evaluating and visualizing spatial data for biodiversity distribution modeling, with a specific focus on **integrated species distribution models (ISDMs)** with multisource geospatial datasets within a Bayesian framework. This includes presence-only, count and presence-absence data. It provides a set of tools for producing robust and reproducible workflows for block cross-validation, data management and visualization, and model evaluation, leveraging the power of `sf`, `dplyr`, and `ggplot2` packages.
 
 # Installation
 
@@ -32,7 +32,7 @@ The package provides a set of core functions and classes to handle common tasks 
 
 **Suitability Analysis**: Standardize model predictions for consistent mapping and compute a final habitat suitability index. The `suitability_index()` function transforms raw integrated model predictions into a suitability score using the inverse of the generalized complementary log-log transform (`cloglog`).
 
-**Model Evaluation**: Compute comprehensive evaluation metrics, including ROC-based and continuous-outcome metrics for each dataset (`"<METRIC>_DatasetName"`) using the `compute_metrics()` function. The package also handles *dataset-weighted composite scores* (`"<METRIC>_Comp"`), providing a holistic view of model performance. Although, the `sample_background()` constructor is called internally with the default random seeds to sample pseudo-absences for presence-only data, users can run it externally to store, print and visualize the points generated in the `BackgroundPoints` object.
+**Model Evaluation**: Compute comprehensive evaluation metrics, including ROC-based and continuous-outcome metrics for each dataset (`"<METRIC>_DatasetName"`) using the `compute_metrics()` function. The package also handles *dataset-weighted composite scores* (`"<METRIC>_Comp"`), providing a holistic view of model performance. Although, the `sample_background()` constructor is called internally to sample pseudo-absences for presence-only data, users can run it externally to print, visualize and store the points generated in the `BackgroundPoints` object using the random seed supplied to `compute_metrics()`.
 
 **Mapping & Visualization**: Visualize model predictions and final habitat suitability maps. The plotting method `generate_maps()` is designed to provide a clear and informative map by visualizing multiple variables of model predictions (e.g. mean, median, standard deviation or quantiles), providing an easy way to interpret models' results. Users can customize the final `ggplot2` object if needed.
 
@@ -91,8 +91,10 @@ splits_fold_3 <- extract_fold(my_folds, fold = 3)
  train_data <- splits_fold_3$train
  test_data <- splits_fold_3$test
 ```
+![The figure above shows the block cross-validation folds.](man/figures/readme_blockCV_map.png)
+
 ## Usage with Prediction Models
-This first output above from the `isdmtools` package is a set of clean `sf` objects, which makes it easy to integrate with various spatial modeling tools using block cross-validation techniques. The extracted train and test data can be directly fed into your preferred modeling packages such as `inlabru`and `PointedSDMs` packages, 'MCMC' or any 'GLMs/GAMs' tools that can accommodate multisource spatial datasets. This ensures that your model predictions are validated using a robust spatial cross-validation approach and comprehensive evaluation metrics. 
+This first output above from the `isdmtools` package is a set of clean `sf` objects, which makes it easy to integrate with various spatial modeling tools using block cross-validation techniques. The extracted train and test data can be directly fed into your preferred modeling packages such as `inlabru` and `PointedSDMs` packages, 'MCMC' or any 'GLMs/GAMs' tools that can accommodate multisource spatial datasets. This ensures that your model predictions are validated using a robust spatial cross-validation approach and comprehensive evaluation metrics. 
 
 ### Step 1: Fitting a Bayesian spatial model with the `inlabru` package
 
@@ -109,8 +111,7 @@ The `inlabru` package is a wrapper for the `R-INLA` package which is designed fo
 where $\mathrm{IPP}$ means a _Inhomogeneous Poisson Process_ and $\mathbf{s}$ the vector of a location coordinates. 
 
 ```R
-# The coordinates reference system (CRS) of the data
-projection <- "+proj=longlat +ellps=WGS84 +datum=WGS84"
+# You can now prepare the remaining data required and fit the model
  
  if (requireNamespace("INLA", quietly = TRUE) &&
      requireNamespace("fmesher", quietly = TRUE) &&
@@ -119,9 +120,9 @@ projection <- "+proj=longlat +ellps=WGS84 +datum=WGS84"
    # Create a "mesh" for the latent field 
    mesh <- fmesher::fm_mesh_2d(
      boundary = ben_sf,
-     max.edge = c(0.3, 0.5),
-     offset = c(1e-3, 0.8),
-     cutoff = 0.12,
+     max.edge = c(0.2, 0.5),
+     offset = c(1e-3, 0.6),
+     cutoff = 0.10,
      crs = "epsg:4326"
    )
    
@@ -131,7 +132,7 @@ projection <- "+proj=longlat +ellps=WGS84 +datum=WGS84"
    # Set the PC-prior for the SPDE model. We estimate a longer range value as no spatial 
    # autocorrelation was defined in the generated data:
    pcmatern <- INLA::inla.spde2.pcmatern(mesh,
-                                       prior.range = c(2, 0.1), # P(spatial range < 2) = 0.1
+                                       prior.range = c(1, 0.1), # P(spatial range < 1) = 0.1
                                        prior.sigma = c(1, 0.1)  # P(sigma > 1) = 0.1
               )
    
@@ -140,76 +141,81 @@ projection <- "+proj=longlat +ellps=WGS84 +datum=WGS84"
                   spde(geometry, model = pcmatern)
    
    # Count observation model
-   lik_count <- inlabru::bru_obs(
+   obs_model_count <- inlabru::bru_obs(
      formula = count ~  + Count_intercept + spde,
      family = "poisson",
      data = train_data$Count
    )
    
    # Presence-only observation model (LGCP)
-   lik_pp <- inlabru::bru_obs(
+   obs_model_pres <- inlabru::bru_obs(
      formula = geometry ~ Presence_intercept + spde,
      family = "cp",
      data = train_data$Presence,
      domain = list(geometry = mesh),
-     samplers = ben_sf
+     samplers = list(geometry = ben_sf)
    )
    
    # Model fit
-   jfit <- inlabru::bru(jcmp, lik_count, lik_pp,
+   jfit <- inlabru::bru(jcmp, obs_model_count, obs_model_pres,
                         options = list(control.inla = list(int.strategy = "eb"),
-                                       bru_max_iter = 15)
+                                       bru_max_iter = 20)
                        )
  } else {
-   message("'INLA', 'fmesher', and 'inlabru' is required to run this example.")
+   message("'INLA', 'fmesher', and 'inlabru' are required to run this example.")
  }
  
  # Model results
  jfit$summary.fixed
- #>                     mean        sd        0.025quant  0.5quant 0.975quant   mode       kld
- #> Count_intercept    -1.04211843 0.6842276   -2.38318 -1.04211843   0.298943 -1.04211843   0
- #> Presence_intercept -0.05060088 0.6680780   -1.36001 -0.05060088   1.258808 -0.05060088   0
+ #>                     mean        sd      0.025quant  0.5quant   0.975quant  mode      kld
+ #> Count_intercept    -0.2497590 0.3086958 -0.8547916 -0.2497590  0.3552737  -0.2497590  0
+ #> Presence_intercept  0.9269141 0.2836352  0.3709992  0.9269141  1.4828289   0.9269141  0
    
  jfit$summary.hyperpar
- #>                mean        sd      0.025quant 0.5quant  0.975quant  mode
- #> Range for spde 3.551056 1.2224526   1.836691  3.329475   6.578244  2.909072
- #> Stdev for spde 1.206941 0.3212041   0.711045  1.161888   1.966190  1.072183
+ #>                mean        sd      0.025quant  0.5quant   0.975quant  mode
+ #> Range for spde 3.535334 2.5240208  0.9513318   2.8572241  10.2509603  1.9527898
+ #> Stdev for spde 0.512346 0.1926203  0.2183487   0.4842595  0.9647017   0.4317979
  ```
-As you can see, the estimated _spatial range_ is higher than we expected. This is because there is no spatial autocorrelation in the simulated data.
+As expected, the estimated _spatial range_ is higher than 1. This is because there is no strong spatial autocorrelation in the simulated data.
  
 ### Step 2: Model prediction 
  
- ```R
- # Define the predictions grids
- grids <- fmesher::fm_pixels(mesh, mask = ben_sf)
- 
- # Joint habitat suitability (can exclude dataset-specific intercepts)
- jpred <- predict(jfit, newdata = grids, 
+```R
+# Define the predictions grids and the projection system
+grids      <- fmesher::fm_pixels(mesh, mask = ben_sf)
+projection <- "+proj=longlat +ellps=WGS84 +datum=WGS84"
+
+# Joint habitat suitability (can also exclude dataset-specific intercepts)
+jpred <- predict(jfit, newdata = grids, 
                 formula = ~ spde + Presence_intercept + Count_intercept,
                 n.samples = 500, seed = 24)
- jpred   <- prepare_predictions(jpred) 
+jpred   <- prepare_predictions(jpred) 
    
- jt_prob <- suitability_index(jpred, 
+jt_prob <- suitability_index(jpred, 
                                post.stat = c("q0.025", "mean", "q0.975"), 
                                output.format = "prob",
                                response.type = "count",
-                               projection = projection)
- plot(jt_prob)
+                               projection = projection
+                               )
+plot(jt_prob)
    
- # Prediction of counts 
- jpred_count <- predict(jfit, newdata = grids, 
+# Prediction of counts 
+jpred_count <- predict(jfit, newdata = grids, 
                     formula = ~ spde + Count_intercept ,
                     n.samples = 500, seed = 24)
- jpred_count <- prepare_predictions(jpred_count)
+jpred_count <- prepare_predictions(jpred_count)
    
- jt_count <- suitability_index(jpred_count, 
-                               post.stat = c("q0.025", "mean", "q0.975"), 
-                               output.format = "response",
-                               response.type = "count",
-                               projection = projection)
- plot(jt_count)
- ```
-### Step 3: Model Performance Evaluation using the test data
+jt_count <- suitability_index(jpred_count, 
+                              post.stat = c("q0.025", "mean", "q0.975"), 
+                              output.format = "response",
+                              response.type = "count",
+                              projection = projection
+                              )
+plot(jt_count)
+```
+ 
+### Step 3: Model performance evaluation using the test data
+Various performance metrics can now be computed, including dataset-specific and weighted composite scores.
 
 ```R
  xy_observed <- rbind(st_coordinates(datasets_list$Presence)[, c("X","Y")], 
@@ -228,28 +234,31 @@ metrics_result <- do.call(rbind, eval_metrics)
 print(metrics_result)
 
                        [,1]
-AUC_Presence      0.9051429
-TSS_Presence      0.7335714
-ACCURACY_Presence 0.8067061
+AUC_Presence      0.9173571
+TSS_Presence      0.7910000
+ACCURACY_Presence 0.7938856
 RMSE_Presence            NA
 MAE_Presence             NA
-AUC_Count         0.8750000
-TSS_Count         0.8750000
-ACCURACY_Count    0.8888889
-RMSE_Count        2.2168022
-MAE_Count         1.8464205
-AUC_Comp          0.8933478
-TSS_Comp          0.7889130
-ACCURACY_Comp     0.8388646
-RMSE_Comp         2.2168022
-MAE_Comp          1.8464205
-TOT_ROC_SCORE     0.8403752
-TOT_ERROR_SCORE   2.0316114
-
+AUC_Count         0.7500000
+TSS_Count         0.7500000
+ACCURACY_Count    0.7777778
+RMSE_Count        2.1191327
+MAE_Count         1.7515229
+AUC_Comp          0.8518696
+TSS_Comp          0.7749565
+ACCURACY_Comp     0.7875825
+RMSE_Comp         2.1191327
+MAE_Comp          1.7515229
+TOT_ROC_SCORE     0.8048029
+TOT_ERROR_SCORE   1.9353278
 ```
-As you will have noticed, continuous-outcome metrics such as MAE (mean absolute error) and RMSE (root mean squared error) are not available for presence-only data, which makes sense.
+As you will have noticed, continuous-outcome metrics such as MAE (mean absolute error) and RMSE (root mean squared error) are not available for presence-only data, which makes sense. Furthermore, the weighted composite scores for continuous responses are identical to their individual counterparts, since there is only one count response.
 
+Next, you can iterate through all five spatial folds to obtain an average model performance, then calculate the variation in metrics between blocks. Finally, run a model on the full 'datasets_list' to make the final prediction.
+ 
 ### Step 4: Prediction mapping 
+You can now generate a formal prediction map ready for publication.
+
 ```R
 p <- generate_maps(jt_prob, 
                    var.names = c("q0.025", "mean", "q0.975"), 
@@ -261,11 +270,8 @@ p <- generate_maps(jt_prob,
                    )
 print(p)
 ```
-![This is the prediction map for the third spatial block data.](man/figures/prediction_map_readme.png)
+![This is the prediction map for the third spatial block data.](man/figures/readme_prediction_map.png)
 
-Next, you can iterate through all five spatial folds to obtain an average model performance.
-Finally, a model can be run on the entire 'datasets_list' to obtain the final prediction.
- 
 # Contributing
 We welcome contributions! If you encounter an issue or have a feature request, please open an issue on the GitHub repository [here](https://github.com/sodeidelphonse/isdmtools/issues).
 
