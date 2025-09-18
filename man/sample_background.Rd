@@ -17,21 +17,21 @@ sample_background(
 )
 }
 \arguments{
-\item{mask}{A raster object (e.g. \code{SpatRaster}) to be used as mask (preferably, the predicted intensity or habitat suitability).}
+\item{mask}{\code{SpatRaster} object to be used as mask (preferably, the predicted intensity or habitat suitability).}
 
 \item{points}{Spatial points (\code{data.frame}, \code{sf} or \code{SpatVector} objects) that would be excluded from the background sample.}
 
-\item{n}{An integer specifying the number of pseudo-absence points to sample for presence-only data. The default is 1000.}
+\item{n}{integer. The number of pseudo-absence points to sample for presence-only data. The default is 1000.}
 
-\item{method}{The sampling technique to select pixels from the raster mask (see \link[terra]{spatSample}). It defaults to \code{random}.}
+\item{method}{character. The sampling technique to select pixels from the raster mask (see \link[terra]{spatSample}). It defaults to \code{random}.}
 
-\item{cells}{Logical.  If \code{TRUE}, sampled cells numbers will be returned. The default is \code{FALSE}.}
+\item{cells}{logical.  If \code{TRUE}, sampled cells numbers will be returned. The default is \code{FALSE}.}
 
-\item{xy}{Logical. If \code{TRUE}, the locations of sampled cells will be returned. The default is \code{TRUE}.}
+\item{xy}{logical. If \code{TRUE}, the locations of sampled cells will be returned. The default is \code{TRUE}.}
 
-\item{as.points}{Logical. If \code{TRUE}, spatial points object will be returned. The default is \code{FALSE}.}
+\item{as.points}{logical. If \code{TRUE}, spatial points object will be returned. The default is \code{FALSE}.}
 
-\item{na.rm}{Logical. If \code{TRUE}, NA values will be excluded from the raster mask. It defaults to \code{TRUE}.}
+\item{na.rm}{logical. If \code{TRUE}, NA values will be excluded from the raster mask. It defaults to \code{TRUE}.}
 
 \item{...}{Additional arguments passed to the internal \link[terra]{spatSample} function.}
 }
