@@ -33,11 +33,11 @@ compute_metrics(
 
 \item{xy.excluded}{An optional \code{SpatVector} or \code{sf} object representing locations where pseudo-absence points should not be sampled, such as occupied areas or known background points. Only relevant for presence-only (PO) data. Default is \code{NULL}.}
 
-\item{expected.response}{A \code{SpatRaster} object containing the model's predictions on a continuous scale (i.e. counts or rate if offset used; see \code{suitability_index()}). Its values are used to compute all continuous-outcome metrics (e.g., RMSE, MAE, MAPE). This argument is required if a continuous-outcome metric is requested.}
+\item{expected.response}{A \code{SpatRaster} object containing the model's predictions on a continuous scale (i.e. counts or rate if offset is used; see \code{suitability_index()}). Its values are used to compute all continuous-outcome metrics (e.g., RMSE, MAE, MAPE). This argument is required if a continuous-outcome metric is requested.}
 
 \item{n.background}{An integer specifying the number of pseudo-absence points to sample for presence-only data. Default is 1000 (see \link{sample_background}).}
 
-\item{responseCounts}{A character string representing the column name in the \code{sf} objects that contains observed counts. Default is 'counts' and must be standardized across all count data sets.}
+\item{responseCounts}{A character string representing the column name in the \code{sf} objects that contains observed counts. Default is 'counts' and must be standardized across all count data sets. Exceptionally, positive measurements (e.g. rainfall) are supported by allowing exposure to its default value. In such cases, only continuous-outcome metrics can be requested.}
 
 \item{responsePA}{A character string representing the column name in the \code{sf} objects that contains presence-absence data (1 for presence, 0 for absence). Default is 'present' and must be standardized across all PA data sets.}
 
@@ -49,12 +49,13 @@ compute_metrics(
 
 \item{best.threshold.policy}{A character string specifying the policy for selecting a threshold when multiple thresholds yield the same 'best' value. Options are "first", "last", "max.prec" (max precision), "max.recall" (max recall), "max.accu" (max accuracy), or "max.f1" (max F1 score). Default is "first".}
 
-\item{metrics}{A character vector of metric names to compute. If \code{NULL}, "auc" (area under the ROC curve), "tss" (true skill statistics), "accuracy", "F1" (F1 score), "precision", and "recall" are computed for ROC-based metrics while "rmse" and "mae" are computed for error-based metrics.}
+\item{metrics}{A character vector of metric names to compute. If \code{NULL}, "auc" (area under the ROC curve), "tss" (true skill statistics), "accuracy", "F1" (F1 score), "precision", and "recall" are computed for ROC-based metrics while "rmse" (root mean squared error), "mae" (mean absolute error) and "r2" (pseudo R-squared) are computed for error-based metrics.}
 
-\item{overall.roc.metrics}{A character vector specifying a subset of ROC-based metrics to be used for the overall composite score (\code{TOT_ROC_SCORE}). Allowed options are "auc", "tss", "accuracy", and "F1". If \code{NULL}, the sensible default is "auc", "tss" and "accuracy".}
+\item{overall.roc.metrics}{A character vector specifying a subset of ROC-based metrics to be used for the overall composite score (\code{TOT_ROC_SCORE}). Allowed options are "auc", "tss", "accuracy", and "F1". If \code{NULL}, the sensible default is "auc", "tss" and "accuracy".
+This metric is useful when the objective is to obtain a rapid overview of the rank of multiple candidate models fitted to datasets via blocked cross-validation using multi-criteria assessment.}
 
-\item{overall.error.metrics}{A character vector specifying a subset of continuous outcome metrics to be used for the overall composite score (\code{TOT_ERROR_SCORE}).
-Allowed options are "rmse" (root mean squared error), "mae" (mean absolute error), "mape" (mean absolute percentage error) and "r2" (pseudo R-squared). If \code{NULL}, the default is "rmse" and "mae".}
+\item{overall.error.metrics}{A character vector specifying a subset of continuous outcome metrics to be used for the overall composite score (\code{TOT_ERROR_SCORE}). Allowed options are "rmse", "mae", and "r2".
+If \code{NULL}, the default is "rmse" and "mae". In order to obtain an overall interpretable score, it is imperative to select metrics that have the same scale.}
 
 \item{is.pred.rate}{A logical value. If \code{TRUE}, it indicates that the \code{expected.response} contains predictions at the intensity (per-unit-of-exposure) scale (typical for Bayesian models with offset from \code{inlabru}). If \code{FALSE}, it assumes predictions are at the original scale (e.g., counts). Default is \code{FALSE}.}
 
@@ -63,7 +64,7 @@ If \code{is.pred.rate} is \code{TRUE}, observed counts are rescaled by this expo
 
 \item{seed}{An integer for setting the seed for random number generation, used for pseudo-absence sampling to ensure reproducibility. Default is 25.}
 
-\item{...}{Additional arguments to be passed to internal functions, particularly \link[pROC]{coords} function.}
+\item{...}{Additional arguments to be passed on to internal functions, particularly \link[pROC]{coords} function.}
 }
 \value{
 A named \code{list} containing all requested metrics. The names follow a consistent convention:
@@ -82,7 +83,7 @@ The function handles three main data types and any combination thereof:
 
 \itemize{
 \item \strong{Presence-Absence (PA) Data:} The function uses the \code{responsePA} column and \code{prob.raster} to calculate all ROC-based metrics (see \link[pROC]{coords}, for more details on available metrics).
-\item \strong{Count Data:} The function uses \code{expected.response} to calculate continuous-outcome metrics and can optionally use \code{prob.raster} to calculate ROC-based metrics.
+\item \strong{Count Data (or optionally measurements):} The function uses \code{expected.response} to calculate continuous-outcome metrics and can optionally use \code{prob.raster} to calculate ROC-based metrics for count data.
 \item \strong{Presence-Only (PO) Data:} The function uses the presence points from the \code{sf} object (\code{xy.excluded}) and samples \code{n} pseudo-absence points from the study background (excluding \code{xy.excluded}) to create a presence-absence dataset for ROC-based metric calculations.
 }
 
@@ -113,7 +114,7 @@ Where:
 
 A \verb{weighted composite score} (\verb{<METRIC>_Comp}) is computed for each requested metric by taking the sample-size-weighted average across all datasets where the metric was successfully calculated.
 A \verb{total composite score} (\code{TOT_ROC_SCORE} or \code{TOT_ERROR_SCORE}) is also computed by averaging the selected metrics in the corresponding \verb{overall metrics} character vector.
-It can be viewed as a quick \emph{multi-criterion decision metric} for several models comparison.
+It can be viewed as a quick \emph{multi-criterion decision metric} for multiple models comparison.
 }
 \examples{
 \dontrun{
@@ -172,5 +173,9 @@ It can be viewed as a quick \emph{multi-criterion decision metric} for several m
 }
 }
 \seealso{
-\code{\link{extract_fold}}, \code{\link{suitability_index}}, \code{\link{sample_background}}
+\code{\link{extract_fold}}, \code{\link{sample_background}}
+
+Other ISDM evaluation methods: 
+\code{\link{print.ISDMmetrics}()}
 }
+\concept{ISDM evaluation methods}

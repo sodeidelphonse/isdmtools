@@ -20,15 +20,15 @@ RoxygenNote: 7.3.3
 Depends:
     R (>= 4.4),
 Imports: 
-    sf (>= 1.0-21),
-    terra (>= 1.8-60),
+    sf (>= 1.0-24),
+    terra (>= 1.8-93),
     blockCV (>= 3.2-0),
     dplyr (>= 1.1.4),
-    purrr (>= 1.1.0),
-    reshape2 (>= 0.8.10),
-    ggplot2 (>= 4.0.0),
+    purrr (>= 1.2.1),
+    reshape2 (>= 1.4.5),
+    ggplot2 (>= 4.0.1),
     ggspatial (>= 1.1.10),
     pROC (>= 1.19.0.1)
 Suggests: 
-    testthat (>= 3.0.0), inlabru(>= 2.11.1), fmesher(>= 0.2.0)
+    testthat (>= 3.3.2), inlabru(>= 2.13.0), fmesher(>= 0.6.1)
 Config/testthat/edition: 3
