@@ -12,7 +12,7 @@
 #' @param expected.response A `SpatRaster` object containing the model's predictions on a continuous scale (i.e. counts or rate if offset is used; see `suitability_index()`). Its values are used to compute all continuous-outcome metrics (e.g., RMSE, MAE, MAPE). This argument is required if a continuous-outcome metric is requested.
 #' @param xy.excluded An optional `SpatVector` or `sf` object representing locations where pseudo-absence points should not be sampled, such as occupied areas or known background points. Only relevant for presence-only (PO) data. Default is `NULL`.
 #' @param n.background An integer specifying the number of pseudo-absence points to sample for presence-only data. Default is 1000 (see \link{sample_background}).
-#' @param responseCounts A character string representing the column name in the `sf` objects that contains observed counts. Default is 'counts' and must be standardized across all count data sets. Exceptionally, positive measurements (e.g. rainfall) are supported by allowing exposure to its default value. In such cases, only continuous-outcome metrics can be requested.
+#' @param responseCounts A character string representing the column name in the `sf` objects that contains observed counts. Default is 'counts' and must be standardized across all count data sets. Exceptionally, positive measurements (e.g. biomass) are supported by allowing exposure to its default value. In such cases, only continuous-outcome metrics can be requested.
 #' @param responsePA A character string representing the column name in the `sf` objects that contains presence-absence data (1 for presence, 0 for absence). Default is 'present' and must be standardized across all PA data sets.
 #' @param seed An integer for setting the seed for random number generation, used for pseudo-absence sampling to ensure reproducibility. Default is 25.
 #' @param threshold.method A character string specifying how to select the threshold for converting probabilities to binary outcomes. Options are 'best' (using `best.method`) or 'fixed'. Default is "best".
@@ -355,6 +355,7 @@ compute_metrics <- function(test.data,
       valid_idx <- is.finite(raw_prob)
       prob_roc <- raw_prob[valid_idx]
 
+      bg_points_po  <- NULL # Ensures the attribute assignment at the end always works
       eval_resp_roc <- NULL
       if (is_count_data) {
         eval_resp_roc <- ifelse(current_data[[responseCounts]] > 0, 1, 0)[valid_idx]
@@ -571,7 +572,8 @@ compute_metrics <- function(test.data,
   )
 
   class(return_list) <- c("ISDMmetrics", "list")
-  attr(return_list, "settings") <- settings
+  attr(return_list, "settings")  <- settings
+  attr(return_list, "bg_points") <- bg_points_po
 
   return(return_list)
 }
@@ -582,11 +584,12 @@ compute_metrics <- function(test.data,
 #' @title Methods for ISDMmetrics Objects
 #'
 #' @description Objects of class \code{ISDMmetrics} are returned by \code{\link{compute_metrics}}.
-#' These methods provide structured ways to view and manipulate the evaluation results.
+#' These methods provide structured ways to view, summarize and manipulate the evaluation results.
 #'
-#' @param x,object An object of class \code{ISDMmetrics}.
+#' @param x An object of class \code{ISDMmetrics}.
+#' @param object An object of class \code{ISDMmetrics}.
 #' @param i Indices specifying elements to extract from the outputs.
-#' @param include_composite Logical. Should the weighted composite scores be included in the plot? Defaults to \code{TRUE}.
+#' @param include.composite Logical. Should the weighted composite scores be included in the plot? Defaults to \code{TRUE}.
 #' @param ... Additional arguments passed on to the method.
 #'
 #' @return
@@ -595,10 +598,52 @@ compute_metrics <- function(test.data,
 #'   \item \code{summary}: Invisibly returns \code{NULL}.
 #'   \item \code{plot}: Returns a \code{ggplot2} object.
 #'   \item \code{[}: Returns a subset of \code{ISDMmetrics} object.
+#'   \item \code{as.data.frame}: Returns a tidy \code{data.frame} in long format.
 #' }
 #'
 #' @family ISDM evaluation methods
 #' @export
+#'
+#' @examples
+#' \dontrun{
+#' #--- Compute metrics for an Integrated SDM
+#' # This object will contain metrics for e.g., Presence-only and Count data
+#' eval_results <- compute_metrics(
+#'   test.data = test_data,
+#'   prob.raster = suitability_raster,
+#'   expected.response = expected_raster,
+#'   n.background = 1000,
+#'   metrics = c("rmse", "mae", "auc", "tss"),
+#'   is_pred_rate = TRUE, # model with offset
+#'   exposure = "area"    # standardized exposure name across the counts
+#' )
+#'
+#' #--- Quick view of the results
+#' print(eval_results)
+#'
+#' #--- Generate a full replication report
+#' # summary.ISDMmetrics shows seeds, threshold logic, and prediction type
+#' summary(eval_results)
+#'
+#' #--- Visual comparison of metrics
+#' plot(eval_results, include.composite = TRUE)
+#'
+#' #--- Background visualization (for Presence-Only data)
+#' # Uses get_background() helper and plot.BackgroundPoints() method
+#' bg_data <- get_background(eval_results)
+#' if (!is.null(bg_data)) {
+#'   plot(bg_data)
+#' }
+#'
+#' #--- Export to tabular format for external reports
+#' results_df <- as.data.frame(eval_results)
+#' head(results_df)
+#'
+#' #--- Subset specific metrics for custom analysis
+#' # The subset method preserves attributes/settings
+#' auc_only <- eval_results[grep("AUC", names(eval_results))]
+#' }
+#'
 print.ISDMmetrics <- function(x, ...) {
   cat("\nISDM Model Evaluation Results\n")
   cat("----------------------------------------------\n")
@@ -633,12 +678,21 @@ summary.ISDMmetrics <- function(object, ...) {
   cat("--- Model Evaluation Settings ---\n")
   cat(sprintf("%-20s: %s\n", "Random Seed", ifelse(is.null(s$seed), "N/A", s$seed)))
   cat(sprintf("%-20s: %s\n", "Background Points", ifelse(is.null(s$n_background), "N/A", s$n_background)))
+  if (!is.null(attr(object, "bg_points"))) {
+    cat("Spatial Context     : BackgroundPoints object attached\n")
+  }
   cat(sprintf("%-20s: %s\n", "Threshold Logic", s$threshold_method))
   if(!is.null(s$threshold_method) && s$threshold_method == "best") {
     cat(sprintf("%-20s: %s\n", "Optimality Criterion", s$best_method))
   }
 
-  is_rate <- if(is.null(s$is_pred_rate)) "Unknown" else ifelse(s$is_pred_rate, "Expected counts")
+  is_rate <- if(is.null(s$is_pred_rate)) {
+    "Not specified"
+  } else if (s$is_pred_rate) {
+    "Rate (Count per Offset unit)"
+  } else {
+    "Absolute Count (No Offset)"
+  }
   cat(sprintf("%-20s: %s\n", "Prediction Type", is_rate))
 
   cat("\n--- Detailed Metric Table ---\n")
@@ -689,10 +743,13 @@ summary.ISDMmetrics <- function(object, ...) {
 `[.ISDMmetrics` <- function(x, i) {
 
   settings_attr <- attr(x, "settings")
+  bg_attr       <- attr(x, "bg_points")
 
   out <- unclass(x)[i]
+
   class(out) <- c("ISDMmetrics", "list")
-  attr(out, "settings") <- settings_attr
+  attr(out, "settings")  <- settings_attr
+  attr(out, "bg_points") <- bg_attr
 
   return(out)
 }
@@ -700,13 +757,13 @@ summary.ISDMmetrics <- function(object, ...) {
 
 #' @rdname print.ISDMmetrics
 #' @export
-plot.ISDMmetrics <- function(x, include_composite = TRUE, ...) {
+plot.ISDMmetrics <- function(x, include.composite = TRUE, ...) {
 
   all_names <- names(x)
   ind_names <- all_names[!grepl("_Comp$", all_names) & !grepl("^TOT_", all_names)]
   comp_names <- all_names[grepl("_Comp$", all_names)]
 
-  target_names <- if (include_composite) c(ind_names, comp_names) else ind_names
+  target_names <- if (include.composite) c(ind_names, comp_names) else ind_names
   if (length(target_names) == 0) stop("No metrics found to plot.")
 
   plot_data <- data.frame(
@@ -727,7 +784,6 @@ plot.ISDMmetrics <- function(x, include_composite = TRUE, ...) {
   cols <- grDevices::hcl.colors(n_sources, palette = "Viridis")
   names(cols) <- unique_sources
 
-  # "Anchor" the weighted composite score to a specific color if it exists
   if ("Weighted Composite" %in% names(cols)) {
     cols["Weighted Composite"] <- "#404040"
   }
@@ -752,6 +808,7 @@ plot.ISDMmetrics <- function(x, include_composite = TRUE, ...) {
 #' @rdname print.ISDMmetrics
 #' @export
 as.data.frame.ISDMmetrics <- function(x, ...) {
+
   all_names <- names(x)
   df <- data.frame(
     Full_Name = all_names,
@@ -768,6 +825,29 @@ as.data.frame.ISDMmetrics <- function(x, ...) {
   })
 
   return(df[, c("Metric", "Source", "Value")])
+}
+
+#' @rdname print.ISDMmetrics
+#' @description \code{get_background} is a helper function to extract the
+#' \code{BackgroundPoints} object from an \code{ISDMmetrics} object.
+#'
+#' @param x An object of class \code{ISDMmetrics}.
+#' @return The \code{BackgroundPoints} object if present, otherwise \code{NULL}.
+#' @export
+get_background <- function(x) {
+
+  if (!inherits(x, "ISDMmetrics")) {
+    stop("Argument 'x' must be an object of class 'ISDMmetrics'.")
+  }
+
+  bg <- attr(x, "bg_points")
+
+  if (is.null(bg)) {
+    message("No background points found. This usually occurs if no Presence-Only (PO) data was evaluated.")
+    return(NULL)
+  }
+
+  return(bg)
 }
 
 

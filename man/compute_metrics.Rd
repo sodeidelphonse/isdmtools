@@ -37,7 +37,7 @@ compute_metrics(
 
 \item{n.background}{An integer specifying the number of pseudo-absence points to sample for presence-only data. Default is 1000 (see \link{sample_background}).}
 
-\item{responseCounts}{A character string representing the column name in the \code{sf} objects that contains observed counts. Default is 'counts' and must be standardized across all count data sets. Exceptionally, positive measurements (e.g. rainfall) are supported by allowing exposure to its default value. In such cases, only continuous-outcome metrics can be requested.}
+\item{responseCounts}{A character string representing the column name in the \code{sf} objects that contains observed counts. Default is 'counts' and must be standardized across all count data sets. Exceptionally, positive measurements (e.g. biomass) are supported by allowing exposure to its default value. In such cases, only continuous-outcome metrics can be requested.}
 
 \item{responsePA}{A character string representing the column name in the \code{sf} objects that contains presence-absence data (1 for presence, 0 for absence). Default is 'present' and must be standardized across all PA data sets.}
 

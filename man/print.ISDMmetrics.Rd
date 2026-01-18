@@ -6,6 +6,7 @@
 \alias{[.ISDMmetrics}
 \alias{plot.ISDMmetrics}
 \alias{as.data.frame.ISDMmetrics}
+\alias{get_background}
 \title{Methods for ISDMmetrics Objects}
 \usage{
 \method{print}{ISDMmetrics}(x, ...)
@@ -14,18 +15,22 @@
 
 \method{[}{ISDMmetrics}(x, i)
 
-\method{plot}{ISDMmetrics}(x, include_composite = TRUE, ...)
+\method{plot}{ISDMmetrics}(x, include.composite = TRUE, ...)
 
 \method{as.data.frame}{ISDMmetrics}(x, ...)
+
+get_background(x)
 }
 \arguments{
-\item{x, object}{An object of class \code{ISDMmetrics}.}
+\item{x}{An object of class \code{ISDMmetrics}.}
 
 \item{...}{Additional arguments passed on to the method.}
 
+\item{object}{An object of class \code{ISDMmetrics}.}
+
 \item{i}{Indices specifying elements to extract from the outputs.}
 
-\item{include_composite}{Logical. Should the weighted composite scores be included in the plot? Defaults to \code{TRUE}.}
+\item{include.composite}{Logical. Should the weighted composite scores be included in the plot? Defaults to \code{TRUE}.}
 }
 \value{
 \itemize{
@@ -33,11 +38,58 @@
 \item \code{summary}: Invisibly returns \code{NULL}.
 \item \code{plot}: Returns a \code{ggplot2} object.
 \item \code{[}: Returns a subset of \code{ISDMmetrics} object.
+\item \code{as.data.frame}: Returns a tidy \code{data.frame} in long format.
 }
+
+The \code{BackgroundPoints} object if present, otherwise \code{NULL}.
 }
 \description{
 Objects of class \code{ISDMmetrics} are returned by \code{\link{compute_metrics}}.
-These methods provide structured ways to view and manipulate the evaluation results.
+These methods provide structured ways to view, summarize and manipulate the evaluation results.
+
+\code{get_background} is a helper function to extract the
+\code{BackgroundPoints} object from an \code{ISDMmetrics} object.
+}
+\examples{
+\dontrun{
+#--- Compute metrics for an Integrated SDM
+# This object will contain metrics for e.g., Presence-only and Count data
+eval_results <- compute_metrics(
+  test.data = test_data,
+  prob.raster = suitability_raster,
+  expected.response = expected_raster,
+  n.background = 1000,
+  metrics = c("rmse", "mae", "auc", "tss"),
+  is_pred_rate = TRUE, # model with offset
+  exposure = "area"    # standardized exposure name across the counts
+)
+
+#--- Quick view of the results
+print(eval_results)
+
+#--- Generate a full replication report
+# summary.ISDMmetrics shows seeds, threshold logic, and prediction type
+summary(eval_results)
+
+#--- Visual comparison of metrics
+plot(eval_results, include.composite = TRUE)
+
+#--- Background visualization (for Presence-Only data)
+# Uses get_background() helper and plot.BackgroundPoints() method
+bg_data <- get_background(eval_results)
+if (!is.null(bg_data)) {
+  plot(bg_data)
+}
+
+#--- Export to tabular format for external reports
+results_df <- as.data.frame(eval_results)
+head(results_df)
+
+#--- Subset specific metrics for custom analysis
+# The subset method preserves attributes/settings
+auc_only <- eval_results[grep("AUC", names(eval_results))]
+}
+
 }
 \seealso{
 Other ISDM evaluation methods: 
