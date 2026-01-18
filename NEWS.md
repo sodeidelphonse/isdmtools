@@ -2,6 +2,7 @@
 
 * Added `ISDMmetrics` S3 class to handle outputs from `compute_metrics()`.
 * Implemented S3 methods for `ISDMmetrics`: `print()`, `summary()`, `plot()`, `as.data.frame()`, and `[`.
+* Implemented get_background helper function for selected background points.
 * Enhanced `suitability_index()`: Added `"linear"` to `output.format` options.
 * Updated `DESCRIPTION` with new minimum version requirements for package dependencies (`sf`, `terra`, `purrr`) to ensure compatibility with recent environment updates.
 
