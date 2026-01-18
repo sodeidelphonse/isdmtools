@@ -14,7 +14,7 @@
 #' It can typically be a standardised grid-based output from a \link{prepare_predictions} call to various classes of spatial prediction on a linear scale, e.g. from the `PointedSDMs` or `inlabru` packages.
 #' It can also be a `SpatRaster` object containing the prediction variables as the layers' names.
 #' @param post.stat A character vector specifying the column or layer name(s) to use for the predictions. Defaults to "mean".
-#' @param output.format A character string indicating the desired output format. Must be one of "prob" (for a probability-based suitability index) or "response" (for the expected count or rate).
+#' @param output.format A character string indicating the desired output format. Must be one of "prob" (for a probability-based suitability index), "response" (for the expected count or rate) or "linear" (for the linear predictor scale).
 #' @param response.type A character string specifying the type of response data the model was fitted with.
 #'   Must be one of "joint.po" (joint model including presence-only data), "count.pa" (joint model with count and presence-absence), "po" (single presence-only model), "count" (count model), or "pa" (presence-absence model).
 #' @param has.offset A logical value. For `count.pa`, `count` and `pa` models, this should be `TRUE` if the linear predictor includes an explicit area offset.
@@ -82,7 +82,7 @@
 #'
 suitability_index <- function(x,
                               post.stat = "mean",
-                              output.format = c("prob", "response"),
+                              output.format = c("prob", "response", "linear"),
                               response.type = c("joint.po", "count.pa", "po", "count", "pa"),
                               has.offset = FALSE,
                               projection = NULL, ...) {
@@ -125,14 +125,12 @@ suitability_index <- function(x,
   prob_rast <- 1 - exp(-scaling_factor * exp(eta_rast))
   expected_response <- exp(eta_rast)
 
-  names(prob_rast) <- post.stat
-  names(expected_response) <- post.stat
-
-  out <- if (output.format == "prob") {
-    prob_rast
-  } else {
-    expected_response
-  }
+  out <- switch(output.format,
+                prob = prob_rast,
+                response = expected_response,
+                linear = eta_rast
+                )
+  names(out) <- post.stat
 
   return(out)
 }
