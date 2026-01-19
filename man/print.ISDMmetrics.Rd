@@ -13,7 +13,7 @@
 
 \method{summary}{ISDMmetrics}(object, ...)
 
-\method{[}{ISDMmetrics}(x, i)
+\method{[}{ISDMmetrics}(x, ...)
 
 \method{plot}{ISDMmetrics}(x, include.composite = TRUE, ...)
 

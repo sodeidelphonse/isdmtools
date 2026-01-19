@@ -746,7 +746,7 @@ summary.ISDMmetrics <- function(object, ...) {
 
 #' @rdname print.ISDMmetrics
 #' @export
-`[.ISDMmetrics` <- function(x, i) {
+`[.ISDMmetrics` <- function(x, ...) {
 
   settings_attr <- attr(x, "settings")
   bg_attr       <- attr(x, "bg_points")
