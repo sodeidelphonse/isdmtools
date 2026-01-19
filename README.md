@@ -28,16 +28,17 @@ renv::restore()
 # Key Features
 The package provides a set of core functions and classes to handle common tasks of data preparation, visualization and model evaluation:
 
-**Data Preparation**: Create DataFolds objects that bind multiple `sf` datasets and generate spatially-separated cross-validation folds using the constructor function `create_folds()`. This ensures the resulting models are robust to spatial autocorrelation. The `fill_na_near()` function can be used to efficiently impute missing values in raster covariates for modelling tools that cannot handle missing values properly.
+**Data Preparation**: Create DataFolds objects that bind multiple `sf` datasets and generate spatially-separated cross-validation folds using the constructor function `create_folds()`. This ensures the resulting models are robust to spatial autocorrelation. 
+The `fill_na_near()` function can be used to efficiently impute missing values in raster covariates for modelling tools that cannot handle missing values properly.
 
 **Suitability Analysis**: Standardize model predictions for consistent mapping and compute a final habitat suitability index. The `suitability_index()` function transforms raw integrated model predictions into a suitability score using the inverse of the complementary log-log transform (`cloglog`).
 
 **Model Evaluation**: Compute comprehensive evaluation metrics, including ROC-based and continuous-outcome metrics for each dataset (`"<METRIC>_DatasetName"`) using the `compute_metrics()` function. The package also handles *dataset-weighted composite scores* (`"<METRIC>_Comp"`), providing a holistic view of model performance. 
-Although, the `sample_background()` constructor is called internally to sample pseudo-absences for presence-only data, users can extract it with `get_background` helper in order to print and visualize the points generated in the `BackgroundPoints` object from the `compute_metrics()` constructor.
+Although, the `sample_background()` constructor is called internally to sample pseudo-absences for presence-only data, users can extract the `BackgroundPoints` object with `get_background` helper in order to print and visualize the points generated from the `compute_metrics()` call.
 
 **Mapping & Visualization**: Visualize model predictions and final habitat suitability maps. The plotting method `generate_maps()` is designed to provide a clear and informative map by visualizing multiple variables of model predictions (e.g. mean, median, standard deviation or quantiles), providing an easy way to interpret models' results. Users can customize the final `ggplot2` object if needed.
 
-**S3 Methods**: The package includes `print()` and `plot()` methods for the `DataFolds` and `ISDMmetrics` classes, providing a concise summary and a clear visualization of the cross-validation partitions and model evaluation. Other methods for `ISDMmetrics` are provided in the worked example.
+**S3 Methods**: The package includes `print()` and `plot()` methods for `DataFolds` and `ISDMmetrics` classes, which provide a concise summary and a clear visualization of the cross-validation partitions and model evaluation. Other methods for `ISDMmetrics` are provided in the worked example.
 
 # Getting Started: A Complete Worked Example
 The core workflow of `isdmtools` involves creating a DataFolds object and then extracting specific folds for a modeling pipeline.
@@ -231,7 +232,21 @@ Various performance metrics can now be computed, including dataset-specific and 
                                 expected.response = jt_count,
                                 responseCounts = "count"
                                 )
+print(eval_metrics)
 
+#> ISDM Model Evaluation Results
+#> ----------------------------------------------
+#> Datasets Evaluated: Presence, Count 
+
+#> Overall Performance:
+#>  TOT ROC SCORE     : 0.8048
+#>  TOT ERROR SCORE   : 1.9353
+#> ----------------------------------------------
+```
+
+One can obtain detailed overview of the evaluation results via the `summary()` method.
+
+```R
 summary(eval_metrics)
 
 #> ==============================================
