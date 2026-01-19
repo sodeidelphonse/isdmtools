@@ -27,7 +27,7 @@ compute_metrics(
 )
 }
 \arguments{
-\item{test.data}{A named \code{list} of \code{sf} objects. Each \code{sf} object represents a different test dataset and must contain point geometries. The function will loop through each named dataset in the list. In particular, \code{test.data} can be a 'fold' of the 'test' set from \code{create_folds()} and \code{extract_fold()} outputs, if independent validation datasets are not available.}
+\item{test.data}{A named \code{list} of \code{sf} objects. Each \code{sf} object represents a different test dataset and must contain point geometries. The function will loop through each named dataset in the list. In particular, \code{test.data} can be a 'fold' from \code{create_folds()} and \code{extract_fold()} outputs, if independent validation datasets are not available.}
 
 \item{prob.raster}{A \code{SpatRaster} object with unique layer containing the model's predictions on a probability scale (0-1). It represents a suitability index, and its values are used to compute all ROC-based metrics (e.g., AUC, TSS, F1 score). This argument is optional if only continuous-outcome metrics are requested for count data.}
 
@@ -35,34 +35,34 @@ compute_metrics(
 
 \item{expected.response}{A \code{SpatRaster} object containing the model's predictions on a continuous scale (i.e. counts or rate if offset is used; see \code{suitability_index()}). Its values are used to compute all continuous-outcome metrics (e.g., RMSE, MAE, MAPE). This argument is required if a continuous-outcome metric is requested.}
 
-\item{n.background}{An integer specifying the number of pseudo-absence points to sample for presence-only data. Default is 1000 (see \link{sample_background}).}
+\item{n.background}{integer. It specifies the number of pseudo-absence points to sample for presence-only data. Default is 1000 (see \link{sample_background}).}
 
-\item{responseCounts}{A character string representing the column name in the \code{sf} objects that contains observed counts. Default is 'counts' and must be standardized across all count data sets. Exceptionally, positive measurements (e.g. biomass) are supported by allowing exposure to its default value. In such cases, only continuous-outcome metrics can be requested.}
+\item{responseCounts}{character. The column name in the \code{sf} objects that contains observed counts. Default is 'counts' and must be standardized across all count data sets. Exceptionally, positive measurements (e.g. biomass) are supported by allowing exposure to its default value. In such cases, only continuous-outcome metrics can be requested.}
 
-\item{responsePA}{A character string representing the column name in the \code{sf} objects that contains presence-absence data (1 for presence, 0 for absence). Default is 'present' and must be standardized across all PA data sets.}
+\item{responsePA}{character. The column name in the \code{sf} objects that contains presence-absence data (1 for presence, 0 for absence). Default is 'present' and must be standardized across all PA data sets.}
 
-\item{threshold.method}{A character string specifying how to select the threshold for converting probabilities to binary outcomes. Options are 'best' (using \code{best.method}) or 'fixed'. Default is "best".}
+\item{threshold.method}{character. The method to be used for selecting the threshold for converting probabilities to binary outcomes. Options are 'best' (using \code{best.method}) or 'fixed'. Default is "best".}
 
-\item{best.method}{A character string specifying the method for selecting the best threshold when \code{threshold.method} is 'best'. Options are 'youden' or 'closest.topleft'. Default is "youden" criterion which maximizes the sensitivity and specificity.}
+\item{best.method}{character. The method to be used for selecting the best threshold when \code{threshold.method} is 'best'. Options are 'youden' or 'closest.topleft'. Default is "youden" criterion which maximizes the sensitivity and specificity.}
 
-\item{fixed.threshold}{A numeric value (0-1) to use as the fixed threshold when \code{threshold.method} is 'fixed'. Default is \code{NA_real_}.}
+\item{fixed.threshold}{numeric. The value (0-1) to be used as the fixed threshold when \code{threshold.method} is 'fixed'. Default is \code{NA_real_}.}
 
-\item{best.threshold.policy}{A character string specifying the policy for selecting a threshold when multiple thresholds yield the same 'best' value. Options are "first", "last", "max.prec" (max precision), "max.recall" (max recall), "max.accu" (max accuracy), or "max.f1" (max F1 score). Default is "first".}
+\item{best.threshold.policy}{character. Specifies the policy for selecting a threshold when multiple thresholds yield the same 'best' value. Options are "first", "last", "max.prec" (max precision), "max.recall" (max recall), "max.accu" (max accuracy), or "max.f1" (max F1 score). Default is "first".}
 
-\item{metrics}{A character vector of metric names to compute. If \code{NULL}, "auc" (area under the ROC curve), "tss" (true skill statistics), "accuracy", "F1" (F1 score), "precision", and "recall" are computed for ROC-based metrics while "rmse" (root mean squared error), "mae" (mean absolute error) and "r2" (pseudo R-squared) are computed for error-based metrics.}
+\item{metrics}{character. A vector of the metric names to compute. If \code{NULL}, "auc" (area under the ROC curve), "tss" (true skill statistics), "accuracy", "F1" (F1 score), "precision", and "recall" are computed for ROC-based metrics while "rmse" (root mean squared error), "mae" (mean absolute error) and "r2" (pseudo R-squared) are computed for error-based metrics.}
 
-\item{overall.roc.metrics}{A character vector specifying a subset of ROC-based metrics to be used for the overall composite score (\code{TOT_ROC_SCORE}). Allowed options are "auc", "tss", "accuracy", and "F1". If \code{NULL}, the sensible default is "auc", "tss" and "accuracy".
+\item{overall.roc.metrics}{character. A vector of a subset of ROC-based metrics to be used for the overall composite score (\code{TOT_ROC_SCORE}). Allowed options are "auc", "tss", "accuracy", and "F1". If \code{NULL}, the sensible default is "auc", "tss" and "accuracy".
 This metric is useful when the objective is to obtain a rapid overview of the rank of multiple candidate models fitted to datasets via blocked cross-validation using multi-criteria assessment.}
 
-\item{overall.error.metrics}{A character vector specifying a subset of continuous outcome metrics to be used for the overall composite score (\code{TOT_ERROR_SCORE}). Allowed options are "rmse", "mae", and "r2".
+\item{overall.error.metrics}{character. A vector of a subset of continuous outcome metrics to be used for the overall composite score (\code{TOT_ERROR_SCORE}). Allowed options are "rmse", "mae", and "r2".
 If \code{NULL}, the default is "rmse" and "mae". In order to obtain an overall interpretable score, it is imperative to select metrics that have the same scale.}
 
-\item{is.pred.rate}{A logical value. If \code{TRUE}, it indicates that the \code{expected.response} contains predictions at the intensity (per-unit-of-exposure) scale (typical for Bayesian models with offset from \code{inlabru}). If \code{FALSE}, it assumes predictions are at the original scale (e.g., counts). Default is \code{FALSE}.}
+\item{is.pred.rate}{logical. If \code{TRUE}, it indicates that the \code{expected.response} contains predictions at the intensity (per-unit-of-exposure) scale (typical for Bayesian models with offset from \code{inlabru}). If \code{FALSE}, it assumes predictions are at the original scale (e.g., counts). Default is \code{FALSE}.}
 
-\item{exposure}{A character string representing the column name in the \code{sf} objects that contains the exposure variable (offset). Only relevant for count (and sometimes presence-absence) data and must be standardized across all these types of datasets.
+\item{exposure}{character. The column name in the \code{sf} objects that contains the exposure variable (offset). Only relevant for count (and sometimes presence-absence) data and must be standardized across all these types of datasets.
 If \code{is.pred.rate} is \code{TRUE}, observed counts are rescaled by this exposure variable. Default is \code{NULL}.}
 
-\item{seed}{An integer for setting the seed for random number generation, used for pseudo-absence sampling to ensure reproducibility. Default is 25.}
+\item{seed}{integer. It sets the seed for random number generation, used for pseudo-absence sampling to ensure reproducibility. Default is 25.}
 
 \item{...}{Additional arguments to be passed on to internal functions, particularly \link[pROC]{coords} function.}
 }
