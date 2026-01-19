@@ -7,7 +7,7 @@
 sample_background(
   mask,
   points = NULL,
-  n = 500,
+  n = 1000,
   method = "random",
   cells = FALSE,
   xy = TRUE,

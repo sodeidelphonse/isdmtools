@@ -43,7 +43,7 @@
 #' plot(bg_sample2)
 #' }
 #'
-sample_background <- function(mask, points = NULL, n = 500, method = "random", cells = FALSE,
+sample_background <- function(mask, points = NULL, n = 1000, method = "random", cells = FALSE,
                               xy = TRUE, as.points = FALSE, na.rm = TRUE, ...) {
 
   if (!any(c(cells, xy, as.points))) {
@@ -76,7 +76,7 @@ sample_background <- function(mask, points = NULL, n = 500, method = "random", c
       }
       pts <- as.matrix(points)[, 1:2]
     } else {
-      stop("Unsupported 'points' format. Must be object from sf, sp, or terra, or a matrix/data.frame.", call. = FALSE)
+      stop("Unsupported 'points' format. Must be object from sf, terra, or a matrix/data.frame.", call. = FALSE)
     }
 
     excluded_cells <- terra::cellFromXY(mask, pts)
