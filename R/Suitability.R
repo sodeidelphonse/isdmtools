@@ -78,9 +78,11 @@
 #' }
 #'
 #' @references
-#' Dorazio RM. Accounting for imperfect detection and survey bias in statistical analysis of presence-only data. _Global Ecology and Biogeography_ (2014) 23:1472–1484.
+#' Dorazio RM. Accounting for imperfect detection and survey bias in statistical analysis of presence-only data. _Global Ecology and Biogeography_ (2014) 23:1472–1484. \doi{10.1111/geb.12216}
 #'
 #' Fithian W, Elith J, Hastie T, Keith DA. Bias correction in species distribution models: pooling survey and collection data for multiple species. _Methods in Ecology and Evolution_ (2015) 6:424–438. \doi{10.1111/2041-210X.12242}
+#'
+#' Phillips SJ, Anderson RP, Dudík M, et al Opening the black box: an open‐source release of Maxent. _Ecography_ (2017) 40:887–893. \doi{10.1111/ecog.03049}
 #'
 suitability_index <- function(x,
                               post.stat = "mean",

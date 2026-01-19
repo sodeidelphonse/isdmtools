@@ -95,9 +95,11 @@ plot(count_expected_mean)
 
 }
 \references{
-Dorazio RM. Accounting for imperfect detection and survey bias in statistical analysis of presence-only data. \emph{Global Ecology and Biogeography} (2014) 23:1472–1484.
+Dorazio RM. Accounting for imperfect detection and survey bias in statistical analysis of presence-only data. \emph{Global Ecology and Biogeography} (2014) 23:1472–1484. \doi{10.1111/geb.12216}
 
 Fithian W, Elith J, Hastie T, Keith DA. Bias correction in species distribution models: pooling survey and collection data for multiple species. \emph{Methods in Ecology and Evolution} (2015) 6:424–438. \doi{10.1111/2041-210X.12242}
+
+Phillips SJ, Anderson RP, Dudík M, et al Opening the black box: an open‐source release of Maxent. \emph{Ecography} (2017) 40:887–893. \doi{10.1111/ecog.03049}
 }
 \seealso{
 Other prediction analyses: 
