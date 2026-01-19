@@ -27,13 +27,13 @@ compute_metrics(
 )
 }
 \arguments{
-\item{test.data}{A named \code{list} of \code{sf} objects. Each \code{sf} object represents a different test dataset and must contain point geometries. The function will loop through each named dataset in the list. In particular, \code{test.data} can be a 'fold' from \code{create_folds()} and \code{extract_fold()} outputs, if independent validation datasets are not available.}
+\item{test.data}{A named \code{list} of \code{sf} objects. Each \code{sf} object represents a different test dataset and must contain point geometries. The function will loop through each named dataset in the list. In particular, \code{test.data} can be a 'fold' from the \link{create_folds} and \link{extract_fold} outputs, if independent validation datasets are not available.}
 
 \item{prob.raster}{A \code{SpatRaster} object with unique layer containing the model's predictions on a probability scale (0-1). It represents a suitability index, and its values are used to compute all ROC-based metrics (e.g., AUC, TSS, F1 score). This argument is optional if only continuous-outcome metrics are requested for count data.}
 
 \item{xy.excluded}{An optional \code{SpatVector} or \code{sf} object representing locations where pseudo-absence points should not be sampled, such as occupied areas or known background points. Only relevant for presence-only (PO) data. Default is \code{NULL}.}
 
-\item{expected.response}{A \code{SpatRaster} object containing the model's predictions on a continuous scale (i.e. counts or rate if offset is used; see \code{suitability_index()}). Its values are used to compute all continuous-outcome metrics (e.g., RMSE, MAE, MAPE). This argument is required if a continuous-outcome metric is requested.}
+\item{expected.response}{A \code{SpatRaster} object containing the model's predictions on a continuous scale (i.e. counts or rate if offset is used; see \link{suitability_index}). Its values are used to compute all continuous-outcome metrics (e.g., RMSE, MAE, MAPE). This argument is required if a continuous-outcome metric is requested.}
 
 \item{n.background}{integer. It specifies the number of pseudo-absence points to sample for presence-only data. Default is 1000 (see \link{sample_background}).}
 
