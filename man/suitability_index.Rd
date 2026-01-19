@@ -10,51 +10,55 @@ suitability_index(
   output.format = c("prob", "response", "linear"),
   response.type = c("joint.po", "count.pa", "po", "count", "pa"),
   has.offset = FALSE,
+  scale.independent = FALSE,
   projection = NULL,
   ...
 )
 }
 \arguments{
-\item{x}{A \code{data.frame} containing \code{X} and \code{Y} coordinates and the column(s) of the predicted linear predictor variables (e.g., mean, standard deviation and quantiles for Bayesian models).
-It can typically be a standardised grid-based output from a \link{prepare_predictions} call to various classes of spatial prediction on a linear scale, e.g. from the \code{PointedSDMs} or \code{inlabru} packages.
-It can also be a \code{SpatRaster} object containing the prediction variables as the layers' names.}
+\item{x}{A \code{data.frame} containing \code{X} and \code{Y} coordinates and the column(s) of the predicted linear predictor variables (e.g., mean, standard deviation and quantiles) or \code{SpatRaster}.
+It can typically be a standardized grid-based output from a \link{prepare_predictions} call to various classes of spatial prediction on a linear scale, e.g. from the \code{PointedSDMs} or \code{inlabru} packages.}
 
-\item{post.stat}{A character vector specifying the column or layer name(s) to use for the predictions. Defaults to "mean".}
+\item{post.stat}{character. A vector specifying the column or layer name(s) to use for extracting the model predictions. Defaults to "mean".}
 
-\item{output.format}{A character string indicating the desired output format. Must be one of "prob" (for a probability-based suitability index), "response" (for the expected count or rate) or "linear" (for the linear predictor scale).}
+\item{output.format}{character. The desired output format and must be one of "prob" (probability-based suitability index), "response" (expected count or rate) or "linear" (linear predictor scale).}
 
-\item{response.type}{A character string specifying the type of response data the model was fitted with.
+\item{response.type}{character. The type of response data the model was fitted with.
 Must be one of "joint.po" (joint model including presence-only data), "count.pa" (joint model with count and presence-absence), "po" (single presence-only model), "count" (count model), or "pa" (presence-absence model).}
 
-\item{has.offset}{A logical value. For \code{count.pa}, \code{count} and \code{pa} models, this should be \code{TRUE} if the linear predictor includes an explicit area offset.
-This argument is not used for "po" or "joint.po" models. Defaults to \code{FALSE} (sensible value).}
+\item{has.offset}{logical. For \code{count.pa}, \code{count} and \code{pa} models, this should be \code{TRUE} if the linear predictor includes an explicit area offset.
+This argument is not used for "po" or "joint.po" models. Defaults to \code{FALSE}.}
 
-\item{projection}{A character string or object specifying the coordinate reference system (CRS) for the output raster. Defaults to \code{NULL}.}
+\item{scale.independent}{logical. If \code{TRUE}, the scaling factor is set to 1, making the suitability index independent of the grid cell size. Defaults to \code{FALSE}.}
 
-\item{...}{Additional arguments passed to the S4 method \link[terra]{rast} for signature 'data.frame'.}
+\item{projection}{character. The coordinate reference system (CRS) for the output raster. Defaults to \code{NULL}.
+If \code{NULL} and \code{x} is a data.frame, an empty CRS is assigned to prevent errors.}
+
+\item{...}{Additional arguments passed to \link[terra]{rast}.}
 }
 \value{
-A SpatRaster object (single or multi-layer) representing either the suitability
-index (probabilities, if \code{output.format = "prob"}) or the expected count/rate (if \code{output.format = "response"}).
+A SpatRaster object representing the requested output format.
 }
 \description{
 This function converts the linear predictor (\code{eta}) from a fitted integrated spatial model
-into a unified suitability index, which can be interpreted as a probability of a species presence
-or species \emph{hotspots}. It also returns the intensity or expected count, depending on whether the model has offset or not.
+into a unified suitability index, which can be interpreted as a probability of a species presence.
+It also calculates the intensity(rate) or expected count for the count data, depending on whether the model has offset or not.
 }
 \details{
 This function implements a unified framework for converting model predictions to a
 comparable suitability index. The method relies on the \emph{Inhomogeneous Poisson Process (IPP)}
 theory, where the linear predictor \code{eta} is related to the probability of presence
-via the inverse complementary log-log link: \code{p(presence) = 1 - exp(-scaling * exp(eta))}.
+via the inverse complementary log-log link as follows: \eqn{p(presence) = 1 - exp(-scaling \times exp(eta))}.
 
 The \code{scaling} factor is determined by the \code{response.type} and the \code{has.offset} arguments:
-
 \itemize{
-\item For PO models (single or part of a joint model), \code{eta} is always a log-rate, and the \code{scaling} is automatically set to the cell area.
+\item For PO models (single or part of a joint model), \code{eta} is always a log-rate, and the \code{scaling} is set to the cell area.
+It is ignored if \code{scale.independent} is set to TRUE.
 \item For Count or PA models, if \code{has.offset = TRUE}, \code{eta} is a log-rate, and \code{scaling} is the cell area.
-\item In all other cases (\code{has.offset = FALSE}), \code{eta} is treated as a log of the expected count/probability, and \code{scaling} is set to \code{1}.
+\item In all other cases (\code{has.offset = FALSE}), \code{eta} is treated as a log of the expected count (count) or cloglog of probability (PA), and \code{scaling} is set to \code{1}.
 }
+If the raster is in a geographic coordinate system (longlat), the area is calculated in \eqn{km^2} using \link[terra]{cellSize}.
+For projected systems, the area is the product of the resolutions (e.g., \eqn{km^2} if units are in km).
 }
 \examples{
 \dontrun{

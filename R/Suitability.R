@@ -7,37 +7,39 @@
 #'
 #' @description
 #' This function converts the linear predictor (`eta`) from a fitted integrated spatial model
-#' into a unified suitability index, which can be interpreted as a probability of a species presence
-#' or species *hotspots*. It also returns the intensity or expected count, depending on whether the model has offset or not.
+#' into a unified suitability index, which can be interpreted as a probability of a species presence.
+#' It also calculates the intensity(rate) or expected count for the count data, depending on whether the model has offset or not.
 #'
-#' @param x A `data.frame` containing `X` and `Y` coordinates and the column(s) of the predicted linear predictor variables (e.g., mean, standard deviation and quantiles for Bayesian models).
-#' It can typically be a standardised grid-based output from a \link{prepare_predictions} call to various classes of spatial prediction on a linear scale, e.g. from the `PointedSDMs` or `inlabru` packages.
-#' It can also be a `SpatRaster` object containing the prediction variables as the layers' names.
-#' @param post.stat A character vector specifying the column or layer name(s) to use for the predictions. Defaults to "mean".
-#' @param output.format A character string indicating the desired output format. Must be one of "prob" (for a probability-based suitability index), "response" (for the expected count or rate) or "linear" (for the linear predictor scale).
-#' @param response.type A character string specifying the type of response data the model was fitted with.
+#' @param x A `data.frame` containing `X` and `Y` coordinates and the column(s) of the predicted linear predictor variables (e.g., mean, standard deviation and quantiles) or `SpatRaster`.
+#' It can typically be a standardized grid-based output from a \link{prepare_predictions} call to various classes of spatial prediction on a linear scale, e.g. from the `PointedSDMs` or `inlabru` packages.
+#' @param post.stat character. A vector specifying the column or layer name(s) to use for extracting the model predictions. Defaults to "mean".
+#' @param output.format character. The desired output format and must be one of "prob" (probability-based suitability index), "response" (expected count or rate) or "linear" (linear predictor scale).
+#' @param response.type character. The type of response data the model was fitted with.
 #'   Must be one of "joint.po" (joint model including presence-only data), "count.pa" (joint model with count and presence-absence), "po" (single presence-only model), "count" (count model), or "pa" (presence-absence model).
-#' @param has.offset A logical value. For `count.pa`, `count` and `pa` models, this should be `TRUE` if the linear predictor includes an explicit area offset.
-#'   This argument is not used for "po" or "joint.po" models. Defaults to `FALSE` (sensible value).
-#' @param projection A character string or object specifying the coordinate reference system (CRS) for the output raster. Defaults to `NULL`.
-#' @param ... Additional arguments passed to the S4 method \link[terra]{rast} for signature 'data.frame'.
+#' @param has.offset logical. For `count.pa`, `count` and `pa` models, this should be `TRUE` if the linear predictor includes an explicit area offset.
+#'   This argument is not used for "po" or "joint.po" models. Defaults to `FALSE`.
+#' @param scale.independent logical. If `TRUE`, the scaling factor is set to 1, making the suitability index independent of the grid cell size. Defaults to `FALSE`.
+#' @param projection character. The coordinate reference system (CRS) for the output raster. Defaults to `NULL`.
+#' If `NULL` and `x` is a data.frame, an empty CRS is assigned to prevent errors.
+#' @param ... Additional arguments passed to \link[terra]{rast}.
 #'
-#' @return A SpatRaster object (single or multi-layer) representing either the suitability
-#'   index (probabilities, if `output.format = "prob"`) or the expected count/rate (if `output.format = "response"`).
+#' @return A SpatRaster object representing the requested output format.
 #'
 #' @details
 #' This function implements a unified framework for converting model predictions to a
 #' comparable suitability index. The method relies on the *Inhomogeneous Poisson Process (IPP)*
 #' theory, where the linear predictor `eta` is related to the probability of presence
-#' via the inverse complementary log-log link: `p(presence) = 1 - exp(-scaling * exp(eta))`.
+#' via the inverse complementary log-log link as follows: \eqn{p(presence) = 1 - exp(-scaling \times exp(eta))}.
 #'
 #' The `scaling` factor is determined by the `response.type` and the `has.offset` arguments:
-#'
 #' \itemize{
-#'   \item For PO models (single or part of a joint model), `eta` is always a log-rate, and the `scaling` is automatically set to the cell area.
+#'   \item For PO models (single or part of a joint model), `eta` is always a log-rate, and the `scaling` is set to the cell area.
+#'   It is ignored if `scale.independent` is set to TRUE.
 #'   \item For Count or PA models, if `has.offset = TRUE`, `eta` is a log-rate, and `scaling` is the cell area.
-#'   \item In all other cases (`has.offset = FALSE`), `eta` is treated as a log of the expected count/probability, and `scaling` is set to `1`.
+#'   \item In all other cases (`has.offset = FALSE`), `eta` is treated as a log of the expected count (count) or cloglog of probability (PA), and `scaling` is set to `1`.
 #' }
+#' If the raster is in a geographic coordinate system (longlat), the area is calculated in \eqn{km^2} using \link[terra]{cellSize}.
+#' For projected systems, the area is the product of the resolutions (e.g., \eqn{km^2} if units are in km).
 #'
 #' @export
 #' @family prediction analyses
@@ -85,6 +87,7 @@ suitability_index <- function(x,
                               output.format = c("prob", "response", "linear"),
                               response.type = c("joint.po", "count.pa", "po", "count", "pa"),
                               has.offset = FALSE,
+                              scale.independent = FALSE,
                               projection = NULL, ...) {
 
   output.format <- match.arg(output.format)
@@ -99,7 +102,9 @@ suitability_index <- function(x,
       stop(paste0("The following 'post.stat' columns were not found in the input data.frame: ",
                   paste(missing_stats, collapse = ", ")), call. = FALSE)
     }
-    eta_rast <- terra::rast(x[, c("X", "Y", post.stat)], type = "xyz", crs = projection, ...)
+
+    target_crs <- if(is.null(projection)) "" else projection
+    eta_rast <- terra::rast(x[, c("X", "Y", post.stat)], type = "xyz", crs = target_crs, ...)
 
   } else if (inherits(x, "SpatRaster")) {
     if (!all(post.stat %in% names(x))) {
@@ -107,23 +112,30 @@ suitability_index <- function(x,
       stop(paste0("The following 'post.stat' layers were not found in the input raster: ",
                   paste(missing_stats, collapse = ", ")), call. = FALSE)
     }
+
     eta_rast <- x[[post.stat]]
+    if (!is.null(projection)) terra::crs(eta_rast) <- projection
+
   } else {
     stop("Input 'x' must be a data.frame or a SpatRaster object.", call. = FALSE)
   }
 
   #--- Determine the correct scaling factor based on model type and has.offset
-  if (response.type %in% c("po", "joint.po")) {
-    scaling_factor <- terra::res(eta_rast)[1] * terra::res(eta_rast)[2]
-  } else if (has.offset) {
-    scaling_factor <- terra::res(eta_rast)[1] * terra::res(eta_rast)[2]
+  if (scale.independent) {
+    scaling_factor <- 1
+  } else if (response.type %in% c("po", "joint.po") || has.offset) {
+    if (terra::is.lonlat(eta_rast)) {
+      scaling_factor <- terra::cellSize(eta_rast, unit = "km")
+    } else {
+      scaling_factor <- terra::res(eta_rast)[1] * terra::res(eta_rast)[2]
+    }
   } else {
     scaling_factor <- 1
   }
 
-  #--- The suitability index and the expected count/rate (response)
-  prob_rast <- 1 - exp(-scaling_factor * exp(eta_rast))
+  #--- The suitability index and the expected count/rate
   expected_response <- exp(eta_rast)
+  prob_rast <- 1 - exp(-(scaling_factor * expected_response))
 
   out <- switch(output.format,
                 prob = prob_rast,
@@ -190,7 +202,6 @@ prepare_predictions <- function(prediction_data, base_map = NULL) {
   }
 
   if (any(c(".block", ".vertex") %in% names(data_to_prepare))) {
-    #message("Detected point-based data by the presence of a .block column. Filtering to base map.")
     if (!inherits(data_to_prepare, "sf")) {
       stop("Detected point-based predictions, but it is not an sf object.", call. = FALSE)
     }
@@ -200,7 +211,6 @@ prepare_predictions <- function(prediction_data, base_map = NULL) {
     } else return(data_to_prepare)
 
   } else {
-    #message("Detected grid-based data. Ensuring X, Y coordinates are present.")
     if (inherits(data_to_prepare, "sf")) {
       coords <- sf::st_coordinates(data_to_prepare)
       df <- as.data.frame(data_to_prepare)
