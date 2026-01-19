@@ -296,6 +296,7 @@ compute_metrics <- function(test.data,
   # set seed for background sampling
   set.seed(seed)
   all_metrics <- list()
+  final_bg_obj <- NULL # Ensures the attribute assignment at the end always works
 
   # --- Loop through each dataset in test.data -----
   for (ds_name in names(test.data)) {
@@ -355,7 +356,6 @@ compute_metrics <- function(test.data,
       valid_idx <- is.finite(raw_prob)
       prob_roc <- raw_prob[valid_idx]
 
-      bg_points_po  <- NULL # Ensures the attribute assignment at the end always works
       eval_resp_roc <- NULL
       if (is_count_data) {
         eval_resp_roc <- ifelse(current_data[[responseCounts]] > 0, 1, 0)[valid_idx]
@@ -366,6 +366,8 @@ compute_metrics <- function(test.data,
       } else {
         bg_points_po <- sample_background(mask = prob.raster, points = xy.excluded,
                                           n = n.background, xy = TRUE, values = FALSE)
+        final_bg_obj <- bg_points_po
+
         if (!is.null(bg_points_po$bg)) {
           prob_bg_po <- terra::extract(prob.raster, bg_points_po$bg)[, 1]
           prob_bg_po <- prob_bg_po[is.finite(prob_bg_po)]
@@ -573,7 +575,7 @@ compute_metrics <- function(test.data,
 
   class(return_list) <- c("ISDMmetrics", "list")
   attr(return_list, "settings")  <- settings
-  attr(return_list, "bg_points") <- bg_points_po
+  attr(return_list, "bg_points") <- final_bg_obj
 
   return(return_list)
 }
@@ -588,7 +590,6 @@ compute_metrics <- function(test.data,
 #'
 #' @param x An object of class \code{ISDMmetrics}.
 #' @param object An object of class \code{ISDMmetrics}.
-#' @param i Indices specifying elements to extract from the outputs.
 #' @param include.composite Logical. Should the weighted composite scores be included in the plot? Defaults to \code{TRUE}.
 #' @param ... Additional arguments passed on to the method.
 #'
@@ -647,18 +648,24 @@ print.ISDMmetrics <- function(x, ...) {
   cat("----------------------------------------------\n")
 
   all_names <- names(x)
-  comp_idx <- grepl("_Comp$", all_names)
   tot_idx  <- grepl("^TOT_", all_names)
-  ind_names <- all_names[!comp_idx & !tot_idx]
-
-  cat("Datasets Evaluated:", paste(unique(gsub(".*_", "", ind_names)), collapse = ", "), "\n\n")
 
   if(any(tot_idx)) {
+    ind_names <- all_names[!grepl("_Comp$", all_names) & !tot_idx]
+    datasets <- unique(gsub(".*_", "", ind_names))
+
+    cat("Datasets Evaluated:", paste(datasets, collapse = ", "), "\n\n")
     cat("Overall Performance:\n")
-    for(tn in all_names[tot_idx]) {
-      cat(sprintf("  %-18s: %0.4f\n", gsub("_", " ", tn), x[[tn]]))
+    for(n in all_names[tot_idx]) {
+      cat(sprintf("  %-18s: %0.4f\n", gsub("_", " ", n), x[[n]]))
+    }
+  } else {   # Fallback to display everything in the subset
+    cat("Note: Subsetted metrics view\n\n")
+    for(n in all_names) {
+      cat(sprintf("  %-18s: %0.4f\n", gsub("_", " ", n), x[[n]]))
     }
   }
+
   cat("----------------------------------------------\n")
   invisible(x)
 }
@@ -666,6 +673,7 @@ print.ISDMmetrics <- function(x, ...) {
 #' @rdname print.ISDMmetrics
 #' @export
 summary.ISDMmetrics <- function(object, ...) {
+
   s <- attr(object, "settings")
 
   cat("\n==============================================\n")
@@ -727,7 +735,7 @@ summary.ISDMmetrics <- function(object, ...) {
     cat("\n--- Overall Performance ---\n")
     for(tn in all_names[tot_idx]) {
       label <- gsub("_", " ", tn)
-      cat(sprintf("  %-18s: %0.4f\n", label, x[[tn]]))
+      cat(sprintf("  %-18s: %0.4f\n", label, object[[tn]]))
     }
   }
 
@@ -743,7 +751,7 @@ summary.ISDMmetrics <- function(object, ...) {
   settings_attr <- attr(x, "settings")
   bg_attr       <- attr(x, "bg_points")
 
-  out <- unclass(x)[i]
+  out <- NextMethod("[")
 
   class(out) <- c("ISDMmetrics", "list")
   attr(out, "settings")  <- settings_attr
@@ -773,7 +781,7 @@ plot.ISDMmetrics <- function(x, include.composite = TRUE, ...) {
   parts <- strsplit(plot_data$Full_Name, "_")
   plot_data$Metric <- sapply(parts, `[`, 1)
   plot_data$Source <- sapply(parts, `[`, 2)
-  plot_data$Source <- gsub("Comp", "Weighted Composite", plot_data$Source)
+  plot_data$Source <- gsub("Comp", "Composite Score", plot_data$Source)
 
   # Dynamic color assignment
   unique_sources <- unique(plot_data$Source)
@@ -782,8 +790,8 @@ plot.ISDMmetrics <- function(x, include.composite = TRUE, ...) {
   cols <- grDevices::hcl.colors(n_sources, palette = "Viridis")
   names(cols) <- unique_sources
 
-  if ("Weighted Composite" %in% names(cols)) {
-    cols["Weighted Composite"] <- "#404040"
+  if ("Composite Score" %in% names(cols)) {
+    cols["Composite Score"] <- "#CC0000"
   }
 
   p <- ggplot2::ggplot(plot_data, ggplot2::aes(x = Source, y = Value, fill = Source)) +
@@ -806,8 +814,10 @@ plot.ISDMmetrics <- function(x, include.composite = TRUE, ...) {
 #' @rdname print.ISDMmetrics
 #' @export
 as.data.frame.ISDMmetrics <- function(x, ...) {
-
   all_names <- names(x)
+
+  if (length(all_names) == 0) return(data.frame())
+
   df <- data.frame(
     Full_Name = all_names,
     Value = unlist(unclass(x)),
@@ -815,12 +825,17 @@ as.data.frame.ISDMmetrics <- function(x, ...) {
   )
 
   parts <- strsplit(df$Full_Name, "_")
+
   df$Metric <- sapply(parts, `[`, 1)
   df$Source <- sapply(parts, function(p) {
-    if(length(p) == 1) return("Global")
-    if(p[2] == "Comp") return("Weighted Composite")
-    return(p[2])
+    if (length(p) == 1) return("Global")
+    # Join remaining parts if there are multiple underscores
+    src <- paste(p[-1], collapse = "_")
+    if (src == "Comp") return("Weighted Composite")
+    return(src)
   })
+
+  df$Source[grepl("^TOT", df$Full_Name)] <- "Global"
 
   return(df[, c("Metric", "Source", "Value")])
 }

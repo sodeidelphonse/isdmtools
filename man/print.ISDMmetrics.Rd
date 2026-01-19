@@ -28,8 +28,6 @@ get_background(x)
 
 \item{object}{An object of class \code{ISDMmetrics}.}
 
-\item{i}{Indices specifying elements to extract from the outputs.}
-
 \item{include.composite}{Logical. Should the weighted composite scores be included in the plot? Defaults to \code{TRUE}.}
 }
 \value{
