@@ -615,7 +615,7 @@ compute_metrics <- function(test.data,
 #'   n.background = 1000,
 #'   metrics = c("rmse", "mae", "auc", "tss"),
 #'   is_pred_rate = TRUE, # model with offset
-#'   exposure = "area"    # standardized exposure name across the counts
+#'   exposure = "area"    # standardized exposure name across the counts data
 #' )
 #'
 #' #--- Quick view of the results
@@ -629,7 +629,6 @@ compute_metrics <- function(test.data,
 #' plot(eval_results, include.composite = TRUE)
 #'
 #' #--- Background visualization (for Presence-Only data)
-#' # Uses get_background() helper and plot.BackgroundPoints() method
 #' bg_data <- get_background(eval_results)
 #' if (!is.null(bg_data)) {
 #'   plot(bg_data)
@@ -640,7 +639,6 @@ compute_metrics <- function(test.data,
 #' head(results_df)
 #'
 #' #--- Subset specific metrics for custom analysis
-#' # The subset method preserves attributes/settings
 #' auc_only <- eval_results[grep("AUC", names(eval_results))]
 #' }
 #'
