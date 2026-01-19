@@ -2,10 +2,14 @@ Package: isdmtools
 Type: Package
 Title: Toolkit for Facilitating Integrated Species Distribution Modeling
 Version: 0.1.0.9000
-Authors@R: person(given = "Akoeugnigan Idelphonse",
-                 family = "SODE",
-                 role = c("cre", "aut"),
-                 email = "sdidelphonse@gmail.com")
+Authors@R: 
+    c(person(given = "Akoeugnigan Idelphonse", family = "SODE",
+             email = "sdidelphonse@gmail.com",
+             role = c("aut", "cre")),
+      person(given = "Adandé Belarmain", family = "Fandohan",
+             role = "ctb"),
+      person(given = "Romain", family = "Glèlè Kakaï",
+             role = "ctb"))
 Date: 2025-09-08
 Maintainer: <sdidelphonse@gmail.com>
 Description: A suite of tools for for manipulating and visualising spatial data, as well as for block cross-validation and evaluating spatial models with multisource point datasets. 
