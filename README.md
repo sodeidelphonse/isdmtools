@@ -30,13 +30,14 @@ The package provides a set of core functions and classes to handle common tasks 
 
 **Data Preparation**: Create DataFolds objects that bind multiple `sf` datasets and generate spatially-separated cross-validation folds using the constructor function `create_folds()`. This ensures the resulting models are robust to spatial autocorrelation. The `fill_na_near()` function can be used to efficiently impute missing values in raster covariates for modelling tools that cannot handle missing values properly.
 
-**Suitability Analysis**: Standardize model predictions for consistent mapping and compute a final habitat suitability index. The `suitability_index()` function transforms raw integrated model predictions into a suitability score using the inverse of the generalized complementary log-log transform (`cloglog`).
+**Suitability Analysis**: Standardize model predictions for consistent mapping and compute a final habitat suitability index. The `suitability_index()` function transforms raw integrated model predictions into a suitability score using the inverse of the complementary log-log transform (`cloglog`).
 
-**Model Evaluation**: Compute comprehensive evaluation metrics, including ROC-based and continuous-outcome metrics for each dataset (`"<METRIC>_DatasetName"`) using the `compute_metrics()` function. The package also handles *dataset-weighted composite scores* (`"<METRIC>_Comp"`), providing a holistic view of model performance. Although, the `sample_background()` constructor is called internally to sample pseudo-absences for presence-only data, users can run it externally to print, visualize and store the points generated in the `BackgroundPoints` object using the random seed supplied to `compute_metrics()`.
+**Model Evaluation**: Compute comprehensive evaluation metrics, including ROC-based and continuous-outcome metrics for each dataset (`"<METRIC>_DatasetName"`) using the `compute_metrics()` function. The package also handles *dataset-weighted composite scores* (`"<METRIC>_Comp"`), providing a holistic view of model performance. 
+Although, the `sample_background()` constructor is called internally to sample pseudo-absences for presence-only data, users can extract it with `get_background` helper in order to print and visualize the points generated in the `BackgroundPoints` object from the `compute_metrics()` constructor.
 
 **Mapping & Visualization**: Visualize model predictions and final habitat suitability maps. The plotting method `generate_maps()` is designed to provide a clear and informative map by visualizing multiple variables of model predictions (e.g. mean, median, standard deviation or quantiles), providing an easy way to interpret models' results. Users can customize the final `ggplot2` object if needed.
 
-**S3 Methods**: The package includes `print()` and `plot()` methods for the `DataFolds` class, providing a concise summary and a clear visualization of the cross-validation partitions. 
+**S3 Methods**: The package includes `print()` and `plot()` methods for the `DataFolds` and `ISDMmetrics` classes, providing a concise summary and a clear visualization of the cross-validation partitions and model evaluation. Other methods for `ISDMmetrics` are provided in the worked example.
 
 # Getting Started: A Complete Worked Example
 The core workflow of `isdmtools` involves creating a DataFolds object and then extracting specific folds for a modeling pipeline.
@@ -230,27 +231,38 @@ Various performance metrics can now be computed, including dataset-specific and 
                                 expected.response = jt_count,
                                 responseCounts = "count"
                                 )
-metrics_result <- do.call(rbind, eval_metrics)
-print(metrics_result)
 
-                       [,1]
-AUC_Presence      0.9173571
-TSS_Presence      0.7910000
-ACCURACY_Presence 0.7938856
-RMSE_Presence            NA
-MAE_Presence             NA
-AUC_Count         0.7500000
-TSS_Count         0.7500000
-ACCURACY_Count    0.7777778
-RMSE_Count        2.1191327
-MAE_Count         1.7515229
-AUC_Comp          0.8518696
-TSS_Comp          0.7749565
-ACCURACY_Comp     0.7875825
-RMSE_Comp         2.1191327
-MAE_Comp          1.7515229
-TOT_ROC_SCORE     0.8048029
-TOT_ERROR_SCORE   1.9353278
+summary(eval_metrics)
+
+#> ==============================================
+#>        ISDM EVALUATION SUMMARY REPORT
+#> ==============================================
+#> Generated on: 2026-01-19 04:41:02 
+
+#> --- Model Evaluation Settings ---
+#> Random Seed         : 25
+#> Background Points   : 1000
+#> Spatial Context     : BackgroundPoints object attached
+#> Threshold Logic     : best
+#> Optimality Criterion: youden
+#> Prediction Type     : Absolute Count (No Offset)
+
+#> --- Detailed Metric Table ---
+#>         Presence Count
+#> AUC         0.917 0.750
+#> TSS         0.791 0.750
+#> ACCURACY    0.794 0.778
+#> RMSE          N/A 2.119
+#> MAE           N/A 1.752
+
+#> --- Composite Scores (Weighted) ---
+#>     AUC      TSS ACCURACY     RMSE      MAE 
+#>    0.852    0.775    0.788    2.119    1.752 
+
+#> --- Overall Performance ---
+#>  TOT ROC SCORE     : 0.8048
+#>  TOT ERROR SCORE   : 1.9353
+#> ==============================================
 ```
 As you will have noticed, continuous-outcome metrics such as MAE (mean absolute error) and RMSE (root mean squared error) are not available for presence-only data, which makes sense. Furthermore, the weighted composite scores for continuous responses are identical to their individual counterparts, since there is only one count response.
 
