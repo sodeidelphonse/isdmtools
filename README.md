@@ -189,16 +189,17 @@ projection <- "+proj=longlat +ellps=WGS84 +datum=WGS84"
 
 # Joint habitat suitability (can also exclude dataset-specific intercepts)
 jpred <- predict(jfit, newdata = grids, 
-                formula = ~ spde + Presence_intercept + Count_intercept,
+                formula = ~ spde + Presence_intercept,
                 n.samples = 500, seed = 24)
 jpred   <- prepare_predictions(jpred) 
    
 jt_prob <- suitability_index(jpred, 
-                               post.stat = c("q0.025", "mean", "q0.975"), 
-                               output.format = "prob",
-                               response.type = "count",
-                               projection = projection
-                               )
+                            post.stat = c("q0.025", "mean", "q0.975"), 
+                            output.format = "prob",
+                            response.type = "joint.po",
+                            projection = projection,
+                            scale.independent = TRUE
+                            )
 plot(jt_prob)
    
 # Prediction of counts 
@@ -226,10 +227,10 @@ Various performance metrics can now be computed, including dataset-specific and 
  metrics <- c("auc", "tss", "accuracy", "rmse", "mae")
  eval_metrics <- compute_metrics(test_data, 
                                 prob.raster = jt_prob$mean, 
+                                expected.response = jt_count$mean,
                                 xy.excluded = xy_observed, 
                                 metrics = metrics,
                                 overall.roc.metrics = c("auc", "tss", "accuracy"),
-                                expected.response = jt_count,
                                 responseCounts = "count"
                                 )
 print(eval_metrics)
