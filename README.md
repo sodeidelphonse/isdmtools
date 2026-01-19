@@ -1,5 +1,6 @@
 # isdmtools
-`isdmtools` is an R package designed to streamline the process of preparing, evaluating and visualizing spatial data for biodiversity distribution modeling, with a specific focus on **integrated species distribution models (ISDMs)** with multisource geospatial datasets within a Bayesian framework. This includes presence-only, count and presence-absence data. It provides a set of tools for producing robust and reproducible workflows for block cross-validation, data management and visualization, and model evaluation, leveraging the power of `sf`, `dplyr`, and `ggplot2` packages.
+`isdmtools` is an R package designed to streamline the process of preparing, evaluating and visualizing spatial data for biodiversity distribution modeling, with a specific focus on **integrated species distribution models (ISDMs)** with multisource geospatial datasets within a Bayesian framework. 
+This includes presence-only, count and presence-absence data. It provides a set of tools for producing robust and reproducible workflows for block cross-validation, data management and visualization, and model evaluation, leveraging the power of `sf`, `dplyr`, and `ggplot2` packages.
 
 # Installation
 
@@ -36,7 +37,8 @@ The `fill_na_near()` function can be used to efficiently impute missing values i
 **Model Evaluation**: Compute comprehensive evaluation metrics, including ROC-based and continuous-outcome metrics for each dataset (`"<METRIC>_DatasetName"`) using the `compute_metrics()` constructor. The package also handles *dataset-weighted composite scores* (`"<METRIC>_Comp"`), providing a holistic view of model performance. 
 Although, the `sample_background()` constructor is called internally to sample pseudo-absences for presence-only data, users can extract the `BackgroundPoints` object with `get_background()` helper in order to print and visualize the points generated from the `compute_metrics()` call.
 
-**Mapping & Visualization**: Visualize model predictions and final habitat suitability maps. The plotting method `generate_maps()` is designed to provide a clear and informative map by visualizing multiple variables of model predictions (e.g. mean, median, standard deviation or quantiles), providing an easy way to interpret models' results. Users can customize the final `ggplot2` object if needed.
+**Mapping & Visualization**: Visualize model predictions and final habitat suitability maps. The plotting method `generate_maps()` is designed to provide a clear and informative map by visualizing multiple variables of model predictions (e.g. mean, median, standard deviation or quantiles), providing an easy way to interpret models' results. 
+Users can customize the final `ggplot2` object if needed.
 
 **S3 Methods**: The package includes `print()` and `plot()` methods for `DataFolds` and `ISDMmetrics` classes, which provide a concise summary and a clear visualization of the cross-validation partitions and model evaluation. Other methods for `ISDMmetrics` are provided in the worked example.
 
@@ -96,7 +98,10 @@ splits_fold_3 <- extract_fold(my_folds, fold = 3)
 ![The figure above shows the block cross-validation folds.](man/figures/readme_blockCV_map.png)
 
 ## Usage with Prediction Models
-This first output above from the `isdmtools` package is a set of clean `sf` objects, which makes it easy to integrate with various spatial modeling tools using block cross-validation techniques. The extracted train and test data can be directly fed into your preferred modeling packages such as `inlabru` and `PointedSDMs` packages, 'MCMC' or any 'GLMs/GAMs' tools that can accommodate multisource spatial datasets. This ensures that your model predictions are validated using a robust spatial cross-validation approach and comprehensive evaluation metrics. 
+
+This first output above from the `isdmtools` package is a set of clean `sf` objects, which makes it easy to integrate with various spatial modeling tools using block cross-validation techniques. 
+The extracted train and test data can be directly fed into your preferred modeling tools such as `inlabru`, `PointedSDMs`, or any `GLMs/GAMs` tools that can accommodate multisource spatial datasets. 
+This ensures that your model predictions are validated using a robust spatial cross-validation approach and comprehensive evaluation metrics. 
 
 ### Step 1: Fitting a Bayesian spatial model with the `inlabru` package
 
@@ -280,11 +285,13 @@ summary(eval_metrics)
 #>  TOT ERROR SCORE   : 1.9353
 #> ==============================================
 ```
-As you will have noticed, continuous-outcome metrics such as MAE (mean absolute error) and RMSE (root mean squared error) are not available for presence-only data, which makes sense. Furthermore, the weighted composite scores for continuous responses are identical to their individual counterparts, since there is only one count response.
+As you will have noticed, continuous-outcome metrics such as MAE (mean absolute error) and RMSE (root mean squared error) are not available for presence-only data, which makes sense. 
+Furthermore, the weighted composite scores for continuous responses are identical to their individual counterparts, since there is only one count response.
 
-Next, you can iterate through all five spatial folds to obtain an average model performance, then calculate the variation in metrics between blocks. Finally, run a model on the full 'datasets_list' to make the final prediction.
+Next, you can iterate through all five spatial folds to obtain an average model performance, then calculate the variation in metrics between blocks. Finally, run a model on the full `datasets_list` to make the final prediction.
  
 ### Step 4: Prediction mapping 
+
 You can now generate a formal prediction map ready for publication.
 
 ```R
