@@ -58,7 +58,7 @@ eval_results <- compute_metrics(
   expected.response = expected_raster,
   n.background = 1000,
   metrics = c("rmse", "mae", "auc", "tss"),
-  is_pred_rate = TRUE, # model with offset
+  is.pred.rate = TRUE, # model with offset
   exposure = "area"    # standardized exposure name across the counts data
 )
 

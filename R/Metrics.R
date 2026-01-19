@@ -615,7 +615,7 @@ compute_metrics <- function(test.data,
 #'   expected.response = expected_raster,
 #'   n.background = 1000,
 #'   metrics = c("rmse", "mae", "auc", "tss"),
-#'   is_pred_rate = TRUE, # model with offset
+#'   is.pred.rate = TRUE, # model with offset
 #'   exposure = "area"    # standardized exposure name across the counts data
 #' )
 #'
@@ -781,7 +781,7 @@ plot.ISDMmetrics <- function(x, include.composite = TRUE, ...) {
   parts <- strsplit(plot_data$Full_Name, "_")
   plot_data$Metric <- sapply(parts, `[`, 1)
   plot_data$Source <- sapply(parts, `[`, 2)
-  plot_data$Source <- gsub("Comp", "Composite Score", plot_data$Source)
+  plot_data$Source <- gsub("Comp", "Composite", plot_data$Source)
 
   # Dynamic color assignment
   unique_sources <- unique(plot_data$Source)
@@ -790,8 +790,8 @@ plot.ISDMmetrics <- function(x, include.composite = TRUE, ...) {
   cols <- grDevices::hcl.colors(n_sources, palette = "Viridis")
   names(cols) <- unique_sources
 
-  if ("Composite Score" %in% names(cols)) {
-    cols["Composite Score"] <- "#CC0000"
+  if ("Composite" %in% names(cols)) {
+    cols["Composite"] <- "#CC0000"
   }
 
   p <- ggplot2::ggplot(plot_data, ggplot2::aes(x = Source, y = Value, fill = Source)) +
