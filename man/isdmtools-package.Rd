@@ -22,5 +22,11 @@ Useful links:
 \author{
 \strong{Maintainer}: Akoeugnigan Idelphonse SODE \email{sdidelphonse@gmail.com}
 
+Other contributors:
+\itemize{
+  \item Adandé Belarmain Fandohan [contributor]
+  \item Romain Glèlè Kakaï [contributor]
+}
+
 }
 \keyword{internal}
