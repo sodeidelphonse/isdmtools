@@ -25,6 +25,7 @@ Useful links:
 Other contributors:
 \itemize{
   \item Adandé Belarmain Fandohan [contributor]
+  \item Elias Teixeira Krainski [contributor]
   \item Romain Glèlè Kakaï [contributor]
 }
 
