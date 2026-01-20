@@ -1,0 +1,20 @@
+bibentry(
+  bibtype = "Article",
+  title = "Integrating Presence-only and Abundance Data to Predict Baobab (Adansonia digitata L.) Distribution: A Bayesian Data Fusion Framework",
+  author = personList(
+    person("A. I.", "Sode"),
+    person("A. B.", "Fandohan"),
+    person("E. T.", "Krainski"),
+    person("A. E.", "Assogbadjo"),
+    person("R.", "Glèlè Kakaï")
+  ),
+  journal = "Preprint",
+  year = 2025,
+  doi = "10.21203/rs.3.rs-7871875/v1",
+  header = "To cite isdmtools in publications, please use:",
+  textVersion = paste0(
+    "Sode A. I., Fandohan A. B., Krainski E. T., Assogbadjo A. E., Glèlè Kakaï R. (2025). ",
+    "Integrating Presence-only and Abundance Data to Predict Baobab (Adansonia digitata L.) ",
+    "Distribution: A Bayesian Data Fusion Framework. Preprint. doi:10.21203/rs.3.rs-7871875/v1"
+  )
+)

@@ -8,11 +8,13 @@ Authors@R:
              role = c("aut", "cre")),
       person(given = "Adandé Belarmain", family = "Fandohan",
              role = "ctb"),
+      person(given = "Elias Teixeira", family = "Krainski",
+             role = "ctb"),      
       person(given = "Romain", family = "Glèlè Kakaï",
              role = "ctb"))
 Date: 2025-09-08
 Maintainer: <sdidelphonse@gmail.com>
-Description: A suite of tools for for manipulating and visualising spatial data, as well as for block cross-validation and evaluating spatial models with multisource point datasets. 
+Description: A suite of tools for manipulating and visualising spatial data, preparing folds for block cross-validation and evaluating spatial models with multisource point datasets. 
     These tools are designed to assist with building and analyzing Integrated Species Distribution Models (ISDMs) with a focus on the Bayesian framework.
 URL: https://github.com/sodeidelphonse/isdmtools
 BugReports: https://github.com/sodeidelphonse/isdmtools/issues
