@@ -33,6 +33,7 @@ Imports:
     ggplot2 (>= 4.0.1),
     ggspatial (>= 1.1.10),
     pROC (>= 1.19.0.1)
+    rlang (>= 1.1.7)
 Suggests: 
     testthat (>= 3.3.2), inlabru(>= 2.13.0), fmesher(>= 0.6.1)
 Config/testthat/edition: 3

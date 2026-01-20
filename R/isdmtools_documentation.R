@@ -9,5 +9,9 @@
 #'
 #' @name isdmtools-package
 #' @aliases isdmtools
+#'
+#' @importFrom dplyr %>%
+#' @importFrom rlang .data
+#'
 #' @keywords internal
 "_PACKAGE"

@@ -1,5 +1,6 @@
 # isdmtools
-`isdmtools` is an R package designed to streamline the process of preparing, evaluating and visualizing spatial data for biodiversity distribution modeling, with a specific focus on **integrated species distribution models (ISDMs)** with multisource geospatial datasets within a Bayesian framework. 
+`isdmtools` is an R package designed to streamline the process of preparing and visualizing spatial data for biodiversity distribution modeling and evaluating the resulting models. 
+The package has been designed with a specific focus on **integrated species distribution models (ISDMs)** based on multisource geospatial datasets within a Bayesian framework. 
 This includes presence-only, count and presence-absence data. It provides a set of tools for producing robust and reproducible workflows for block cross-validation, data management and visualization, and model evaluation, leveraging the power of `sf`, `dplyr`, and `ggplot2` packages.
 
 # Installation
