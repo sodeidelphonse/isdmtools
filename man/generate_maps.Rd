@@ -18,9 +18,9 @@ generate_maps(
 }
 \arguments{
 \item{data}{A data frame, \code{sf} or \code{SpatRaster} object containing the prediction data.
-For grid-based data frame, it must contain columns named "X" and "Y" representing pixels' coordinates.}
+For grid-based data frame, it must contain columns named "x" and "y" representing pixels' coordinates.}
 
-\item{var.names}{A character vector of column names in \code{data} to be
+\item{var.names}{character. The vector of column names in \code{data} to be
 plotted on separate panels.}
 
 \item{base.map}{An \code{sf} object to be plotted as a base layer underneath the
@@ -30,12 +30,12 @@ Users can add additional vector geometries if needed using a ggplot2 syntax.}
 \item{color.gradient}{A vector of valid colors to be used in the fill/color gradient.
 Defaults to \code{map.pal("viridis", 100)}.}
 
-\item{legend.title}{A character string for the title of the color legend.}
+\item{legend.title}{character. The title of the color legend.}
 
-\item{panel.labels}{An optional character vector of labels for the facet panels.
+\item{panel.labels}{character. An optional vector of labels for the facet panels.
 The order should correspond to \code{var.names}.}
 
-\item{nrow}{The number of rows for \code{ggplot2::facet_wrap()}. Defaults to an
+\item{nrow}{integer. The number of rows for \code{ggplot2::facet_wrap()}. Defaults to an
 optimal layout chosen by \code{ggplot2}.}
 
 \item{xaxis.breaks}{A numeric vector specifying the breaks for the x-axis.}
@@ -61,8 +61,8 @@ Users can also add to the map other spatial vector layers or customize the plot 
 \dontrun{
 # --- Example with grid-based data ---
 # Simulate a data frame with coordinates and two prediction variables
-grid_data <- expand.grid(X = 1:100, Y = 1:100)
-grid_data$mean <- rnorm(10000, mean = grid_data$X / 100, sd = 0.1)
+grid_data <- expand.grid(x = 1:100, y = 1:100)
+grid_data$mean <- rnorm(10000, mean = grid_data$x / 100, sd = 0.1)
 grid_data$sd <- rgamma(10000, shape = 2, scale = 0.2)
 
 # Simulate a boundary map (e.g., a simple polygon)
@@ -86,7 +86,7 @@ generate_maps(
 library(sf)
 set.seed(123)
 points_sf <- st_as_sf(grid_data[sample(1:10000, 1000), ],
-                     coords = c("X", "Y"), crs = 32631) # UTM CRS
+                     coords = c("x", "y"), crs = 32631) # UTM CRS
 points_sf <- prepare_predictions(points_sf)
 
 # Generate the map

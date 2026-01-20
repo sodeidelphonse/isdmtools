@@ -794,7 +794,7 @@ plot.ISDMmetrics <- function(x, include.composite = TRUE, ...) {
     cols["Composite"] <- "#CC0000"
   }
 
-  p <- ggplot2::ggplot(plot_data, ggplot2::aes(x = Source, y = Value, fill = Source)) +
+  p <- ggplot2::ggplot(plot_data, ggplot2::aes(x = .data$Source, y = .data$Value, fill = .data$Source)) +
     ggplot2::geom_col(show.legend = FALSE, alpha = 0.85) +
     ggplot2::facet_wrap(~Metric, scales = "free_y") +
     ggplot2::scale_fill_manual(values = cols) +
@@ -814,8 +814,8 @@ plot.ISDMmetrics <- function(x, include.composite = TRUE, ...) {
 #' @rdname print.ISDMmetrics
 #' @export
 as.data.frame.ISDMmetrics <- function(x, ...) {
-  all_names <- names(x)
 
+  all_names <- names(x)
   if (length(all_names) == 0) return(data.frame())
 
   df <- data.frame(
@@ -829,7 +829,6 @@ as.data.frame.ISDMmetrics <- function(x, ...) {
   df$Metric <- sapply(parts, `[`, 1)
   df$Source <- sapply(parts, function(p) {
     if (length(p) == 1) return("Global")
-    # Join remaining parts if there are multiple underscores
     src <- paste(p[-1], collapse = "_")
     if (src == "Comp") return("Weighted Composite")
     return(src)

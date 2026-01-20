@@ -10,7 +10,7 @@
 #' into a unified suitability index, which can be interpreted as a probability of a species presence.
 #' It also calculates the intensity(rate) or expected count for the count data, depending on whether the model has offset or not.
 #'
-#' @param x A `data.frame` containing `X` and `Y` coordinates and the column(s) of the predicted linear predictor variables (e.g., mean, standard deviation and quantiles) or `SpatRaster`.
+#' @param x A `data.frame` containing `x` and `y` coordinates and the column(s) of the predicted linear predictor variables (e.g., mean, standard deviation and quantiles) or `SpatRaster`.
 #' It can typically be a standardized grid-based output from a \link{prepare_predictions} call to various classes of spatial prediction on a linear scale, e.g. from the `PointedSDMs` or `inlabru` packages.
 #' @param post.stat character. A vector specifying the column or layer name(s) to use for extracting the model predictions. Defaults to "mean".
 #' @param output.format character. The desired output format and must be one of "prob" (probability-based suitability index), "response" (expected count or rate) or "linear" (linear predictor scale).
@@ -47,9 +47,9 @@
 #' @examples
 #' \dontrun{
 #' library(terra)
-#' # Simulate a sample data.frame with X, Y, and a linear predictor
+#' # Simulate a sample data.frame with x, y, and a linear predictor
 #' set.seed(42)
-#' x <- expand.grid(X = seq(0, 50, 1), Y = seq(0, 50, 1))
+#' x <- expand.grid(x = seq(0, 50, 1), y = seq(0, 50, 1))
 #' x$eta <- rnorm(nrow(x), mean = 0, sd = 1)
 #'
 #' # Create a simple raster object
@@ -96,8 +96,8 @@ suitability_index <- function(x,
   response.type <- match.arg(response.type)
 
   if (is.data.frame(x)) {
-    if (!all(c("X", "Y") %in% names(x))) {
-      stop("'x' must contain 'X' and 'Y' coordinates when it is a data.frame.", call. = FALSE)
+    if (!all(c("x", "y") %in% names(x))) {
+      stop("'x' must contain 'x' and 'y' coordinates when it is a data.frame.", call. = FALSE)
     }
     if (!all(post.stat %in% names(x))) {
       missing_stats <- post.stat[!post.stat %in% names(x)]
@@ -106,7 +106,7 @@ suitability_index <- function(x,
     }
 
     target_crs <- if(is.null(projection)) "" else projection
-    eta_rast <- terra::rast(x[, c("X", "Y", post.stat)], type = "xyz", crs = target_crs, ...)
+    eta_rast <- terra::rast(x[, c("x", "y", post.stat)], type = "xyz", crs = target_crs, ...)
 
   } else if (inherits(x, "SpatRaster")) {
     if (!all(post.stat %in% names(x))) {
@@ -217,12 +217,12 @@ prepare_predictions <- function(prediction_data, base_map = NULL) {
       coords <- sf::st_coordinates(data_to_prepare)
       df <- as.data.frame(data_to_prepare)
       df$geometry <- NULL
-      return(cbind(df, X = coords[, "X"], Y = coords[, "Y"]))
+      return(cbind(df, x = coords[, "X"], y = coords[, "Y"]))
 
     } else {
       df <- as.data.frame(data_to_prepare)
-      if (!all(c("X", "Y") %in% names(df))) {
-        stop("Input data lacks 'X' and 'Y' coordinate columns for plotting.", call. = FALSE)
+      if (!all(c("x", "y") %in% names(df))) {
+        stop("Input data lacks 'x' and 'y' coordinate columns for plotting.", call. = FALSE)
       }
       return(df)
     }

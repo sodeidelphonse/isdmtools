@@ -16,18 +16,18 @@
 #' Users can also add to the map other spatial vector layers or customize the plot using ggplot2 syntax if needed.
 #'
 #' @param data A data frame, `sf` or `SpatRaster` object containing the prediction data.
-#'   For grid-based data frame, it must contain columns named "X" and "Y" representing pixels' coordinates.
-#' @param var.names A character vector of column names in `data` to be
+#'   For grid-based data frame, it must contain columns named "x" and "y" representing pixels' coordinates.
+#' @param var.names character. The vector of column names in `data` to be
 #'   plotted on separate panels.
 #' @param base.map An `sf` object to be plotted as a base layer underneath the
 #'   prediction data (e.g., a background simple polygon). Defaults to `NULL`.
 #'   Users can add additional vector geometries if needed using a ggplot2 syntax.
 #' @param color.gradient A vector of valid colors to be used in the fill/color gradient.
 #'   Defaults to `map.pal("viridis", 100)`.
-#' @param legend.title A character string for the title of the color legend.
-#' @param panel.labels An optional character vector of labels for the facet panels.
+#' @param legend.title character. The title of the color legend.
+#' @param panel.labels character. An optional vector of labels for the facet panels.
 #'   The order should correspond to `var.names`.
-#' @param nrow The number of rows for `ggplot2::facet_wrap()`. Defaults to an
+#' @param nrow integer. The number of rows for `ggplot2::facet_wrap()`. Defaults to an
 #'   optimal layout chosen by `ggplot2`.
 #' @param xaxis.breaks A numeric vector specifying the breaks for the x-axis.
 #' @param yaxis.breaks A numeric vector specifying the breaks for the y-axis.
@@ -39,8 +39,8 @@
 #' \dontrun{
 #' # --- Example with grid-based data ---
 #' # Simulate a data frame with coordinates and two prediction variables
-#' grid_data <- expand.grid(X = 1:100, Y = 1:100)
-#' grid_data$mean <- rnorm(10000, mean = grid_data$X / 100, sd = 0.1)
+#' grid_data <- expand.grid(x = 1:100, y = 1:100)
+#' grid_data$mean <- rnorm(10000, mean = grid_data$x / 100, sd = 0.1)
 #' grid_data$sd <- rgamma(10000, shape = 2, scale = 0.2)
 #'
 #' # Simulate a boundary map (e.g., a simple polygon)
@@ -64,7 +64,7 @@
 #' library(sf)
 #' set.seed(123)
 #' points_sf <- st_as_sf(grid_data[sample(1:10000, 1000), ],
-#'                      coords = c("X", "Y"), crs = 32631) # UTM CRS
+#'                      coords = c("x", "y"), crs = 32631) # UTM CRS
 #' points_sf <- prepare_predictions(points_sf)
 #'
 #' # Generate the map
@@ -99,10 +99,9 @@ generate_maps <- function(data,
 
   if(inherits(data, "SpatRaster")) {
     data <- as.data.frame(data, xy = TRUE)
-    data <- data %>% dplyr::rename(X = x, Y = y)
   }
-  if (is.data.frame(data) && !inherits(data, "sf") && !all(c("X", "Y") %in% names(data))) {
-    stop("'data' is a data.frame but is missing 'X' and 'Y' coordinate columns.", call. = FALSE)
+  if (is.data.frame(data) && !inherits(data, "sf") && !all(c("x", "y") %in% names(data))) {
+    stop("'data' is a data.frame but is missing 'x' and 'y' coordinate columns.", call. = FALSE)
   }
 
   if (!is.character(var.names) || length(var.names) == 0) {
@@ -150,7 +149,7 @@ generate_maps <- function(data,
   } else {
     long_data <- reshape2::melt(
       data,
-      id.vars = c("X", "Y"),
+      id.vars = c("x", "y"),
       measure.vars = var.names,
       variable.name = "prediction_var",
       value.name = "value"
@@ -171,11 +170,11 @@ generate_maps <- function(data,
 
   if (is_sf_data) {
     p <- p +
-      ggplot2::geom_sf(data = long_data, ggplot2::aes(color = value)) +
+      ggplot2::geom_sf(data = long_data, ggplot2::aes(color = .data$value)) +
       ggplot2::scale_color_gradientn(colours = color.gradient, name = legend.title)
   } else {
     p <- p +
-      ggplot2::geom_tile(data = long_data, ggplot2::aes(x = X, y = Y, fill = value)) +
+      ggplot2::geom_tile(data = long_data, ggplot2::aes(x = .data$x, y = .data$y, fill = .data$value)) +
       ggplot2::scale_fill_gradientn(colours = color.gradient, name = legend.title)
   }
 

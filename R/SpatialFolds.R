@@ -149,8 +149,8 @@ extract_fold.DataFolds <- function(object, fold, ...) {
     stop(paste("Invalid fold number. Must be between 1 and", object$k))
   }
 
-  train_folds_splits <- object$data_all %>% dplyr::filter(folds_ids != fold)
-  test_folds_splits <- object$data_all %>% dplyr::filter(folds_ids == fold)
+  train_folds_splits <- object$data_all %>% dplyr::filter(.data$folds_ids != fold)
+  test_folds_splits <- object$data_all %>% dplyr::filter(.data$folds_ids == fold)
 
   train_splits_list <- split(train_folds_splits, train_folds_splits$datasetName)
   test_splits_list  <- split(test_folds_splits, test_folds_splits$datasetName)
@@ -220,7 +220,7 @@ print.DataFolds <- function(x, ...) {
   cat("Summary of individuals per dataset:\n")
 
   summary_df <- x$data_all %>%
-    dplyr::group_by(datasetName, folds_ids) %>%
+    dplyr::group_by(.data$datasetName, .data$folds_ids) %>%
     dplyr::summarise(n = dplyr::n(), .groups = "keep") %>%
     dplyr::ungroup()
   print(summary_df)
@@ -297,7 +297,7 @@ plot.DataFolds <- function(x, nrow = 1, ...) {
   plot_data_list <- purrr::map(1:x$k, function(fold_id) {
     x$data_all %>%
       dplyr::mutate(
-        Set = ifelse(folds_ids == fold_id, "Test", "Train"),
+        Set = ifelse(.data$folds_ids == fold_id, "Test", "Train"),
         fold_panel = factor(fold_id)
       )
   })
@@ -306,7 +306,7 @@ plot.DataFolds <- function(x, nrow = 1, ...) {
 
   plot_cv <- ggplot2::ggplot(folds_xy_expanded) +
     ggspatial::geom_sf(data = x$region_polygon, fill = NA, color = "grey20") +
-    ggspatial::geom_sf(ggplot2::aes(color = Set, shape = datasetName), size = 1.2) +
+    ggspatial::geom_sf(ggplot2::aes(color = .data$Set, shape = .data$datasetName), size = 1.2) +
     ggplot2::scale_color_manual(name = "Partition", values = c("Train" = "blue", "Test" = "orange")) +
     ggplot2::scale_shape_manual(name = "Dataset", values = shapes) +
     ggplot2::facet_wrap(~ fold_panel,
@@ -345,6 +345,16 @@ bind_datasets <- function(datasets) {
   if (!is.list(datasets) || is.null(names(datasets))) {
     stop("Input must be a named list of 'sf' objects.", call. = FALSE)
   }
+
+  for (ds_name in names(datasets)) {
+    if (!inherits(datasets[[ds_name]], "sf")) {
+      stop(sprintf("All elements in 'datasets' must be 'sf' objects. '%s' is not.", ds_name), call. = FALSE)
+    }
+    if (!inherits(sf::st_geometry(datasets[[ds_name]]), "sfc_POINT")) {
+      warning(sprintf("Dataset '%s' in 'datasets' does not contain point geometries and could cause issue to values extraction.", ds_name), call. = FALSE)
+    }
+  }
+
   datasets_labeled <- purrr::map2(datasets, names(datasets), ~ .x %>% dplyr::mutate(datasetName = .y))
   bound_data <- dplyr::bind_rows(datasets_labeled)
   bound_data$datasetName <- factor(bound_data$datasetName, levels = names(datasets))

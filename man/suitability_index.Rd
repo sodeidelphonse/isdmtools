@@ -16,7 +16,7 @@ suitability_index(
 )
 }
 \arguments{
-\item{x}{A \code{data.frame} containing \code{X} and \code{Y} coordinates and the column(s) of the predicted linear predictor variables (e.g., mean, standard deviation and quantiles) or \code{SpatRaster}.
+\item{x}{A \code{data.frame} containing \code{x} and \code{y} coordinates and the column(s) of the predicted linear predictor variables (e.g., mean, standard deviation and quantiles) or \code{SpatRaster}.
 It can typically be a standardized grid-based output from a \link{prepare_predictions} call to various classes of spatial prediction on a linear scale, e.g. from the \code{PointedSDMs} or \code{inlabru} packages.}
 
 \item{post.stat}{character. A vector specifying the column or layer name(s) to use for extracting the model predictions. Defaults to "mean".}
@@ -63,9 +63,9 @@ For projected systems, the area is the product of the resolutions (e.g., \eqn{km
 \examples{
 \dontrun{
 library(terra)
-# Simulate a sample data.frame with X, Y, and a linear predictor
+# Simulate a sample data.frame with x, y, and a linear predictor
 set.seed(42)
-x <- expand.grid(X = seq(0, 50, 1), Y = seq(0, 50, 1))
+x <- expand.grid(x = seq(0, 50, 1), y = seq(0, 50, 1))
 x$eta <- rnorm(nrow(x), mean = 0, sd = 1)
 
 # Create a simple raster object
