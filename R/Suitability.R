@@ -96,6 +96,9 @@ suitability_index <- function(x,
   response.type <- match.arg(response.type)
 
   if (is.data.frame(x)) {
+    names(x)[names(x) == "X"] <- "x"
+    names(x)[names(x) == "Y"] <- "y"
+
     if (!all(c("x", "y") %in% names(x))) {
       stop("'x' must contain 'x' and 'y' coordinates when it is a data.frame.", call. = FALSE)
     }
@@ -126,7 +129,7 @@ suitability_index <- function(x,
   if (scale.independent) {
     scaling_factor <- 1
   } else if (response.type %in% c("po", "joint.po") || has.offset) {
-    if (terra::is.lonlat(eta_rast)) {
+    if (isTRUE(terra::is.lonlat(eta_rast))) {
       scaling_factor <- terra::cellSize(eta_rast, unit = "km")
     } else {
       scaling_factor <- terra::res(eta_rast)[1] * terra::res(eta_rast)[2]
@@ -208,22 +211,42 @@ prepare_predictions <- function(prediction_data, base_map = NULL) {
       stop("Detected point-based predictions, but it is not an sf object.", call. = FALSE)
     }
 
-    if(!is.null(base_map)) {
+    if (!is.null(base_map)) {
+      pred_crs <- sf::st_crs(data_to_prepare)
+      map_crs  <- sf::st_crs(base_map)
+
+      if (is.na(pred_crs) || is.na(map_crs)) {
+        warning("One of the inputs lacks a CRS. Spatial filtering may be inaccurate.", call. = FALSE)
+      } else if (pred_crs != map_crs) {
+        base_map <- sf::st_transform(base_map, pred_crs)
+      }
+
       return(sf::st_filter(data_to_prepare, base_map))
-    } else return(data_to_prepare)
+
+    } else {
+      return(data_to_prepare)
+    }
 
   } else {
     if (inherits(data_to_prepare, "sf")) {
       coords <- sf::st_coordinates(data_to_prepare)
+
       df <- as.data.frame(data_to_prepare)
-      df$geometry <- NULL
+      geom_column <- attr(data_to_prepare, "sf_column")
+      df[[geom_column]] <- NULL
+      df <- df[, !(names(df) %in% c("x", "y", "X", "Y")), drop = FALSE]
+
       return(cbind(df, x = coords[, "X"], y = coords[, "Y"]))
 
     } else {
       df <- as.data.frame(data_to_prepare)
+      names(df)[names(df) == "X"] <- "x"
+      names(df)[names(df) == "Y"] <- "y"
+
       if (!all(c("x", "y") %in% names(df))) {
         stop("Input data lacks 'x' and 'y' coordinate columns for plotting.", call. = FALSE)
       }
+
       return(df)
     }
   }
