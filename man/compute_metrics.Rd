@@ -113,7 +113,7 @@ Where:
 }
 
 A \verb{weighted composite score} (\verb{<METRIC>_Comp}) is computed for each requested metric by taking the sample-size-weighted average across all datasets where the metric was successfully calculated.
-A \verb{total composite score} (\code{TOT_ROC_SCORE} or \code{TOT_ERROR_SCORE}) is also computed by averaging the selected metrics in the corresponding \verb{overall metrics} character vector.
+A \verb{total composite score} (\code{TOT_ROC_SCORE} or \code{TOT_ERROR_SCORE}) is also computed by averaging the selected metrics in the corresponding 'overall metrics' character vector.
 It can be viewed as a quick \emph{multi-criterion decision metric} for multiple models comparison.
 }
 \examples{

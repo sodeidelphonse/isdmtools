@@ -30,18 +30,18 @@ renv::restore()
 # Key Features
 The package provides a set of core functions and classes to handle common tasks of data preparation, visualization and model evaluation:
 
-**Data Preparation**: Create `DataFolds` objects that bind multiple `sf` datasets and generate spatially-separated cross-validation folds using the constructor function `create_folds()`. This ensures the resulting models are robust to spatial autocorrelation. 
+**Data Preparation**: Create a `DataFolds` object that bind multiple `sf` datasets and generate spatially-separated cross-validation folds using the constructor function `create_folds()`. This ensures the resulting models are robust to spatial autocorrelation. 
 The `fill_na_near()` function can be used to efficiently impute missing values in raster covariates for modelling tools that cannot handle missing values properly.
 
 **Suitability Analysis**: Standardize model predictions for consistent mapping and compute a final habitat suitability index. The `suitability_index()` function transforms raw integrated model predictions into a suitability score using the inverse of the complementary log-log transform (`cloglog`).
 
 **Model Evaluation**: Compute comprehensive evaluation metrics, including ROC-based and continuous-outcome metrics for each dataset (`"<METRIC>_DatasetName"`) using the `compute_metrics()` constructor. The package also handles *dataset-weighted composite scores* (`"<METRIC>_Comp"`), providing a holistic view of model performance. 
-Although, the `sample_background()` constructor is called internally to sample pseudo-absences for presence-only data, users can extract the `BackgroundPoints` object with `get_background()` helper in order to print and visualize the points generated from the `compute_metrics()` call.
+Note that the `sample_background()` constructor is called internally to sample pseudo-absences for presence-only data. However, users have the option of extracting the `BackgroundPoints` object with the `get_background()` helper in order to print and visualise the generated pseudo-absences.
 
 **Mapping & Visualization**: Visualize model predictions and final habitat suitability maps. The plotting method `generate_maps()` is designed to provide a clear and informative map by visualizing multiple variables of model predictions (e.g. mean, median, standard deviation or quantiles), providing an easy way to interpret models' results. 
 Users can customize the final `ggplot2` object if needed.
 
-**S3 Methods**: The package includes `print()` and `plot()` methods for `DataFolds` and `ISDMmetrics` classes, which provide a concise summary and a clear visualization of the cross-validation partitions and model evaluation. Other methods for `ISDMmetrics` are provided in the worked example.
+**S3 Methods**: The package includes `print()` and `plot()` methods for `DataFolds` and `ISDMmetrics` classes, which provide a concise summary and a clear visualization of the block cross-validation partitions and model evaluation. Other methods for `ISDMmetrics` are provided in the worked example.
 
 # Getting Started: A Complete Worked Example
 The core workflow of `isdmtools` involves creating a `DataFolds` object and then extracting specific folds for a modeling pipeline.
@@ -98,15 +98,16 @@ splits_fold_3 <- extract_fold(my_folds, fold = 3)
 ```
 ![The figure above shows the block cross-validation folds.](man/figures/readme_blockCV_map.png)
 
-## Usage with Prediction Models
+## Usage with Predictive Models
 
 This first output above from the `isdmtools` package is a set of clean `sf` objects, which makes it easy to integrate with various spatial modeling tools using block cross-validation techniques. 
-The extracted train and test data can be directly fed into your preferred modeling tools such as `inlabru`, `PointedSDMs`, or any `GLMs/GAMs` tools that can accommodate multisource spatial datasets. 
+The extracted train and test data can be directly fed into your preferred interated modeling tools such as `inlabru`, `PointedSDMs`, or any `GLMs/GAMs` tools that can accommodate multisource spatial datasets. 
 This ensures that your model predictions are validated using a robust spatial cross-validation approach and comprehensive evaluation metrics. 
 
-### Step 1: Fitting a Bayesian spatial model with the `inlabru` package
+### Step 1: Fitting a Bayesian integrated model with the `inlabru` package
 
-The `inlabru` package is a wrapper for the `R-INLA` package which is designed for Bayesian Latent Gaussian Modelling using INLA (Integrated Laplace Nested Approximations) and Extensions. Let's develop a Bayesian model with the fake data above. We assume the following basic joint model with a shared latent signal $\xi(.)$ (i.e. a Gaussian random field):
+The `inlabru` package is a wrapper for the `R-INLA` package which is designed for Bayesian Latent Gaussian Modelling using INLA (Integrated Laplace Nested Approximations) and Extensions. 
+Let's develop a Bayesian spatial model with the fake data above. We assume the following basic joint model with a shared latent signal $\xi(.)$ (i.e. a Gaussian random field):
 
 ```math
  \begin{matrix} 
@@ -142,7 +143,7 @@ where $\mathrm{IPP}$ means a _Inhomogeneous Poisson Process_ and $\mathbf{s}$ th
    pcmatern <- INLA::inla.spde2.pcmatern(mesh,
                                        prior.range = c(1, 0.1), # P(spatial range < 1) = 0.1
                                        prior.sigma = c(1, 0.1)  # P(sigma > 1) = 0.1
-              )
+                                       )
    
    # The shared spatial latent component is denoted by 'spde'
    jcmp <- ~ -1 + Presence_intercept(1) + Count_intercept(1) +
@@ -224,6 +225,7 @@ plot(jt_count)
 ```
  
 ### Step 3: Model performance evaluation using the test data
+
 Various performance metrics can now be computed, including dataset-specific and weighted composite scores.
 
 ```R
@@ -289,7 +291,8 @@ summary(eval_metrics)
 As you will have noticed, continuous-outcome metrics such as MAE (mean absolute error) and RMSE (root mean squared error) are not available for presence-only data, which makes sense. 
 Furthermore, the weighted composite scores for continuous responses are identical to their individual counterparts, since there is only one count response.
 
-Next, you can iterate through all five spatial folds to obtain an average model performance, then calculate the variation in metrics between blocks. Finally, run a model on the full `datasets_list` to make the final prediction.
+Next, you can iterate through all five spatial folds to obtain an average model performance, then calculate the variation in metrics between blocks. 
+Finally, run a model on the full `datasets_list` to make the final prediction.
  
 ### Step 4: Prediction mapping 
 

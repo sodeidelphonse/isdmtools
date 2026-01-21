@@ -63,7 +63,7 @@
 #' }
 #'
 #' A `weighted composite score` (`<METRIC>_Comp`) is computed for each requested metric by taking the sample-size-weighted average across all datasets where the metric was successfully calculated.
-#' A `total composite score` (`TOT_ROC_SCORE` or `TOT_ERROR_SCORE`) is also computed by averaging the selected metrics in the corresponding `overall metrics` character vector.
+#' A `total composite score` (`TOT_ROC_SCORE` or `TOT_ERROR_SCORE`) is also computed by averaging the selected metrics in the corresponding 'overall metrics' character vector.
 #' It can be viewed as a quick *multi-criterion decision metric* for multiple models comparison.
 #'
 #' @return A named `list` containing all requested metrics. The names follow a consistent convention:
@@ -796,7 +796,7 @@ plot.ISDMmetrics <- function(x, include.composite = TRUE, ...) {
 
   p <- ggplot2::ggplot(plot_data, ggplot2::aes(x = .data$Source, y = .data$Value, fill = .data$Source)) +
     ggplot2::geom_col(show.legend = FALSE, alpha = 0.85) +
-    ggplot2::facet_wrap(~Metric, scales = "free_y") +
+    ggplot2::facet_wrap(~ .data$Metric, scales = "free_y") +
     ggplot2::scale_fill_manual(values = cols) +
     ggplot2::theme_minimal() +
     ggplot2::labs(
