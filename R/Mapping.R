@@ -138,43 +138,57 @@ generate_maps <- function(data,
   }
 
   is_sf_data <- inherits(data, "sf")
+  multi_panel <- length(var.names) > 1
 
-  if (is_sf_data) {
-    long_data <- reshape2::melt(
-      data,
-      measure.vars = var.names,
-      variable.name = "prediction_var",
-      value.name = "value"
-    )
+  if(multi_panel) {
+    if (is_sf_data) {
+      long_data <- reshape2::melt(
+        data,
+        measure.vars = var.names,
+        variable.name = "prediction_var",
+        value.name = "value"
+      )
+    } else {
+      long_data <- reshape2::melt(
+        data,
+        id.vars = c("x", "y"),
+        measure.vars = var.names,
+        variable.name = "prediction_var",
+        value.name = "value"
+      )
+    }
+
+    if (is.null(panel.labels)) {
+      long_data$prediction_var <- factor(long_data$prediction_var, levels = var.names)
+    } else {
+      long_data$prediction_var <- factor(long_data$prediction_var, levels = var.names, labels = panel.labels)
+    }
+
   } else {
-    long_data <- reshape2::melt(
-      data,
-      id.vars = c("x", "y"),
-      measure.vars = var.names,
-      variable.name = "prediction_var",
-      value.name = "value"
-    )
+    long_data <- data
+    fill_col  <- var.names
   }
 
-  if (is.null(panel.labels)) {
-    long_data$prediction_var <- factor(long_data$prediction_var, levels = var.names)
-  } else {
-    long_data$prediction_var <- factor(long_data$prediction_var, levels = var.names, labels = panel.labels)
+  p <- ggplot2::ggplot(long_data)
+
+  if (!is.null(base.map)) {
+    if (is_sf_data && sf::st_crs(data) != sf::st_crs(base.map)) {
+      base_map_to_plot <- sf::st_transform(base.map, sf::st_crs(data))
+    } else {
+      base_map_to_plot <- base.map
+    }
+    p <- p + ggplot2::geom_sf(data = base_map_to_plot, fill = NA, color = "grey20")
   }
 
-  if(!is.null(base.map)) {
-    p <- ggplot2::ggplot(base.map) + ggplot2::geom_sf()
-  } else{
-    p <- ggplot2::ggplot()
-  }
+  fill_col <- if(multi_panel) "value" else var.names
 
   if (is_sf_data) {
     p <- p +
-      ggplot2::geom_sf(data = long_data, ggplot2::aes(color = .data$value)) +
+      ggplot2::geom_sf(ggplot2::aes(color = .data[[fill_col]])) +
       ggplot2::scale_color_gradientn(colours = color.gradient, name = legend.title)
   } else {
     p <- p +
-      ggplot2::geom_tile(data = long_data, ggplot2::aes(x = .data$x, y = .data$y, fill = .data$value)) +
+      ggplot2::geom_tile(ggplot2::aes(x = .data$x, y = .data$y, fill = .data[[fill_col]])) +
       ggplot2::scale_fill_gradientn(colours = color.gradient, name = legend.title)
   }
 
@@ -182,15 +196,22 @@ generate_maps <- function(data,
     ggplot2::labs(x = "Longitude", y = "Latitude") +
     ggplot2::scale_x_continuous(breaks = xaxis.breaks) +
     ggplot2::scale_y_continuous(breaks = yaxis.breaks) +
-    ggplot2::facet_wrap(~ prediction_var,
-                        strip.position = "top",
-                        nrow = nrow) +
-    ggplot2::theme_bw(base_size = 12) +
-    ggplot2::theme(
+    ggplot2::theme_bw(base_size = 12)
+
+  # Conditional Faceting
+  if (multi_panel) {
+    p <- p + ggplot2::facet_wrap(~ prediction_var, strip.position = "top", nrow = nrow)
+  } else {
+    plot_title <- if(!is.null(panel.labels)) panel.labels else var.names
+    p <- p + ggplot2::labs(title = plot_title)
+  }
+
+  p <- p + ggplot2::theme(
       axis.title.x = ggplot2::element_text(margin = ggplot2::margin(t = 10, b = 10)),
       axis.title.y = ggplot2::element_text(margin = ggplot2::margin(r = 10, l = 10)),
       panel.border = ggplot2::element_rect(color = "grey", fill = NA),
-      strip.text = ggplot2::element_text(hjust = 0, vjust = 1)
+      strip.text = ggplot2::element_text(hjust = 0, vjust = 1),
+      plot.title = ggplot2::element_text(size = 13, face = "bold", margin = ggplot2::margin(b = 10))
     ) +
     ggspatial::annotation_north_arrow(location = "tl", height = grid::unit(0.6, "cm"), width = grid::unit(0.3, "cm")) +
     ggspatial::annotation_scale(location = "br", bar_cols = c("grey60", "white"))
