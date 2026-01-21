@@ -816,11 +816,13 @@ plot.ISDMmetrics <- function(x, include.composite = TRUE, ...) {
 as.data.frame.ISDMmetrics <- function(x, ...) {
 
   all_names <- names(x)
-  if (length(all_names) == 0) return(data.frame())
+  if (is.null(all_names)) return(data.frame())
+
+  values <- as.numeric(unlist(unclass(x), use.names = FALSE))
 
   df <- data.frame(
     Full_Name = all_names,
-    Value = unlist(unclass(x)),
+    Value     = values,
     stringsAsFactors = FALSE
   )
 
@@ -836,7 +838,7 @@ as.data.frame.ISDMmetrics <- function(x, ...) {
 
   df$Source[grepl("^TOT", df$Full_Name)] <- "Global"
 
-  return(df[, c("Metric", "Source", "Value")])
+  return(df[, c("Full_Name", "Metric", "Source", "Value")])
 }
 
 #' @rdname print.ISDMmetrics
