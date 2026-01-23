@@ -404,16 +404,26 @@ plot.DataFolds <- function(x, nrow = 1, ...) {
   plot_data_list <- purrr::map(1:x$k, function(fold_id) {
     x$data_all %>%
       dplyr::mutate(
-        Set = ifelse(.data$folds_ids == fold_id, "Test", "Train"),
+        Partition = dplyr::case_when(
+          is.na(.data$folds_ids) ~ "Excluded",
+          .data$folds_ids == fold_id ~ "Test",
+          TRUE ~ "Train"
+        ),
+        Partition = factor(.data$Partition, levels = c("Train", "Test", "Excluded")),
         fold_panel = factor(fold_id)
       )
   })
 
   folds_xy_expanded <- dplyr::bind_rows(plot_data_list)
 
-  plot_cv <- ggplot2::ggplot(folds_xy_expanded) +
-    ggspatial::geom_sf(data = x$region_polygon, fill = NA, color = "grey20") +
-    ggspatial::geom_sf(ggplot2::aes(color = .data$Set, shape = .data$datasetName), size = 1.2) +
+  plot_cv <- ggplot2::ggplot(folds_xy_expanded)
+  if (!is.null(x$region_polygon)) {
+    plot_cv <- plot_cv +
+      ggspatial::geom_sf(data = x$region_polygon, fill = NA, color = "grey20")
+  }
+
+  plot_cv <- plot_cv +
+    ggspatial::geom_sf(ggplot2::aes(color = .data$Partition, shape = .data$datasetName), size = 1.2) +
     ggplot2::scale_color_manual(name = "Partition", values = c("Train" = "blue", "Test" = "orange")) +
     ggplot2::scale_shape_manual(name = "Dataset", values = shapes) +
     ggplot2::facet_wrap(~ fold_panel,

@@ -3,7 +3,7 @@ test_that("create_folds works with blockCV (default)", {
   pts <- sf::st_as_sf(data.frame(x = runif(20), y = runif(20)), coords = c("x", "y"), crs = 4326)
   dsets <- list(PO = pts[1:10, ], AB = pts[11:20, ])
 
-  res <- create_folds(dsets, k = 5, cv.method = "spatial")
+  res <- create_folds(dsets, k = 5, cv.method = "spatial", plot = FALSE)
   expect_s3_class(res, "DataFolds")
   expect_equal(length(res$data_all$folds_ids), 20)
   expect_type(res$data_all$folds_ids, "integer")
