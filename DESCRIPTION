@@ -39,5 +39,6 @@ Imports:
 Suggests: 
     testthat (>= 3.0.0),
     inlabru (>= 2.13.0),
-    fmesher (>= 0.6.1)
+    fmesher (>= 0.6.1),
+    spatialsample
 Config/testthat/edition: 3
