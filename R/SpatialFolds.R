@@ -203,8 +203,26 @@ extract_fold.DataFolds <- function(object, fold, ...) {
   train_splits_list <- split(train_folds_splits, train_folds_splits$datasetName)
   test_splits_list  <- split(test_folds_splits, test_folds_splits$datasetName)
 
-  train_data <- purrr::map2(object$original_datasets, train_splits_list, sf::st_filter)
-  test_data <- purrr::map2(object$original_datasets, test_splits_list, sf::st_filter)
+  # We iterate over names(original_datasets) to maintain data integrity
+  train_data <- purrr::map(names(object$original_datasets), function(nm) {
+    if (nm %in% names(train_splits_list)) {
+      sf::st_filter(object$original_datasets[[nm]], train_splits_list[[nm]])
+    } else {
+      # Return empty sf object if no points for this dataset are in the training set
+      object$original_datasets[[nm]][0, ]
+    }
+  })
+  names(train_data) <- names(object$original_datasets)
+
+  test_data <- purrr::map(names(object$original_datasets), function(nm) {
+    if (nm %in% names(test_splits_list)) {
+      sf::st_filter(object$original_datasets[[nm]], test_splits_list[[nm]])
+    } else {
+      # Return empty sf object if no points for this dataset are in the testing set
+      object$original_datasets[[nm]][0, ]
+    }
+  })
+  names(test_data) <- names(object$original_datasets)
 
   return(list(
     train = train_data,
