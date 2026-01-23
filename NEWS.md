@@ -14,6 +14,8 @@ Points falling within spatial buffers are now correctly identified as NA and exc
 
 * Added `summary.DataFolds` method for providing clean aggregated statistics on data partition.
 
+* Added relevant tests for `DataFolds` and `BackgroundPoints` classes and their constructors/methods. 
+
 ## Enhanced Features
 * Unified CV Constructor: `create_folds()` now acts as a high-level bridge between `blockCV` and `spatialsample`.
 * Standardized S3 Outputs: The `DataFolds` object now standardizes internal indexing across different blocking engines, ensuring "folds_ids" are consistent regardless of the underlying package used.
