@@ -3,7 +3,7 @@
 ## New Features
 * Expanded Cross-Validation Engines: Integrated "spatialsample"" as a backend, providing a unified interface for advanced spatial resampling methods.
 
-* New CV Methods: Added support for four new `cv.method` options:
+* New CV Methods: Added support for four new `cv.method` options for advanced spatial cross-validation:
    * "block": Grid-based blocking via "spatialsample" (similar to "spatial" in blockCV but with exclusion buffer).
    * "nndm": Nearest Neighbor Distance Matching for matching prediction and validation environments.
    * "buffer": Distance-based exclusion zones (Leave-One-Out with buffers).
@@ -20,11 +20,8 @@ Points falling within spatial buffers are now correctly identified as NA and exc
 
 # isdmtools 0.1.0.9000
 
-## New Features
-* Added `spatialsample` blocking methods to `create_folds()` to support advanced spatial cross-validation.
+## Refactoring & enhancement
 * Integrated unit testing framework using `testthat`.
-
-## Refactoring
 * Standardized coordinate column names to lowercase `x` and `y` across all functions.
 * Updated internal logic to use `.data` pronouns to resolve global variable notes.
 
