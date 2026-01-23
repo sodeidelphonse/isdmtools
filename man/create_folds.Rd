@@ -19,13 +19,15 @@ spatial dataset with its name corresponding to the list element's name.}
 
 \item{region.polygon}{An \code{sf} object representing the study area polygon.}
 
-\item{k}{An integer specifying the number of folds (k-fold cross-validation).}
+\item{k}{integer. It specifies the number of folds (k-fold cross-validation).}
 
-\item{seed}{An integer for reproducibility.}
+\item{seed}{integer. It sets seed for reproducibility.}
 
-\item{cv.method}{A character string specifying the spatial cross-validation method to use. Options are \code{"cluster"} (default) or \code{"spatial"}.}
+\item{cv.method}{character. It specifies the spatial cross-validation method to use.
+Options are \code{"cluster"} (default) or \code{"spatial"}, see \link[blockCV]{cv_cluster} or \link[blockCV]{cv_spatial} functions.
+For \code{"block"}, \code{"buffer"}, \code{"location"}, or \code{"nndm"}, see the corresponding functions in the \code{spatialsample} package.}
 
-\item{...}{Additional arguments to be passed to the underlying blocking function (see \link[blockCV]{cv_cluster} or \link[blockCV]{cv_spatial}).}
+\item{...}{Additional arguments to be passed to the underlying blocking function in \code{blockCV} or \code{spatialsample}.}
 }
 \value{
 An S3 object of class \code{DataFolds} containing the combined data,
@@ -39,6 +41,25 @@ into a single object and generates spatially or environmentally-separated cross-
 This function first binds all datasets into a single \code{sf} object. It then applies the chosen blocking method to create spatial folds.
 The fold IDs are added to the combined data object, and the original datasets and other relevant information are
 stored in the returned \code{DataFolds} object.
+
+The \code{"cluster"} method from the \code{blockCV} package, supports both spatial and environmental clustering.
+Methods \code{"block"}, \code{"buffer"}, \code{"nndm"}, and \code{"location"}are useful for distance-based exclusion (buffering)
+or leaving out specific groups/locations (e.g., using \code{group = "column_name"} with the \link[spatialsample]{spatial_leave_location_out_cv} method).
+Use \code{"spatial"} for \code{blockCV} grid-blocking, or \code{"block"} for \code{spatialsample} grid-blocking.
+
+The behavior of \code{create_folds} depends on the \code{cv.method} chosen.
+Several methods require specific arguments passed via the ellipsis (\code{...}):
+\itemize{
+\item \bold{\code{location}}: Requires a \code{group} argument (character).
+This should be the name of a column in your datasets representing
+independent units like \code{"site_id"}, \code{"year"}, or \code{"observer"}.
+This tests model generalizability across these factors.
+\item \bold{\code{block} & \code{buffer}}: Accept \code{radius} and \code{buffer}
+arguments to define the size of the test/assessment areas and the width of
+the exclusion zones, respectively.
+\item \bold{\code{nndm}}: Requires \code{prediction_sites}, an \code{sf}
+object representing the area where the model will be projected.
+}
 }
 \examples{
 \dontrun{
@@ -72,9 +93,11 @@ print(my_folds)
 
 }
 \references{
+Mahoney MJ, Johnson LK, Silge J, Frick H, Kuhn M, Beier CM. Assessing the performance of spatial cross-validation approaches for models of spatially structured data. \emph{arXiv} (2023) \doi{10.48550/arXiv.2303.07334}
+
 Roberts DR, Bahn V, Ciuti S, Boyce MS, Elith J, Guillera-Arroita G, Hauenstein S, Lahoz-Monfort JJ, Schröder B, Thuiller W, et al. Cross-validation strategies for data with temporal, spatial, hierarchical, or phylogenetic structure. \emph{Ecography} (2017) 40:913–929. \doi{10.1111/ecog.02881}
 
-Valavi R, Elith J, Lahoz-Monfort JJ, Guillera-Arroita G. blockCV: an R package for generating spatially or environmentally separated folds for k-fold cross-validation of species distribution models. \emph{bioRxiv} (2018)357798. \doi{10.1101/357798}
+Valavi R, Elith J, Lahoz-Monfort JJ, Guillera-Arroita G. blockCV: an R package for generating spatially or environmentally separated folds for k-fold cross-validation of species distribution models. \emph{bioRxiv} (2018). \doi{10.1101/357798}
 }
 \seealso{
 Other spatial blocking methods: 

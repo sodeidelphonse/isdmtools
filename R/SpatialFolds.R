@@ -12,15 +12,36 @@
 #' @param datasets A named list of `sf` objects. Each list element should be a
 #'   spatial dataset with its name corresponding to the list element's name.
 #' @param region.polygon An `sf` object representing the study area polygon.
-#' @param k An integer specifying the number of folds (k-fold cross-validation).
-#' @param seed An integer for reproducibility.
-#' @param cv.method A character string specifying the spatial cross-validation method to use. Options are `"cluster"` (default) or `"spatial"`.
-#' @param ... Additional arguments to be passed to the underlying blocking function (see \link[blockCV]{cv_cluster} or \link[blockCV]{cv_spatial}).
+#' @param k integer. It specifies the number of folds (k-fold cross-validation).
+#' @param seed integer. It sets seed for reproducibility.
+#' @param cv.method character. It specifies the spatial cross-validation method to use.
+#' Options are `"cluster"` (default) or `"spatial"`, see \link[blockCV]{cv_cluster} or \link[blockCV]{cv_spatial} functions.
+#' For `"block"`, `"buffer"`, `"location"`, or `"nndm"`, see the corresponding functions in the \code{spatialsample} package.
+#' @param ... Additional arguments to be passed to the underlying blocking function in \code{blockCV} or \code{spatialsample}.
 #'
 #' @details
 #' This function first binds all datasets into a single `sf` object. It then applies the chosen blocking method to create spatial folds.
 #' The fold IDs are added to the combined data object, and the original datasets and other relevant information are
 #' stored in the returned `DataFolds` object.
+#'
+#' The `"cluster"` method from the \code{blockCV} package, supports both spatial and environmental clustering.
+#' Methods `"block"`, `"buffer"`, `"nndm"`, and `"location"`are useful for distance-based exclusion (buffering)
+#' or leaving out specific groups/locations (e.g., using `group = "column_name"` with the \link[spatialsample]{spatial_leave_location_out_cv} method).
+#' Use `"spatial"` for \code{blockCV} grid-blocking, or `"block"` for \code{spatialsample} grid-blocking.
+#'
+#' The behavior of \code{create_folds} depends on the \code{cv.method} chosen.
+#' Several methods require specific arguments passed via the ellipsis (\code{...}):
+#' \itemize{
+#'   \item \bold{\code{location}}: Requires a \code{group} argument (character).
+#'   This should be the name of a column in your datasets representing
+#'   independent units like \code{"site_id"}, \code{"year"}, or \code{"observer"}.
+#'   This tests model generalizability across these factors.
+#'   \item \bold{\code{block} & \code{buffer}}: Accept \code{radius} and \code{buffer}
+#'   arguments to define the size of the test/assessment areas and the width of
+#'   the exclusion zones, respectively.
+#'   \item \bold{\code{nndm}}: Requires \code{prediction_sites}, an \code{sf}
+#'   object representing the area where the model will be projected.
+#' }
 #'
 #' @return An S3 object of class `DataFolds` containing the combined data,
 #' fold information, and the original datasets.
@@ -58,20 +79,47 @@
 #' }
 #'
 #' @references
+#' Mahoney MJ, Johnson LK, Silge J, Frick H, Kuhn M, Beier CM. Assessing the performance of spatial cross-validation approaches for models of spatially structured data. _arXiv_ (2023) \doi{10.48550/arXiv.2303.07334}
+#'
 #' Roberts DR, Bahn V, Ciuti S, Boyce MS, Elith J, Guillera-Arroita G, Hauenstein S, Lahoz-Monfort JJ, Schröder B, Thuiller W, et al. Cross-validation strategies for data with temporal, spatial, hierarchical, or phylogenetic structure. _Ecography_ (2017) 40:913–929. \doi{10.1111/ecog.02881}
 #'
-#' Valavi R, Elith J, Lahoz-Monfort JJ, Guillera-Arroita G. blockCV: an R package for generating spatially or environmentally separated folds for k-fold cross-validation of species distribution models. _bioRxiv_ (2018)357798. \doi{10.1101/357798}
-#'
+#' Valavi R, Elith J, Lahoz-Monfort JJ, Guillera-Arroita G. blockCV: an R package for generating spatially or environmentally separated folds for k-fold cross-validation of species distribution models. _bioRxiv_ (2018). \doi{10.1101/357798}
 #'
 create_folds <- function(datasets, region.polygon = NULL, k = 5, seed = 23, cv.method = "cluster", ...) {
 
   xy_all <- bind_datasets(datasets)
+  n_obs  <- nrow(xy_all)
+
   set.seed(seed)
   folds_cv <- switch(cv.method,
-                     "cluster" = blockCV::cv_cluster(x = xy_all, k = k, biomod2 = FALSE, ...),
-                     "spatial" = blockCV::cv_spatial(x = xy_all, k = k, biomod2 = FALSE, ...),
-                     stop("Invalid `cv.method`. Must be 'cluster' or 'spatial'.")
-  )
+                     "cluster" = blockCV::cv_cluster(x = xy_all, k = k, ...),
+                     "spatial" = blockCV::cv_spatial(x = xy_all, k = k, ...),
+                     "nndm" = {
+                       .check_suggests("spatialsample")
+                       res <- spatialsample::spatial_nndm_cv(xy_all, ...)
+                       list(folds_ids = .extract_spatialsample_ids(res, n_obs))
+                     },
+                     "buffer" = {
+                       .check_suggests("spatialsample")
+                       res <- spatialsample::spatial_buffer_vfold_cv(xy_all, v = k, ...)
+                       list(folds_ids = .extract_spatialsample_ids(res, n_obs))
+                     },
+                     "location" = {
+                       .check_suggests("spatialsample")
+                       dots <- rlang::list2(...)
+                       if (!"group" %in% names(dots)) {
+                         stop("The 'group' argument (column name) is required for 'location out' CV.")
+                       }
+                       res <- spatialsample::spatial_leave_location_out_cv(xy_all, v = k, ...)
+                       list(folds_ids = .extract_spatialsample_ids(res, n_obs))
+                     },
+                     "block" = {
+                       .check_suggests("spatialsample")
+                       res <- spatialsample::spatial_block_cv(xy_all, v = k, ...)
+                       list(folds_ids = .extract_spatialsample_ids(res, n_obs))
+                     },
+                     stop("Invalid `cv.method`. Supported: 'cluster', 'spatial', 'block', 'buffer', 'location', 'nndm'.")
+                     )
 
   xy_all$folds_ids <- folds_cv$folds_ids
 
@@ -149,7 +197,7 @@ extract_fold.DataFolds <- function(object, fold, ...) {
     stop(paste("Invalid fold number. Must be between 1 and", object$k))
   }
 
-  train_folds_splits <- object$data_all %>% dplyr::filter(.data$folds_ids != fold)
+  train_folds_splits <- object$data_all %>% dplyr::filter(.data$folds_ids != fold & !is.na(.data$folds_ids))
   test_folds_splits <- object$data_all %>% dplyr::filter(.data$folds_ids == fold)
 
   train_splits_list <- split(train_folds_splits, train_folds_splits$datasetName)
@@ -220,10 +268,11 @@ print.DataFolds <- function(x, ...) {
   cat("Summary of individuals per dataset:\n")
 
   summary_df <- x$data_all %>%
+    dplyr::mutate(fold = ifelse(is.na(.data$folds_ids), "Excluded (Buffer)", as.character(.data$folds_ids))) %>%
     dplyr::group_by(.data$datasetName, .data$folds_ids) %>%
-    dplyr::summarise(n = dplyr::n(), .groups = "keep") %>%
-    dplyr::ungroup()
-  print(summary_df)
+    dplyr::summarise(n = dplyr::n(), .groups = "drop")
+
+ print(summary_df)
 
   invisible(x)
 }
@@ -360,4 +409,23 @@ bind_datasets <- function(datasets) {
   bound_data$datasetName <- factor(bound_data$datasetName, levels = names(datasets))
 
   return(bound_data)
+}
+
+#-- Other helper functions for 'spatialsample' blocking
+.extract_spatialsample_ids <- function(rset, n) {
+  ids <- rep(NA_integer_, n)
+  for (i in seq_len(nrow(rset))) {
+    assess_idx <- as.integer(rset$splits[[i]], data = "assessment")
+    if (length(assess_idx) > 0) {
+      ids[assess_idx] <- i
+    }
+  }
+  return(ids)
+}
+
+.check_suggests <- function(pkg) {
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+    stop(sprintf("Package '%s' is required for this CV method. Please install it.", pkg),
+         call. = FALSE)
+  }
 }
