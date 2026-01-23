@@ -1,26 +1,26 @@
 # isdmtools 0.2.0
 
 ## New Features
-* Expanded Cross-Validation Engines: Integrated "spatialsample"" as a backend, providing a unified interface for advanced spatial resampling methods.
+* Expanded Cross-Validation Engines: Integrated 'spatialsample' as a backend, providing a unified interface for advanced spatial resampling methods.
 
 * New CV Methods: Added support for four new `cv.method` options for advanced spatial cross-validation:
    * "block": Grid-based blocking via "spatialsample" (similar to "spatial" in blockCV but with exclusion buffer).
    * "nndm": Nearest Neighbor Distance Matching for matching prediction and validation environments.
-   * "buffer": Distance-based exclusion zones (Leave-One-Out with buffers).
+   * "buffer": Distance-based exclusion zones (Leave-One-Out with buffer).
    * "location": Leave-location-out/Leave-group-out CV, enabling spatiotemporal validation (e.g., by year) and source-specific validation (e.g., by observers, sites or regions).
 
 * Buffer-Aware Extraction: Updated `extract_fold()` to automatically handle exclusion zones. 
 Points falling within spatial buffers are now correctly identified as NA and excluded from both training and testing sets to prevent spatial autocorrelation bias.
 
-## Updates & Refactoring
-* Unified CV Constructor: `create_folds()` now acts as a high-level bridge between blockCV and spatialsample.
-* Standardized S3 Outputs: The DataFolds object now standardizes internal indexing across different blocking engines, ensuring "folds_ids"" are consistent regardless of the underlying package used.
+## Enhanced Features
+* Unified CV Constructor: `create_folds()` now acts as a high-level bridge between `blockCV` and `spatialsample`.
+* Standardized S3 Outputs: The `DataFolds` object now standardizes internal indexing across different blocking engines, ensuring "folds_ids" are consistent regardless of the underlying package used.
 * Improved Print Method: The `print.DataFolds` method now explicitly labels "Excluded" points, providing a clear summary of how many observations were buffered out of the validation process.
 * Added robust unit tests for spatial buffer logic and multisource data fusion integrity.
 
 # isdmtools 0.1.0.9000
 
-## Refactoring & enhancement
+## Refactoring & internal checks
 * Integrated unit testing framework using `testthat`.
 * Standardized coordinate column names to lowercase `x` and `y` across all functions.
 * Updated internal logic to use `.data` pronouns to resolve global variable notes.
