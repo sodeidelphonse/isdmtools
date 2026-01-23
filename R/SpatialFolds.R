@@ -295,6 +295,46 @@ print.DataFolds <- function(x, ...) {
   invisible(x)
 }
 
+#' Summary of DataFolds object
+#'
+#' @description Provides a global overview of the cross-validation setup, including
+#' the total number of observations, the number of folds, and a global tally of
+#' points assigned to each fold or excluded via spatial buffering.
+#'
+#' @param object A \code{DataFolds} object.
+#' @param ... Additional arguments (currently unused).
+#'
+#' @return Invisibly returns a \code{table} of observation counts per fold,
+#' including excluded points.
+#'
+#' @details This method provides an aggregated view across all datasets. For a
+#' breakdown by individual dataset source, use \code{print()}.
+#'
+#' @method summary DataFolds
+#' @export
+summary.DataFolds <- function(object, ...) {
+  cat("DataFolds Object Summary\n")
+  cat("------------------------\n")
+  cat("Total observations:", nrow(object$data_all), "\n")
+  cat("Number of folds (k):", object$k, "\n")
+  cat("Datasets merged:", paste(object$dataset_names, collapse = ", "), "\n")
+
+  # Calculate global counts across all merged datasets
+  counts <- table(object$data_all$folds_ids, useNA = "always")
+  names(counts)[is.na(names(counts))] <- "Excluded (Buffer)"
+
+  cat("\nGlobal Observations per Fold:\n")
+  print(counts)
+
+  if (!is.null(object$region_polygon)) {
+    cat("\nSpatial Context: Study area polygon is defined (available for plotting).\n")
+  } else {
+    cat("\nSpatial Context: No study area polygon defined.\n")
+  }
+
+  invisible(counts)
+}
+
 #--- Plot method ---
 #' @title Plot block cross-validation folds for multisource datasets
 #'

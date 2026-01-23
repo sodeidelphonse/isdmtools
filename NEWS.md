@@ -12,6 +12,8 @@
 * Buffer-Aware Extraction: Updated `extract_fold()` to automatically handle exclusion zones. 
 Points falling within spatial buffers are now correctly identified as NA and excluded from both training and testing sets to prevent spatial autocorrelation bias.
 
+* Added `summary.DataFolds` method for providing clean aggregated statistics on data partition.
+
 ## Enhanced Features
 * Unified CV Constructor: `create_folds()` now acts as a high-level bridge between `blockCV` and `spatialsample`.
 * Standardized S3 Outputs: The `DataFolds` object now standardizes internal indexing across different blocking engines, ensuring "folds_ids" are consistent regardless of the underlying package used.
