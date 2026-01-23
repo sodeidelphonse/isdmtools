@@ -424,7 +424,7 @@ plot.DataFolds <- function(x, nrow = 1, ...) {
 
   plot_cv <- plot_cv +
     ggspatial::geom_sf(ggplot2::aes(color = .data$Partition, shape = .data$datasetName), size = 1.2) +
-    ggplot2::scale_color_manual(name = "Partition", values = c("Train" = "blue", "Test" = "orange")) +
+    ggplot2::scale_color_manual(name = "Partition", values = c("Train" = "blue", "Test" = "orange", "Excluded" = "grey")) +
     ggplot2::scale_shape_manual(name = "Dataset", values = shapes) +
     ggplot2::facet_wrap(~ fold_panel,
                         labeller = ggplot2::labeller(fold_panel = function(x) paste("Fold", x)),
