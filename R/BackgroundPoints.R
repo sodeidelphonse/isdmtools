@@ -65,21 +65,24 @@ sample_background <- function(mask, points = NULL, n = 1000, method = "random", 
         stop(sprintf("'%s' SpatVector must contain only point geometries.", deparse(substitute(points))), call. = FALSE)
       }
       pts <- terra::geom(points)[, c("x", "y")]
+
     } else if (inherits(points, "sf")) {
       if (!all(sf::st_geometry_type(points) %in% c("POINT", "MULTIPOINT"))) {
         stop(sprintf("'%s' sf object must contain only POINT geometries.", deparse(substitute(points))), call. = FALSE)
       }
-      pts <- sf::st_coordinates(points)[, c("X", "Y")]
+      pts <- sf::st_coordinates(points)[, c("X", "Y"), drop = FALSE]
+
     } else if (is.matrix(points) || is.data.frame(points)) {
       if (ncol(points) < 2) {
         stop(sprintf("'%s' must have at least two columns (x and y).", deparse(substitute(points))), call. = FALSE)
       }
       pts <- as.matrix(points)[, 1:2]
+
     } else {
       stop("Unsupported 'points' format. Must be object from sf, terra, or a matrix/data.frame.", call. = FALSE)
     }
 
-    excluded_cells <- terra::cellFromXY(mask, pts)
+    excluded_cells <- unique(terra::cellFromXY(mask, pts))
     mask_modified  <- mask
     mask_modified[excluded_cells] <- NA
   } else {
