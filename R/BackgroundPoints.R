@@ -184,8 +184,12 @@ plot.BackgroundPoints <- function(x, ...) {
   extract_points <- function(bg, mask) {
     if (inherits(bg, "SpatVector")) return(terra::crds(bg))
     if (is.matrix(bg) || is.data.frame(bg)) {
-      if (all(c("x", "y") %in% colnames(bg))) return(bg[, c("x", "y")])
-      if (ncol(bg) == 1 || ncol(bg) == 2) return(terra::xyFromCell(mask, bg[, "cell"]))
+      if (all(c("x", "y") %in% colnames(bg))) {
+        return(bg[, c("x", "y")])
+      }
+      if ("cell" %in% colnames(bg)) {
+        return(terra::xyFromCell(mask, bg[, "cell"]))
+      }
     }
     stop("Unsupported format for background points.")
   }
