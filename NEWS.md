@@ -3,7 +3,7 @@
 ## New Features
 * Expanded Cross-Validation Engines: Integrated 'spatialsample' as a backend, providing a unified interface for advanced spatial resampling methods.
 
-* New CV Methods: Added support for four new `cv.method` options for advanced spatial cross-validation:
+* New CV Methods: Added support for four new `cv_method` options for advanced spatial cross-validation:
    * "block": Grid-based blocking via "spatialsample" (similar to "spatial" in blockCV but with exclusion buffer).
    * "nndm": Nearest Neighbor Distance Matching for matching prediction and validation environments.
    * "buffer": Distance-based exclusion zones (Leave-One-Out with buffer).
@@ -17,6 +17,7 @@ Points falling within spatial buffers are now correctly identified as NA and exc
 * Added relevant tests for `DataFolds` and `BackgroundPoints` classes and their constructors/methods. 
 
 ## Enhanced Features
+* Refactoring: Remove unnecessary dependencies (`reshape2`, `purrr` and `ggspatial`) and ensure consistent argument naming (snake_case).
 * Unified CV Constructor: `create_folds()` now acts as a high-level bridge between `blockCV` and `spatialsample`.
 * Standardized S3 Outputs: The `DataFolds` object now standardizes internal indexing across different blocking engines, ensuring "folds_ids" are consistent regardless of the underlying package used.
 * Improved Print Method: The `print.DataFolds` method now explicitly labels "Excluded" points, providing a clear summary of how many observations were buffered out of the validation process.
