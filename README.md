@@ -201,11 +201,11 @@ jpred <- predict(jfit, newdata = grids,
 jpred   <- prepare_predictions(jpred) 
    
 jt_prob <- suitability_index(jpred, 
-                            post.stat = c("q0.025", "mean", "q0.975"), 
-                            output.format = "prob",
-                            response.type = "joint.po",
+                            post_stat = c("q0.025", "mean", "q0.975"), 
+                            output_format = "prob",
+                            response_type = "joint.po",
                             projection = projection,
-                            scale.independent = TRUE
+                            scale_independent = TRUE
                             )
 plot(jt_prob)
    
@@ -216,9 +216,9 @@ jpred_count <- predict(jfit, newdata = grids,
 jpred_count <- prepare_predictions(jpred_count)
    
 jt_count <- suitability_index(jpred_count, 
-                              post.stat = c("q0.025", "mean", "q0.975"), 
-                              output.format = "response",
-                              response.type = "count",
+                              post_stat = c("q0.025", "mean", "q0.975"), 
+                              output_format = "response",
+                              response_type = "count",
                               projection = projection
                               )
 plot(jt_count)
@@ -234,12 +234,12 @@ Various performance metrics can now be computed, including dataset-specific and 
    
  metrics <- c("auc", "tss", "accuracy", "rmse", "mae")
  eval_metrics <- compute_metrics(test_data, 
-                                prob.raster = jt_prob$mean, 
-                                expected.response = jt_count$mean,
-                                xy.excluded = xy_observed, 
+                                prob_raster = jt_prob$mean, 
+                                expected_response = jt_count$mean,
+                                xy_excluded = xy_observed, 
                                 metrics = metrics,
-                                overall.roc.metrics = c("auc", "tss", "accuracy"),
-                                responseCounts = "count"
+                                overall_roc_metrics = c("auc", "tss", "accuracy"),
+                                response_counts = "count"
                                 )
 print(eval_metrics)
 
@@ -300,12 +300,12 @@ You can now generate a formal prediction map ready for publication.
 
 ```R
 p <- generate_maps(jt_prob, 
-                   var.names = c("q0.025", "mean", "q0.975"), 
-                   base.map = ben_sf,
-                   legend.title = "suitability",  
-                   panel.labels = c("(a) q2.5%", "(b) Mean", "(c) q97.5%"),
-                   xaxis.breaks = seq(0, 4, 1),
-                   yaxis.breaks = seq(6, 13, 2)
+                   var_names = c("q0.025", "mean", "q0.975"), 
+                   base_map = ben_sf,
+                   legend_title = "suitability",  
+                   panel_labels = c("(a) q2.5%", "(b) Mean", "(c) q97.5%"),
+                   xaxis_breaks = seq(0, 4, 1),
+                   yaxis_breaks = seq(6, 13, 2)
                    )
 print(p)
 ```

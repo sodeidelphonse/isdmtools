@@ -3,7 +3,7 @@ test_that("create_folds works with blockCV (default)", {
   pts <- sf::st_as_sf(data.frame(x = runif(20), y = runif(20)), coords = c("x", "y"), crs = 4326)
   dsets <- list(PO = pts[1:10, ], AB = pts[11:20, ])
 
-  res <- create_folds(dsets, k = 5, cv.method = "spatial", plot = FALSE)
+  res <- create_folds(dsets, k = 5, cv_method = "spatial", plot = FALSE)
   expect_s3_class(res, "DataFolds")
   expect_equal(length(res$data_all$folds_ids), 20)
   expect_type(res$data_all$folds_ids, "integer")
@@ -18,7 +18,7 @@ test_that("create_folds works with spatialsample methods", {
 
   # Test location-out: We pass 'site' as a quoted string to be safe with the ellipsis
   dsets$PO$site <- sample(letters[1:5], 50, replace = TRUE)
-  res_loc <- create_folds(dsets, k = 5, cv.method = "location", group = "site")
+  res_loc <- create_folds(dsets, k = 5, cv_method = "location", group = "site")
 
   expect_s3_class(res_loc, "DataFolds")
   expect_true(all(res_loc$data_all$folds_ids %in% 1:5 | is.na(res_loc$data_all$folds_ids)))
@@ -41,7 +41,7 @@ test_that("spatialsample bridge handles buffers (NA values)", {
   res_buf <- create_folds(
     dsets,
     k = 2,
-    cv.method = "buffer",
+    cv_method = "buffer",
     radius = 1,
     buffer = 500
   )
@@ -64,5 +64,5 @@ test_that("create_folds errors gracefully on missing packages", {
 
   pts <- sf::st_as_sf(data.frame(x = 1:5, y = 1:5), coords = c("x", "y"), crs = 4326)
   dsets <- list(test = pts)
-  expect_error(create_folds(dsets, cv.method = "block"), "required")
+  expect_error(create_folds(dsets, cv_method = "block"), "required")
 })

@@ -11,7 +11,7 @@ test_that("extract_fold correctly partitions data including NAs", {
   dsets <- list(PO = pts)
 
   # Create folds with a buffer that forces an NA (k = 2 and a buffer of 500m)
-  folds <- create_folds(dsets, k = 2, cv.method = "buffer", radius = 1, buffer = 500)
+  folds <- create_folds(dsets, k = 2, cv_method = "buffer", radius = 1, buffer = 500)
 
   # Identify how many were excluded globally
   n_total <- nrow(pts)
@@ -36,7 +36,7 @@ test_that("extract_fold handles multisource datasets correctly", {
   pts2 <- sf::st_as_sf(data.frame(x = 10:14, y = 10:14), coords = c("x", "y"), crs = 32631)
   dsets <- list(Presence = pts1, Abundance = pts2)
 
-  folds <- create_folds(dsets, k = 2, cv.method = "spatial")
+  folds <- create_folds(dsets, k = 2, cv_method = "spatial")
   res <- extract_fold(folds, fold = 1)
 
   # Verify structure: train and test should both be lists of 2 elements
@@ -56,7 +56,7 @@ test_that("extract_fold preserves metadata and attributes", {
                        coords = c("x", "y"), crs = 32631)
   dsets <- list(Presence = pts1, Abundance = pts2)
 
-  folds <- create_folds(dsets, k = 2, cv.method = "spatial")
+  folds <- create_folds(dsets, k = 2, cv_method = "spatial")
   res   <- extract_fold(folds, fold = 1)
 
   # Check CRS preservation during filtering
@@ -81,7 +81,7 @@ test_that("extract_fold handles empty subsets gracefully", {
                             coords = c("x", "y"), crs = 32631)
   dsets <- list(Main = pts_large, Rare = pts_small)
 
-  folds <- create_folds(dsets, k = 2, cv.method = "spatial")
+  folds <- create_folds(dsets, k = 2, cv_method = "spatial")
 
   # Force the Rare point into Fold 1
   folds$data_all$folds_ids[folds$data_all$datasetName == "Rare"] <- 1

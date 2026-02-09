@@ -17,24 +17,24 @@
 #'
 #' @param data A data frame, `sf` or `SpatRaster` object containing the prediction data.
 #'   For grid-based data frame, it must contain columns named "x" and "y" representing pixels' coordinates.
-#' @param var.names character. The vector of column names in `data` to be
+#' @param var_names character. The vector of column names in `data` to be
 #'   plotted on separate panels.
-#' @param base.map An `sf` object to be plotted as a base layer underneath the
+#' @param base_map An `sf` object to be plotted as a base layer underneath the
 #'   prediction data (e.g., a background simple polygon). Defaults to `NULL`.
 #'   Users can add additional vector geometries if needed using a ggplot2 syntax.
-#' @param color.gradient A vector of valid colors to be used in the fill/color gradient.
+#' @param color_gradient A vector of valid colors to be used in the fill/color gradient.
 #'   Defaults to `map.pal("viridis", 100)`.
-#' @param legend.title character. The title of the color legend.
-#' @param panel.labels character. An optional vector of labels for the facet panels.
-#'   The order should correspond to `var.names`.
+#' @param legend_title character. The title of the color legend.
+#' @param panel_labels character. An optional vector of labels for the facet panels.
+#'   The order should correspond to `var_names`.
 #' @param nrow integer. The number of rows for `ggplot2::facet_wrap()`. Defaults to an
 #'   optimal layout chosen by `ggplot2`.
-#' @param xaxis.breaks A numeric vector specifying the breaks for the x-axis.
-#' @param yaxis.breaks A numeric vector specifying the breaks for the y-axis.
+#' @param xaxis_breaks A numeric vector specifying the breaks for the x-axis.
+#' @param yaxis_breaks A numeric vector specifying the breaks for the y-axis.
+#' @param annotate logical. If `TRUE`, add the north arrow and scale bar to the map. Defaults to `TRUE`
 #'
 #' @return A `ggplot` object representing the multi-panel plot that can be customized by the user.
 #' @export
-#'
 #' @examples
 #' \dontrun{
 #' # --- Example with grid-based data ---
@@ -51,11 +51,11 @@
 #' # Generate the map
 #' generate_maps(
 #'   data = grid_data,
-#'   var.names = c("mean", "sd"),
-#'   base.map = boundary_sf,
-#'   color.gradient = c("white", "skyblue", "navy"),
-#'   legend.title = "Prediction Value",
-#'   panel.labels = c("Mean", "StDev"),
+#'   var_names = c("mean", "sd"),
+#'   base_map = boundary_sf,
+#'   color_gradient = c("white", "skyblue", "navy"),
+#'   legend_title = "Prediction Value",
+#'   panel_labels = c("Mean", "StDev"),
 #'   nrow = 1
 #' )
 #'
@@ -70,11 +70,11 @@
 #' # Generate the map
 #' generate_maps(
 #'   data = points_sf,
-#'   var.names = c("mean", "sd"),
-#'   base.map = boundary_sf,
-#'   color.gradient = c("white", "orange", "red"),
-#'   legend.title = "Prediction Value",
-#'   panel.labels = c("Mean", "StDev"),
+#'   var_names = c("mean", "sd"),
+#'   base_map = boundary_sf,
+#'   color_gradient = c("white", "orange", "red"),
+#'   legend_title = "Prediction Value",
+#'   panel_labels = c("Mean", "StDev"),
 #'   nrow = 1
 #' )
 #' }
@@ -84,14 +84,15 @@
 #' @family prediction analyses
 #'
 generate_maps <- function(data,
-                          var.names = c("mean", "sd"),
-                          base.map = NULL,
-                          color.gradient = map.pal("viridis", 100),
-                          legend.title = NULL,
-                          panel.labels = NULL,
+                          var_names = c("mean", "sd"),
+                          base_map = NULL,
+                          color_gradient = map.pal("viridis", 100),
+                          legend_title = NULL,
+                          panel_labels = NULL,
                           nrow = NULL,
-                          xaxis.breaks = NULL,
-                          yaxis.breaks = NULL) {
+                          xaxis_breaks = NULL,
+                          yaxis_breaks = NULL,
+                          annotate = TRUE) {
 
   if (!inherits(data, c("data.frame", "sf", "SpatRaster"))) {
     stop("'data' must be a data.frame, an sf object, or a SpatRaster.", call. = FALSE)
@@ -104,105 +105,104 @@ generate_maps <- function(data,
     stop("'data' is a data.frame but is missing 'x' and 'y' coordinate columns.", call. = FALSE)
   }
 
-  if (!is.character(var.names) || length(var.names) == 0) {
-    stop("'var.names' must be a non-empty character vector of columns names.", call. = FALSE)
+  if (!is.character(var_names) || length(var_names) == 0) {
+    stop("'var_names' must be a non-empty character vector of columns names.", call. = FALSE)
   }
 
-  if (!all(var.names %in% names(data))) {
-    missing_vars <- setdiff(var.names, names(data))
-    stop(paste("The following variables in 'var.names' were not found in 'data':",
+  if (!all(var_names %in% names(data))) {
+    missing_vars <- setdiff(var_names, names(data))
+    stop(paste("The following variables in 'var_names' were not found in 'data':",
                paste(missing_vars, collapse = ", ")), call. = FALSE)
   }
 
-  if(!is.null(base.map)) {
-    if (!inherits(base.map, "sf")) {
-      stop("'base.map' must be an sf object.", call. = FALSE)
+  if(!is.null(base_map)) {
+    if (!inherits(base_map, "sf")) {
+      stop("'base_map' must be an sf object.", call. = FALSE)
     }
-    if (!all(sf::st_geometry_type(base.map) %in% c("POLYGON", "MULTIPOLYGON"))) {
-      stop("'base.map' must have polygon or multipolygon geometry.", call. = FALSE)
+    if (!all(sf::st_geometry_type(base_map) %in% c("POLYGON", "MULTIPOLYGON"))) {
+      stop("'base_map' must have polygon or multipolygon geometry.", call. = FALSE)
     }
   }
 
-  if (!is.character(color.gradient) || length(color.gradient) < 2) {
-    stop("'color.gradient' must be a character vector of at least two colors.", call. = FALSE)
+  if (!is.character(color_gradient) || length(color_gradient) < 2) {
+    stop("'color_gradient' must be a character vector of at least two colors.", call. = FALSE)
   }
 
-  if (!is.null(legend.title) && is.character(legend.title) && length(legend.title) != 1) {
-    stop("'legend.title' must be a single character string or NULL.", call. = FALSE)
+  if (!is.null(legend_title) && is.character(legend_title) && length(legend_title) != 1) {
+    stop("'legend_title' must be a single character string or NULL.", call. = FALSE)
   }
 
-  if (!is.null(panel.labels)) {
-    if (!is.character(panel.labels) || length(panel.labels) != length(var.names)) {
-      stop("'panel.labels' must be a character vector with the same length as 'var.names'.", call. = FALSE)
+  if (!is.null(panel_labels)) {
+    if (!is.character(panel_labels) || length(panel_labels) != length(var_names)) {
+      stop("'panel_labels' must be a character vector with the same length as 'var_names'.", call. = FALSE)
     }
   }
 
   is_sf_data <- inherits(data, "sf")
-  multi_panel <- length(var.names) > 1
+  multi_panel <- length(var_names) > 1
 
   if(multi_panel) {
-    if (is_sf_data) {
-      long_data <- reshape2::melt(
-        data,
-        measure.vars = var.names,
-        variable.name = "prediction_var",
-        value.name = "value"
-      )
-    } else {
-      long_data <- reshape2::melt(
-        data,
-        id.vars = c("x", "y"),
-        measure.vars = var.names,
-        variable.name = "prediction_var",
-        value.name = "value"
-      )
-    }
+    long_data_list <- lapply(var_names, function(vn) {
+      if (is_sf_data) {
+        tmp <- data[, vn]
+        names(tmp)[names(tmp) == vn] <- "value"
+        tmp$prediction_var <- vn
+        return(tmp)
+      } else {
+        tmp <- data[, c("x", "y", vn)]
+        names(tmp)[names(tmp) == vn] <- "value"
+        tmp$prediction_var <- vn
+        return(tmp)
+      }
+    })
 
-    if (is.null(panel.labels)) {
-      long_data$prediction_var <- factor(long_data$prediction_var, levels = var.names)
+    long_data <- dplyr::bind_rows(long_data_list)
+
+    if (is.null(panel_labels)) {
+      long_data$prediction_var <- factor(long_data$prediction_var, levels = var_names)
     } else {
-      long_data$prediction_var <- factor(long_data$prediction_var, levels = var.names, labels = panel.labels)
+      long_data$prediction_var <- factor(long_data$prediction_var, levels = var_names, labels = panel_labels)
     }
 
   } else {
     long_data <- data
-    fill_col  <- var.names
+    fill_col  <- var_names
   }
 
   p <- ggplot2::ggplot(long_data)
 
-  if (!is.null(base.map)) {
-    if (is_sf_data && sf::st_crs(data) != sf::st_crs(base.map)) {
-      base_map_to_plot <- sf::st_transform(base.map, sf::st_crs(data))
+  if (!is.null(base_map)) {
+    if (is_sf_data && sf::st_crs(data) != sf::st_crs(base_map)) {
+      base_map_to_plot <- sf::st_transform(base_map, sf::st_crs(data))
     } else {
-      base_map_to_plot <- base.map
+      base_map_to_plot <- base_map
     }
     p <- p + ggplot2::geom_sf(data = base_map_to_plot, fill = NA, color = "grey20")
   }
 
-  fill_col <- if(multi_panel) "value" else var.names
+  fill_col <- if(multi_panel) "value" else var_names
 
   if (is_sf_data) {
     p <- p +
       ggplot2::geom_sf(ggplot2::aes(color = .data[[fill_col]])) +
-      ggplot2::scale_color_gradientn(colours = color.gradient, name = legend.title)
+      ggplot2::scale_color_gradientn(colours = color_gradient, name = legend_title)
   } else {
     p <- p +
       ggplot2::geom_tile(ggplot2::aes(x = .data$x, y = .data$y, fill = .data[[fill_col]])) +
-      ggplot2::scale_fill_gradientn(colours = color.gradient, name = legend.title)
+      ggplot2::scale_fill_gradientn(colours = color_gradient, name = legend_title)
   }
 
   p <- p +
     ggplot2::labs(x = "Longitude", y = "Latitude") +
-    ggplot2::scale_x_continuous(breaks = xaxis.breaks) +
-    ggplot2::scale_y_continuous(breaks = yaxis.breaks) +
+    ggplot2::scale_x_continuous(breaks = xaxis_breaks) +
+    ggplot2::scale_y_continuous(breaks = yaxis_breaks) +
     ggplot2::theme_bw(base_size = 12)
 
   # Conditional Faceting
   if (multi_panel) {
     p <- p + ggplot2::facet_wrap(~ prediction_var, strip.position = "top", nrow = nrow)
   } else {
-    plot_title <- if(!is.null(panel.labels)) panel.labels else var.names
+    plot_title <- if(!is.null(panel_labels)) panel_labels else var_names
     p <- p + ggplot2::labs(title = plot_title)
   }
 
@@ -212,9 +212,13 @@ generate_maps <- function(data,
       panel.border = ggplot2::element_rect(color = "grey", fill = NA),
       strip.text = ggplot2::element_text(hjust = 0, vjust = 1),
       plot.title = ggplot2::element_text(size = 13, face = "bold", margin = ggplot2::margin(b = 10))
-    ) +
-    ggspatial::annotation_north_arrow(location = "tl", height = grid::unit(0.6, "cm"), width = grid::unit(0.3, "cm")) +
-    ggspatial::annotation_scale(location = "br", bar_cols = c("grey60", "white"))
+    )
+
+  if (annotate && requireNamespace("ggspatial", quietly = TRUE)) {
+    p <- p +
+      ggspatial::annotation_north_arrow(location = "tl", height = grid::unit(0.6, "cm"), width = grid::unit(0.3, "cm")) +
+      ggspatial::annotation_scale(location = "br", bar_cols = c("grey60", "white"))
+  }
 
   return(p)
 }

@@ -1,8 +1,4 @@
 
-#-----------------------------------------------------------------------
-#--- Creating spatial cross-validation folds for mutisource datasets
-#-----------------------------------------------------------------------
-
 #' @title Create block cross-validation folds for multisource spatial datasets
 #'
 #' @description
@@ -11,10 +7,10 @@
 #'
 #' @param datasets A named list of `sf` objects. Each list element should be a
 #'   spatial dataset with its name corresponding to the list element's name.
-#' @param region.polygon An `sf` object representing the study area polygon.
+#' @param region_polygon An `sf` object representing the study area polygon.
 #' @param k integer. It specifies the number of folds (k-fold cross-validation).
 #' @param seed integer. It sets seed for reproducibility.
-#' @param cv.method character. It specifies the spatial cross-validation method to use.
+#' @param cv_method character. It specifies the spatial cross-validation method to use.
 #' Options are `"cluster"` (default) or `"spatial"`, see \link[blockCV]{cv_cluster} or \link[blockCV]{cv_spatial} functions.
 #' For `"block"`, `"buffer"`, `"location"`, or `"nndm"`, see the corresponding functions in the \code{spatialsample} package.
 #' @param ... Additional arguments to be passed to the underlying blocking function in \code{blockCV} or \code{spatialsample}.
@@ -29,7 +25,7 @@
 #' or leaving out specific groups/locations (e.g., using `group = "column_name"` with the \link[spatialsample]{spatial_leave_location_out_cv} method).
 #' Use `"spatial"` for \code{blockCV} grid-blocking, or `"block"` for \code{spatialsample} grid-blocking.
 #'
-#' The behavior of \code{create_folds} depends on the \code{cv.method} chosen.
+#' The behavior of \code{create_folds} depends on the \code{cv_method} chosen.
 #' Several methods require specific arguments passed via the ellipsis (\code{...}):
 #' \itemize{
 #'   \item \bold{\code{location}}: Requires a \code{group} argument (character).
@@ -85,13 +81,13 @@
 #'
 #' Valavi R, Elith J, Lahoz-Monfort JJ, Guillera-Arroita G. blockCV: an R package for generating spatially or environmentally separated folds for k-fold cross-validation of species distribution models. _bioRxiv_ (2018). \doi{10.1101/357798}
 #'
-create_folds <- function(datasets, region.polygon = NULL, k = 5, seed = 23, cv.method = "cluster", ...) {
+create_folds <- function(datasets, region_polygon = NULL, k = 5, seed = 23, cv_method = "cluster", ...) {
 
   xy_all <- bind_datasets(datasets)
   n_obs  <- nrow(xy_all)
 
   set.seed(seed)
-  folds_cv <- switch(cv.method,
+  folds_cv <- switch(cv_method,
                      "cluster" = blockCV::cv_cluster(x = xy_all, k = k, ...),
                      "spatial" = blockCV::cv_spatial(x = xy_all, k = k, ...),
                      "nndm" = {
@@ -118,7 +114,7 @@ create_folds <- function(datasets, region.polygon = NULL, k = 5, seed = 23, cv.m
                        res <- spatialsample::spatial_block_cv(xy_all, v = k, ...)
                        list(folds_ids = .extract_spatialsample_ids(res, n_obs))
                      },
-                     stop("Invalid `cv.method`. Supported: 'cluster', 'spatial', 'block', 'buffer', 'location', 'nndm'.")
+                     stop("Invalid `cv_method`. Supported: 'cluster', 'spatial', 'block', 'buffer', 'location', 'nndm'.")
                      )
 
   xy_all$folds_ids <- folds_cv$folds_ids
@@ -129,7 +125,7 @@ create_folds <- function(datasets, region.polygon = NULL, k = 5, seed = 23, cv.m
     folds_info = folds_cv,
     dataset_names = names(datasets),
     k = k,
-    region_polygon = region.polygon
+    region_polygon = region_polygon
   )
   class(object) <- "DataFolds"
   return(object)
@@ -203,23 +199,21 @@ extract_fold.DataFolds <- function(object, fold, ...) {
   train_splits_list <- split(train_folds_splits, train_folds_splits$datasetName)
   test_splits_list  <- split(test_folds_splits, test_folds_splits$datasetName)
 
-  # We iterate over names(original_datasets) to maintain data integrity
-  train_data <- purrr::map(names(object$original_datasets), function(nm) {
+  # We iterate over the original datasets names
+  train_data <- lapply(names(object$original_datasets), function(nm) {
     if (nm %in% names(train_splits_list)) {
       sf::st_filter(object$original_datasets[[nm]], train_splits_list[[nm]])
     } else {
-      # Return empty sf object if no points for this dataset are in the training set
-      object$original_datasets[[nm]][0, ]
+      object$original_datasets[[nm]][0, ] # Return empty sf object
     }
   })
   names(train_data) <- names(object$original_datasets)
 
-  test_data <- purrr::map(names(object$original_datasets), function(nm) {
+  test_data <- lapply(names(object$original_datasets), function(nm) {
     if (nm %in% names(test_splits_list)) {
       sf::st_filter(object$original_datasets[[nm]], test_splits_list[[nm]])
     } else {
-      # Return empty sf object if no points for this dataset are in the testing set
-      object$original_datasets[[nm]][0, ]
+      object$original_datasets[[nm]][0, ] # Return empty sf object
     }
   })
   names(test_data) <- names(object$original_datasets)
@@ -312,6 +306,7 @@ print.DataFolds <- function(x, ...) {
 #'
 #' @method summary DataFolds
 #' @export
+#' @family spatial blocking methods
 summary.DataFolds <- function(object, ...) {
   cat("DataFolds Object Summary\n")
   cat("------------------------\n")
@@ -401,7 +396,7 @@ plot.DataFolds <- function(x, nrow = 1, ...) {
   shapes <- c(16, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)[1:num_datasets]
   names(shapes) <- x$dataset_names
 
-  plot_data_list <- purrr::map(1:x$k, function(fold_id) {
+  plot_data_list <- lapply(1:x$k, function(fold_id) {
     x$data_all %>%
       dplyr::mutate(
         Partition = dplyr::case_when(
@@ -472,8 +467,12 @@ bind_datasets <- function(datasets) {
     }
   }
 
-  datasets_labeled <- purrr::map2(datasets, names(datasets), ~ .x %>% dplyr::mutate(datasetName = .y))
+  datasets_labeled <- lapply(names(datasets), function(ds_name) {
+    datasets[[ds_name]] %>%
+      dplyr::mutate(datasetName = ds_name)
+  })
   bound_data <- dplyr::bind_rows(datasets_labeled)
+
   bound_data$datasetName <- factor(bound_data$datasetName, levels = names(datasets))
 
   return(bound_data)

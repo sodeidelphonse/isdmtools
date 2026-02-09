@@ -8,18 +8,18 @@ test_that("suitability_index handles data.frame and SpatRaster inputs", {
   projection <- "+proj=utm +zone=31 +units=km"
 
   # Test data.frame input
-  res_df <- suitability_index(df, post.stat = "mean", projection = projection)
+  res_df <- suitability_index(df, post_stat = "mean", projection = projection)
   expect_s4_class(res_df, "SpatRaster")
 
   # Test SpatRaster input
   r <- terra::rast(df, type = "xyz", crs = projection)
-  res_rast <- suitability_index(r, post.stat = "mean")
+  res_rast <- suitability_index(r, post_stat = "mean")
   expect_s4_class(res_rast, "SpatRaster")
 
   expect_equal(terra::values(res_df), terra::values(res_rast))
 })
 
-test_that("scale.independent argument correctly modifies probability", {
+test_that("scale_independent argument correctly modifies probability", {
 
   # Set up a raster with 10km2 cells (res = sqrt(10))
   side <- sqrt(10)
@@ -28,12 +28,12 @@ test_that("scale.independent argument correctly modifies probability", {
   names(r) <- "mean"
   terra::crs(r) <- "+proj=utm +zone=31 +units=km"
 
-  # Default (scale.independent = FALSE): p = 1 - exp(-10 * 1)
-  p_scaled <- suitability_index(r, response.type = "po", scale.independent = FALSE)
+  # Default (scale_independent = FALSE): p = 1 - exp(-10 * 1)
+  p_scaled <- suitability_index(r, response_type = "po", scale_independent = FALSE)
   expect_equal(as.numeric(terra::values(p_scaled)), 1 - exp(-10), tolerance = 1e-6)
 
   # Scale Independent: p = 1 - exp(-1 * 1)
-  p_indep <- suitability_index(r, response.type = "po", scale.independent = TRUE)
+  p_indep <- suitability_index(r, response_type = "po", scale_independent = TRUE)
   expect_equal(as.numeric(terra::values(p_indep)), 1 - exp(-1), tolerance = 1e-6)
 })
 
@@ -44,16 +44,16 @@ test_that("error handling triggers for missing columns/layers", {
   # Case 1: Data frame with wrong column name
   df <- data.frame(x = c(0, 1), y = c(0, 1), wrong_name = c(0, 1))
   expect_error(
-    suitability_index(df, post.stat = "mean"),
-    "The following 'post.stat' columns were not found"
+    suitability_index(df, post_stat = "mean"),
+    "The following 'post_stat' columns were not found"
   )
 
   # Case 2: Raster with wrong layer name
   r <- terra::rast(nrows = 5, ncols = 5)
   names(r) <- "wrong_name"
   expect_error(
-    suitability_index(r, post.stat = "mean"),
-    "The following 'post.stat' layers were not found"
+    suitability_index(r, post_stat = "mean"),
+    "The following 'post_stat' layers were not found"
   )
 })
 
@@ -64,25 +64,25 @@ test_that("suitability_index handles lowercase x and y", {
 
   # Testing lowercase standardization
   df <- data.frame(x = c(0, 1), y = c(0, 1), mean = c(0, 1))
-  res <- suitability_index(df, post.stat = "mean", projection = proj_planar)
+  res <- suitability_index(df, post_stat = "mean", projection = proj_planar)
   expect_s4_class(res, "SpatRaster")
 
   # Testing uppercase X/Y auto-correction
   df_upper <- data.frame(X = c(0, 1), Y = c(0, 1), mean = c(0, 1))
-  res_upper <- suitability_index(df_upper, post.stat = "mean", projection = proj_planar)
+  res_upper <- suitability_index(df_upper, post_stat = "mean", projection = proj_planar)
   expect_s4_class(res_upper, "SpatRaster")
   expect_equal(terra::values(res), terra::values(res_upper))
 })
 
-test_that("output.format returns correct scales", {
+test_that("output_format returns correct scales", {
   r <- terra::rast(nrows = 5, ncols = 5, val = 2)
   names(r) <- "mean"
 
   # Linear should be exactly eta = 2
-  expect_equal(unique(as.numeric(terra::values(suitability_index(r, output.format = "linear")))), 2)
+  expect_equal(unique(as.numeric(terra::values(suitability_index(r, output_format = "linear")))), 2)
 
   # Response should be exp(eta) regardless of scaling factor
-  expect_equal(unique(as.numeric(terra::values(suitability_index(r, output.format = "response")))), exp(2))
+  expect_equal(unique(as.numeric(terra::values(suitability_index(r, output_format = "response")))), exp(2))
 })
 
 
@@ -99,7 +99,7 @@ test_that("longlat area calculation uses km2 for PO intensity scaling", {
   terra::crs(r) <- "+proj=longlat +datum=WGS84"
 
   # Calculate suitability
-  res <- suitability_index(r, post.stat = "mean", response.type = "po", output.format = "prob")
+  res <- suitability_index(r, post_stat = "mean", response_type = "po", output_format = "prob")
 
   # Manual validation logic
   val <- as.numeric(terra::values(res)[1])
