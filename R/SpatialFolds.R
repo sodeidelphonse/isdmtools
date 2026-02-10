@@ -340,6 +340,7 @@ summary.DataFolds <- function(object, ...) {
 #' @param x A `DataFolds` S3 object.
 #' @param nrow An integer specifying the number of rows needed for the panel plot.
 #' The default is 1.
+#' @param annotate If `TRUE`, the north arrow and scale bar are added to the plot.
 #' @param ... Additional arguments (not used by this method).
 #'
 #' @return A `ggplot2` object that can be printed or saved.
@@ -390,7 +391,7 @@ summary.DataFolds <- function(object, ...) {
 #' print(plot_cv)
 #' }
 #'
-plot.DataFolds <- function(x, nrow = 1, ...) {
+plot.DataFolds <- function(x, nrow = 1, annotate = TRUE, ...) {
 
   num_datasets <- length(x$dataset_names)
   shapes <- c(16, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)[1:num_datasets]
@@ -414,11 +415,11 @@ plot.DataFolds <- function(x, nrow = 1, ...) {
   plot_cv <- ggplot2::ggplot(folds_xy_expanded)
   if (!is.null(x$region_polygon)) {
     plot_cv <- plot_cv +
-      ggspatial::geom_sf(data = x$region_polygon, fill = NA, color = "grey20")
+      ggplot2::geom_sf(data = x$region_polygon, fill = NA, color = "grey20")
   }
 
   plot_cv <- plot_cv +
-    ggspatial::geom_sf(ggplot2::aes(color = .data$Partition, shape = .data$datasetName), size = 1.2) +
+    ggplot2::geom_sf(ggplot2::aes(color = .data$Partition, shape = .data$datasetName), size = 1.2) +
     ggplot2::scale_color_manual(name = "Partition", values = c("Train" = "blue", "Test" = "orange", "Excluded" = "grey")) +
     ggplot2::scale_shape_manual(name = "Dataset", values = shapes) +
     ggplot2::facet_wrap(~ fold_panel,
@@ -433,10 +434,13 @@ plot.DataFolds <- function(x, nrow = 1, ...) {
     ) +
     ggplot2::labs(title = paste("Block Cross-Validation Folds"),
                   x = "Longitude",
-                  y = "Latitude") +
-    ggspatial::annotation_north_arrow(location = "tl", height = grid::unit(0.6, "cm"),
-                                      width = grid::unit(0.3, "cm")) +
-    ggspatial::annotation_scale(location = "br", bar_cols = c("grey60", "white"))
+                  y = "Latitude")
+
+  if (annotate && requireNamespace("ggspatial", quietly = TRUE)) {
+    plot_cv <- plot_cv + ggspatial::annotation_north_arrow(location = "tl", height = grid::unit(0.6, "cm"),
+                                                           width = grid::unit(0.3, "cm")) +
+      ggspatial::annotation_scale(location = "br", bar_cols = c("grey60", "white"))
+  }
 
   return(plot_cv)
 }
