@@ -1,13 +1,15 @@
 # isdmtools 0.2.0
 
 ## New Features
-* Expanded Cross-Validation Engines: Integrated 'spatialsample' as a backend, providing a unified interface for advanced spatial resampling methods.
+* Add folds diagnostics tools: `check_folds` and `check_env_balance` are key methods operating on `DataFolds` objects to check the independence and representativeness of generated folds.
 
 * New CV Methods: Added support for four new `cv_method` options for advanced spatial cross-validation:
    * "block": Grid-based blocking via "spatialsample" (similar to "spatial" in blockCV but with exclusion buffer).
    * "nndm": Nearest Neighbor Distance Matching for matching prediction and validation environments.
    * "buffer": Distance-based exclusion zones (Leave-One-Out with buffer).
    * "location": Leave-location-out/Leave-group-out CV, enabling spatiotemporal validation (e.g., by year) and source-specific validation (e.g., by observers, sites or regions).
+   
+* Expanded Cross-Validation Engines: Integrated 'spatialsample' as a backend, providing a unified interface for advanced spatial resampling methods.
 
 * Buffer-Aware Extraction: Updated `extract_fold()` to automatically handle exclusion zones. 
 Points falling within spatial buffers are now correctly identified as NA and excluded from both training and testing sets to prevent spatial autocorrelation bias.

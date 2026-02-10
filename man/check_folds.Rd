@@ -5,7 +5,7 @@
 \alias{check_folds.DataFolds}
 \title{Check Spatial Folds Independence}
 \usage{
-\method{check_folds}{DataFolds}(object, ...)
+check_folds(object, ...)
 
 \method{check_folds}{DataFolds}(object, rho = NULL, plot = TRUE, ...)
 }

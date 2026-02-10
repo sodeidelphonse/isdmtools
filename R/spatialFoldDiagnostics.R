@@ -8,12 +8,14 @@
 #' @param fold_col Character. Name of the fold ID column.
 #' @param rho Numeric. Estimated spatial range (km).
 #' @param plot Logical. If TRUE, generates a ggplot object.
-#' @noRd
 #'
-check_spatial_geometry <- function(data_all, fold_col = "fold_ids", rho = NULL, plot = TRUE) {
+#' @importFrom units set_units
+#' @keywords internal
+#'
+check_spatial_geometry <- function(data_all, fold_col = "folds_ids", rho = NULL, plot = TRUE) {
 
   data_all[[fold_col]] <- as.factor(data_all[[fold_col]])
-  fold_ids <- levels(data_all[[fold_col]])
+  folds_ids <- levels(data_all[[fold_col]])
 
   # Folds centroids
   centroids <- data_all %>%
@@ -33,36 +35,38 @@ check_spatial_geometry <- function(data_all, fold_col = "fold_ids", rho = NULL, 
       by = fold_col
     )
 
-  points_with_centroids$dist_val <- as.numeric(
-    sf::st_distance(
+  dist_raw <- sf::st_distance(
       sf::st_geometry(points_with_centroids),
       sf::st_geometry(points_with_centroids$centroid_geom),
       by_element = TRUE
     )
-  )
+  points_with_centroids$dist_val <- as.numeric(units::set_units(dist_raw, "km"))
 
   # Inter-block gap
-  min_gaps <- vapply(fold_ids, function(id) {
-    block_pts <- data_all[data_all$fold_ids == id, ]
-    other_pts <- data_all[data_all$fold_ids != id, ]
+  min_gaps <- vapply(folds_ids, function(id) {
+    block_pts <- data_all[data_all$folds_ids == id, ]
+    other_pts <- data_all[data_all$folds_ids != id, ]
     if(nrow(other_pts) == 0) return(NA_real_)
-    as.numeric(min(sf::st_distance(block_pts, other_pts)))
+    d_m <- min(sf::st_distance(block_pts, other_pts))
+    as.numeric(units::set_units(d_m, "km"))
   }, FUN.VALUE = numeric(1))
 
   gap_df <- data.frame(
-    fold_ids = names(min_gaps),
+    folds_ids = names(min_gaps),
     min_gap_km = as.numeric(min_gaps),
     stringsAsFactors = FALSE
   )
+  gap_df[[fold_col]] <- factor(gap_df[[fold_col]], levels = folds_ids)
 
+  # Merging summary stats
   summary_stats <- points_with_centroids %>%
     sf::st_drop_geometry() %>%
     dplyr::group_by(.data[[fold_col]]) %>%
     dplyr::summarise(
       n_points = dplyr::n(),
-      max_dist_km = max(.data$dist_val),
-      mean_dist_km = mean(.data$dist_val),
-      median_dist_km = stats::median(.data$dist_val),
+      max_dist_km = max(.data$dist_val, na.rm = TRUE),
+      mean_dist_km = mean(.data$dist_val, na.rm = TRUE),
+      median_dist_km = stats::median(.data$dist_val, na.rm = TRUE),
       .groups = "drop"
     ) %>%
     dplyr::left_join(gap_df, by = fold_col) %>%
@@ -84,15 +88,30 @@ check_spatial_geometry <- function(data_all, fold_col = "fold_ids", rho = NULL, 
 
   diag_plot <- NULL
   if (plot) {
+    buffer_geoms <- sf::st_buffer(
+      sf::st_geometry(centroids),
+      dist = units::set_units(summary_stats$max_dist_km, "km")
+      )
+
     buffers <- centroids %>%
-      dplyr::left_join(summary_stats, by = fold_col) %>%
-      sf::st_buffer(dist = summary_stats$max_dist_km)
+      dplyr::mutate(geometry = buffer_geoms) %>%
+      dplyr::left_join(as.data.frame(summary_stats), by = fold_col)
+
+    rho_val <- if (is.null(rho)) "N/A" else rho
+    sub_text <- bquote(paste("Estimated range (", rho, ") = ", .(rho_val), " km"))
 
     diag_plot <- ggplot2::ggplot() +
-      ggplot2::geom_sf(data = buffers, ggplot2::aes(fill = .data[[fold_col]]), alpha = 0.1, linetype = "dashed") +
+      ggplot2::geom_sf(data = buffers, ggplot2::aes(fill = .data[[fold_col]]),
+                       alpha = 0.1, linetype = "dashed", color = "black") +
       ggplot2::geom_sf(data = data_all, ggplot2::aes(color = .data[[fold_col]]), size = 1) +
-      ggplot2::geom_sf(data = centroids, color = "black", shape = 3) +
-      ggplot2::theme_minimal()
+      ggplot2::geom_sf(data = centroids, ggplot2::aes(shape = "Fold Centroid"),
+                       color = "black", size = 3, stroke = 1) +
+      ggplot2::scale_shape_manual(name = "Reference", values = c("Fold Centroid" = 3)) +
+      ggplot2::theme_minimal() +
+      ggplot2::labs(title = "Spatial Fold Partitioning",
+                    subtitle = sub_text,
+                    fill = "Folds", color = "Folds"
+                    )
   }
 
   return(list(summary = summary_stats, plot = diag_plot, rho = rho))
@@ -128,7 +147,6 @@ check_spatial_geometry <- function(data_all, fold_col = "fold_ids", rho = NULL, 
 #' }
 #'
 #' @return An object of class \code{GeoDiagnostic}.
-#' @method check_folds DataFolds
 #' @export
 #' @family blocks diagnostics
 #'
@@ -168,7 +186,7 @@ check_folds <- function(object, ...) {
 check_folds.DataFolds <- function(object, rho = NULL, plot = TRUE, ...) {
   res <- check_spatial_geometry(
     data_all = object$data_all,
-    fold_col = "fold_ids",
+    fold_col = "folds_ids",
     rho = rho,
     plot = plot
   )
@@ -218,10 +236,12 @@ print.GeoDiagnostic <- function(x, ...) {
 plot.GeoDiagnostic <- function(x, ...) {
   if (is.null(x$plot)) stop("No plot found.")
 
+  rho_val <- if (is.null(x$rho)) "N/A" else x$rho
+
   p <- x$plot +
     ggplot2::labs(
-      title = "GeoDiagnostic: Size & Isolation",
-      subtitle = paste0("Model Range (rho) = ", ifelse(is.null(x$rho), "N/A", x$rho), " km")
+      title = "Spatial Diagnostics: Size & Isolation",
+      subtitle = bquote(paste("Estimated range (", rho, ") = ", .(rho_val), " km"))
     )
   return(p)
 }
@@ -237,6 +257,7 @@ plot.GeoDiagnostic <- function(x, ...) {
 #'
 #' @param object A \code{DataFolds} object.
 #' @param covariates A \code{SpatRaster} (terra) containing environmental layers.
+#' It must have the same coordinate reference system (CRS) as the sf objects used for blocking.
 #' @param plot_type Character. Either "density" (default) or "boxplot".
 #' @param n_background Numeric. Number of background points to sample for environmental
 #' space representation. Default 10,000.
@@ -321,28 +342,33 @@ check_env_balance <- function(object, ...) {
 #' @rdname check_env_balance
 #' @method check_env_balance DataFolds
 #' @export
-check_env_balance.DataFolds <- function(object, covariates, plot_type = "density",
+check_env_balance.DataFolds <- function(object, covariates, plot_type = c("density", "boxplot"),
                                         n_background = 10000, ...) {
 
-  # Prepare species point data
+  plot_type <-match.arg(plot_type)
+
+  # Prepare point data
   data_sf <- object$data_all %>%
-    dplyr::filter(!is.na(.data$fold_ids))
+    dplyr::filter(!is.na(.data$folds_ids))
+
+  if (!inherits(covariates, "SpatRaster")) stop("covariates must be a SpatRaster.")
+  if (!terra::same.crs(data_sf, covariates)) stop("CRS mismatch between points and raster.")
 
   fold_vals <- terra::extract(covariates, sf::st_coordinates(data_sf))
   cov_names <- names(fold_vals)
 
   raw_data <- data.frame(
-    fold_ids = factor(data_sf$fold_ids),
+    folds_ids = factor(data_sf$folds_ids),
     fold_vals,
     stringsAsFactors = FALSE
   )
 
-  # Sample background for environmental context
+  # Sample background points
   back_pts  <- sample_background(mask = covariates, n = n_background, values = FALSE, ...)
   back_vals <- terra::extract(covariates, back_pts$bg[, c("x", "y")])
 
   back_data <- data.frame(
-    fold_ids = factor("Background"),
+    folds_ids = factor("Background"),
     back_vals,
     stringsAsFactors = FALSE
   )
@@ -354,15 +380,15 @@ check_env_balance.DataFolds <- function(object, covariates, plot_type = "density
     if (is.numeric(raw_data[[v]])) {
 
       # Internal balance: are folds statistically different from each other?
-      test <- stats::kruskal.test(raw_data[[v]] ~ raw_data$fold_ids)
+      test <- stats::kruskal.test(raw_data[[v]] ~ raw_data$folds_ids)
       type <- "Continuous"
 
       # External balance: niche overlap between folds and background
-      d_vals <- vapply(split(raw_data[[v]], raw_data$fold_ids),
+      d_vals <- vapply(split(raw_data[[v]], raw_data$folds_ids),
                        function(x) calc_niche_overlap(x, back_data[[v]]), FUN.VALUE = numeric(1))
       overlap_val <- round(stats::median(d_vals, na.rm = TRUE), 3)
     } else {
-      test <- stats::chisq.test(table(raw_data[[v]], raw_data$fold_ids))
+      test <- stats::chisq.test(table(raw_data[[v]], raw_data$folds_ids))
       type <- "Categorical"
       overlap_val <- NA_real_
     }
@@ -381,7 +407,7 @@ check_env_balance.DataFolds <- function(object, covariates, plot_type = "density
 
   plot_list <- lapply(cov_names, function(v) {
     data.frame(
-      Fold = full_env_data$fold_ids,
+      Fold = full_env_data$folds_ids,
       Variable = v,
       Value = as.numeric(full_env_data[[v]]),
       stringsAsFactors = FALSE
@@ -393,18 +419,19 @@ check_env_balance.DataFolds <- function(object, covariates, plot_type = "density
                              levels = stats_df$Variable,
                              labels = stats_df$label)
 
+  n_folds <- length(levels(raw_data$folds_ids))
+  fold_colors <- .get_isdm_palette(n_folds)
+  names(fold_colors) <- levels(raw_data$folds_ids)
+
+  all_colors <- c("Background" = "#228B22", fold_colors)
+
   p <- ggplot2::ggplot(plot_df, ggplot2::aes(x = .data$Value, fill = .data$Fold)) +
     ggplot2::facet_wrap(~ Variable, scales = "free") +
+    ggplot2::scale_fill_manual(values = all_colors) +
     ggplot2::theme_bw() +
-    ggplot2::scale_fill_manual(
-      values = c("Background" = "grey80",
-                 setNames(viridisLite::mako(length(levels(raw_data$fold_ids))),
-                          levels(raw_data$fold_ids)))
-    ) +
     ggplot2::labs(
-      title = "Environmental Representativeness",
-      subtitle = "Folds vs. Background (Grey)",
-      fill = "Fold Group"
+      fill = "Group",
+      title = "Environmental Diagnostics"
     )
 
   if (plot_type == "density") {

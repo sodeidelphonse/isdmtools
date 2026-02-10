@@ -10,7 +10,7 @@ check_env_balance(object, ...)
 \method{check_env_balance}{DataFolds}(
   object,
   covariates,
-  plot_type = "density",
+  plot_type = c("density", "boxplot"),
   n_background = 10000,
   ...
 )
@@ -20,7 +20,8 @@ check_env_balance(object, ...)
 
 \item{...}{Additional arguments passed to \code{sample_background}.}
 
-\item{covariates}{A \code{SpatRaster} (terra) containing environmental layers.}
+\item{covariates}{A \code{SpatRaster} (terra) containing environmental layers.
+It must have the same coordinate reference system (CRS) as the sf objects used for blocking.}
 
 \item{plot_type}{Character. Either "density" (default) or "boxplot".}
 

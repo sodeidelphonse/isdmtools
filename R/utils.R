@@ -27,3 +27,17 @@ calc_niche_overlap <- function(x, y, n = 512) {
 
   return(1 - 0.5 * sum(abs(px - py)))
 }
+
+
+# Color Palette
+.get_isdm_palette <- function(n) {
+  mako_hex <- c(
+    "#30123B", "#4454C4", "#4490FE", "#1EC4EB", "#2CF2B4",
+    "#94FB68", "#F2E230", "#FEC029", "#F76E11", "#BB2001"
+  )
+  if (n <= length(mako_hex)) {
+    return(mako_hex[seq_len(n)])
+  } else { # Fallback for very high k
+    return(grDevices::colorRampPalette(mako_hex)(n))
+  }
+}
