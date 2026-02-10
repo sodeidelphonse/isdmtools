@@ -32,7 +32,8 @@ Imports:
     ggplot2 (>= 4.0.1),
     blockCV (>= 3.2-0),
     pROC (>= 1.19.0.1),
-    rlang (>= 1.1.7)
+    rlang (>= 1.1.7),
+    units
 Suggests: 
     testthat (>= 3.0.0),
     inlabru (>= 2.13.0),

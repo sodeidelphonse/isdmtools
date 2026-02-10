@@ -1,0 +1,535 @@
+
+#' Diagnostic for Spatial Folds Geometry
+#'
+#' @description
+#' Internal function to evaluate the spatial structure of folds for blocked cross-validation.
+#'
+#' @param data_all An sf object containing pooled locations and fold IDs.
+#' @param fold_col Character. Name of the fold ID column.
+#' @param rho Numeric. Estimated spatial range (km).
+#' @param plot Logical. If TRUE, generates a ggplot object.
+#' @noRd
+#'
+check_spatial_geometry <- function(data_all, fold_col = "fold_ids", rho = NULL, plot = TRUE) {
+
+  data_all[[fold_col]] <- as.factor(data_all[[fold_col]])
+  fold_ids <- levels(data_all[[fold_col]])
+
+  # Folds centroids
+  centroids <- data_all %>%
+    dplyr::group_by(.data[[fold_col]]) %>%
+    dplyr::summarise(geometry = sf::st_union(geometry), .groups = "drop") %>%
+    sf::st_centroid()
+
+  coords_mat <- sf::st_coordinates(centroids)
+  centroids_data <- sf::st_drop_geometry(centroids) %>%
+    dplyr::mutate(x = coords_mat[, 1], y = coords_mat[, 2])
+
+  # Internal distances (point-to-centroid)
+  points_with_centroids <- data_all %>%
+    dplyr::left_join(
+      as.data.frame(centroids) %>%
+        dplyr::select(!!rlang::sym(fold_col), centroid_geom = geometry),
+      by = fold_col
+    )
+
+  points_with_centroids$dist_val <- as.numeric(
+    sf::st_distance(
+      sf::st_geometry(points_with_centroids),
+      sf::st_geometry(points_with_centroids$centroid_geom),
+      by_element = TRUE
+    )
+  )
+
+  # Inter-block gap
+  min_gaps <- vapply(fold_ids, function(id) {
+    block_pts <- data_all[data_all$fold_ids == id, ]
+    other_pts <- data_all[data_all$fold_ids != id, ]
+    if(nrow(other_pts) == 0) return(NA_real_)
+    as.numeric(min(sf::st_distance(block_pts, other_pts)))
+  }, FUN.VALUE = numeric(1))
+
+  gap_df <- data.frame(
+    fold_ids = names(min_gaps),
+    min_gap_km = as.numeric(min_gaps),
+    stringsAsFactors = FALSE
+  )
+
+  summary_stats <- points_with_centroids %>%
+    sf::st_drop_geometry() %>%
+    dplyr::group_by(.data[[fold_col]]) %>%
+    dplyr::summarise(
+      n_points = dplyr::n(),
+      max_dist_km = max(.data$dist_val),
+      mean_dist_km = mean(.data$dist_val),
+      median_dist_km = stats::median(.data$dist_val),
+      .groups = "drop"
+    ) %>%
+    dplyr::left_join(gap_df, by = fold_col) %>%
+    dplyr::left_join(centroids_data, by = fold_col)
+
+  # Independence logic
+  if (!is.null(rho)) {
+    summary_stats <- summary_stats %>%
+      dplyr::mutate(
+        gap_rho_ratio = .data$min_gap_km / rho,
+        independence = dplyr::case_when(
+          .data$min_gap_km == 0 ~ "Contiguous",
+          .data$gap_rho_ratio < 1 ~ "Weakly Independent",
+          .data$gap_rho_ratio >= 1 & .data$gap_rho_ratio < 2 ~ "Independent",
+          TRUE ~ "Strongly Independent"
+        )
+      )
+  }
+
+  diag_plot <- NULL
+  if (plot) {
+    buffers <- centroids %>%
+      dplyr::left_join(summary_stats, by = fold_col) %>%
+      sf::st_buffer(dist = summary_stats$max_dist_km)
+
+    diag_plot <- ggplot2::ggplot() +
+      ggplot2::geom_sf(data = buffers, ggplot2::aes(fill = .data[[fold_col]]), alpha = 0.1, linetype = "dashed") +
+      ggplot2::geom_sf(data = data_all, ggplot2::aes(color = .data[[fold_col]]), size = 1) +
+      ggplot2::geom_sf(data = centroids, color = "black", shape = 3) +
+      ggplot2::theme_minimal()
+  }
+
+  return(list(summary = summary_stats, plot = diag_plot, rho = rho))
+}
+
+
+#' Check Spatial Folds Independence
+#'
+#' @description
+#' Evaluates the geometric properties of spatial folds to ensure spatial independence
+#' for cross-validation. This function verifies if block sizes and inter-block gaps
+#' are sufficient relative to the prior or model's estimated spatial range (\eqn{\rho}).
+#'
+#' @param object A \code{DataFolds} object created by \code{create_folds()}.
+#' @param rho Numeric. Optional. The spatial range (km) estimated from the exploratory
+#' analysis (e.g., \link[blockCV]{cv_spatial_autocor}) and used as the block size or
+#' the one estimated from the integrated model (e.g., the Matérn range parameter).
+#' @param plot Logical. If \code{TRUE}, returns a diagnostic plot.
+#' @param ... Additional arguments.
+#'
+#' @details
+#' The function assesses independence based on the minimum gap between folds
+#' compared to the spatial range (\eqn{\rho}):
+#' \itemize{
+#'   \item \strong{Contiguous}: Gap = 0. High risk of spatial leakage; observations in
+#'   test folds are spatially correlated with training data.
+#'   \item \strong{Weakly Independent}: 0 < Gap < \eqn{\rho}. A physical gap exists,
+#'   but correlation remains above 0.1.
+#'   \item \strong{Independent}: \eqn{\rho \le} Gap < \eqn{2\rho}. Spatial correlation
+#'   is below 0.1 at the boundary; considered robust for most CV applications.
+#'   \item \strong{Strongly Independent}: Gap \eqn{\ge 2\rho}. Spatial correlation
+#'   is effectively zero, providing the most rigorous test of model extrapolation.
+#' }
+#'
+#' @return An object of class \code{GeoDiagnostic}.
+#' @method check_folds DataFolds
+#' @export
+#' @family blocks diagnostics
+#'
+#' @references
+#' \itemize{
+#'   \item Roberts DR, Bahn V, Ciuti S, Boyce MS, Elith J, Guillera-Arroita G, Hauenstein S, Lahoz-Monfort JJ, Schröder B, Thuiller W, et al. Cross-validation strategies for data with temporal, spatial, hierarchical, or phylogenetic structure. _Ecography_ (2017) 40:913–929. \doi{10.1111/ecog.02881}
+#' }
+#'
+#' @examples
+#' \dontrun{
+#' # 'datasets' is a list of sf objects (e.g. presence-only and presence-absence)
+#' datasets_list <- list(Presence = presence_data, Count = count_data)
+#'
+#' # Create Folds using create_folds()
+#' folds_obj <- create_folds(
+#'   datasets = datasets_list,
+#'   region_polygon = ben_utm,
+#'   k = 5,
+#'   seed = 23,
+#'   cv_method = "spatial",
+#'   size = estimated_range
+#' )
+#'
+#' # Check Spatial Independence (Geometric check)
+#' # Assuming autocorrelation range (rho) is 'estimated_range' in km
+#' spat_diag <- check_folds(folds_obj, rho = estimated_range)
+#' print(spat_diag)
+#' }
+#'
+check_folds <- function(object, ...) {
+  UseMethod("check_folds")
+}
+
+#' @rdname check_folds
+#' @method check_folds DataFolds
+#' @export
+check_folds.DataFolds <- function(object, rho = NULL, plot = TRUE, ...) {
+  res <- check_spatial_geometry(
+    data_all = object$data_all,
+    fold_col = "fold_ids",
+    rho = rho,
+    plot = plot
+  )
+  class(res) <- "GeoDiagnostic"
+
+  return(res)
+}
+
+
+#' Print GeoDiagnostic
+#'
+#' @param x A \code{GeoDiagnostic} object.
+#' @param ... Additional arguments.
+#'
+#' @return The \code{GeoDiagnostic} object invisibly or a \code{ggplot} object.
+#' @export
+#' @family blocks diagnostics
+print.GeoDiagnostic <- function(x, ...) {
+  cat("\n=== isdmtools: Spatial Fold Diagnostic ===\n")
+
+  if (!is.null(x$rho)) {
+    cat(paste0("Model Spatial Range (rho): ", x$rho, " km\n\n"))
+    if ("independence" %in% names(x$summary)) {
+      status_summary <- x$summary %>%
+        dplyr::group_by(.data$independence) %>%
+        dplyr::summarise(Count = dplyr::n(), .groups = "drop")
+      print(as.data.frame(status_summary))
+    }
+  }
+
+  cat("\nInternal Size (Max Distance to Centroid):\n")
+  print(summary(x$summary$max_dist_km))
+
+  cat("\nInter-block Gap (Min Distance to nearest fold):\n")
+  print(summary(x$summary$min_gap_km))
+
+  if (any(x$summary$min_gap_km == 0, na.rm = TRUE)) {
+    cat("\nWARNING: One or more folds are contiguous (Gap = 0). Potential spatial leakage.\n")
+  }
+
+  cat("==========================================\n")
+  invisible(x)
+}
+
+#' @rdname print.GeoDiagnostic
+#' @export
+plot.GeoDiagnostic <- function(x, ...) {
+  if (is.null(x$plot)) stop("No plot found.")
+
+  p <- x$plot +
+    ggplot2::labs(
+      title = "GeoDiagnostic: Size & Isolation",
+      subtitle = paste0("Model Range (rho) = ", ifelse(is.null(x$rho), "N/A", x$rho), " km")
+    )
+  return(p)
+}
+
+
+#--- Diagnosis in the environmental space -----
+
+#' Check Environmental Balance of Folds
+#'
+#' @description Evaluates whether environmental covariates are well-balanced
+#' across folds. It extracts values from a \code{SpatRaster} at point locations.
+#' For large rasters, it uses a background sample to represent the study area.
+#'
+#' @param object A \code{DataFolds} object.
+#' @param covariates A \code{SpatRaster} (terra) containing environmental layers.
+#' @param plot_type Character. Either "density" (default) or "boxplot".
+#' @param n_background Numeric. Number of background points to sample for environmental
+#' space representation. Default 10,000.
+#' @param ... Additional arguments passed to \code{sample_background}.
+#'
+#' @details
+#' The function also calculates the environmental niche overlap using Schoener's D
+#' metric (Schoener, 1968). This metric ranges from 0 (no overlap) to 1 (identical
+#' niches).
+#' \itemize{
+#'   \item \strong{Schoener's D}: Quantifies how well each fold represents the
+#'   available environmental space (the background). A median value is reported
+#'   across all folds for each covariate.
+#'   \item \strong{Interpretation}: Values > 0.6 generally indicate that the folds
+#'   are representative of the study area's environmental conditions. Low values
+#'   suggest that cross-validation results may be biased because the model is being
+#'   tested on environmental conditions it rarely encountered during training.
+#' }
+#'
+#' @return An object of class \code{EnvDiagnostic}.
+#' @export
+#' @family blocks diagnostics
+#'
+#' @examples
+#' \dontrun{
+#' # 'datasets' is a list of sf objects (e.g. presence-only and presence-absence)
+#' datasets_list <- list(Presence = presence_data, Count = count_data)
+#'
+#' # Create Folds
+#' folds_obj <- create_folds(
+#'   datasets = my_data_list,
+#'   region_polygon = ben_utm,
+#'   k = 5,
+#'   seed = 23,
+#'   cv_method = "cluster"
+#' )
+#'
+#' # Check Environmental Representation
+#' env_diag <- check_env_balance(
+#'   object = folds_obj,
+#'   covariates = c("temp", "precip", "elevation"),
+#'   plot_type = "density"
+#' )
+#'
+#' # View p-values in console
+#' print(env_diag)
+#'
+#' # View density plots
+#' plot(env_diag)
+#'
+#'
+#' #--- Mixture of continuous and categorical covariates
+#' r_temp <- terra::rast(extent = c(0, 10, 0, 10), res = 1, val = runif(100, 15, 25))
+#' r_land <- terra::rast(extent = c(0, 10, 0, 10), res = 1, val = sample(1:3, 100, TRUE))
+#'
+#' # Set up land cover as a factor
+#' levels(r_land) <- data.frame(ID = 1:3, cover = c("Forest", "Grass", "Urban"))
+#' env_stack <- c(r_temp, r_land)
+#' names(env_stack) <- c("temperature", "land_use")
+#'
+#' # Run the diagnostic with 500 cells for a quick example
+#' env_diag <- check_env_balance(
+#'   object = folds_obj,
+#'   covariates = env_stack,
+#'   n_background = 500,
+#'   plot_type = "boxplot"
+#' )
+#'
+#' # Inspect results
+#' # 'temperature' will show a p-value and Schoener's D
+#' # 'land_use' will show a p-value (Chi-sq) and Schoener_D as NA
+#' print(env_diag)
+#'
+#' # The plot will automatically facet both types
+#' plot(env_diag)
+#' }
+#'
+check_env_balance <- function(object, ...) {
+  UseMethod("check_env_balance")
+}
+
+#' @rdname check_env_balance
+#' @method check_env_balance DataFolds
+#' @export
+check_env_balance.DataFolds <- function(object, covariates, plot_type = "density",
+                                        n_background = 10000, ...) {
+
+  # Prepare species point data
+  data_sf <- object$data_all %>%
+    dplyr::filter(!is.na(.data$fold_ids))
+
+  fold_vals <- terra::extract(covariates, sf::st_coordinates(data_sf))
+  cov_names <- names(fold_vals)
+
+  raw_data <- data.frame(
+    fold_ids = factor(data_sf$fold_ids),
+    fold_vals,
+    stringsAsFactors = FALSE
+  )
+
+  # Sample background for environmental context
+  back_pts  <- sample_background(mask = covariates, n = n_background, values = FALSE, ...)
+  back_vals <- terra::extract(covariates, back_pts$bg[, c("x", "y")])
+
+  back_data <- data.frame(
+    fold_ids = factor("Background"),
+    back_vals,
+    stringsAsFactors = FALSE
+  )
+
+  full_env_data <- dplyr::bind_rows(raw_data, back_data)
+
+  # Statistical testing and overlap calculation
+  stats_list <- lapply(cov_names, function(v) {
+    if (is.numeric(raw_data[[v]])) {
+
+      # Internal balance: are folds statistically different from each other?
+      test <- stats::kruskal.test(raw_data[[v]] ~ raw_data$fold_ids)
+      type <- "Continuous"
+
+      # External balance: niche overlap between folds and background
+      d_vals <- vapply(split(raw_data[[v]], raw_data$fold_ids),
+                       function(x) calc_niche_overlap(x, back_data[[v]]), FUN.VALUE = numeric(1))
+      overlap_val <- round(stats::median(d_vals, na.rm = TRUE), 3)
+    } else {
+      test <- stats::chisq.test(table(raw_data[[v]], raw_data$fold_ids))
+      type <- "Categorical"
+      overlap_val <- NA_real_
+    }
+
+    data.frame(
+      Variable = v,
+      Type = type,
+      p_val = round(test$p.value, 4),
+      Schoener_D = overlap_val,
+      label = paste0(v, "\n(p = ", round(test$p.value, 3),
+                     if(!is.na(overlap_val)) paste0(", D = ", overlap_val), ")"),
+      stringsAsFactors = FALSE
+    )
+  })
+  stats_df <- dplyr::bind_rows(stats_list)
+
+  plot_list <- lapply(cov_names, function(v) {
+    data.frame(
+      Fold = full_env_data$fold_ids,
+      Variable = v,
+      Value = as.numeric(full_env_data[[v]]),
+      stringsAsFactors = FALSE
+    )
+  })
+  plot_df <- dplyr::bind_rows(plot_list)
+
+  plot_df$Variable <- factor(plot_df$Variable,
+                             levels = stats_df$Variable,
+                             labels = stats_df$label)
+
+  p <- ggplot2::ggplot(plot_df, ggplot2::aes(x = .data$Value, fill = .data$Fold)) +
+    ggplot2::facet_wrap(~ Variable, scales = "free") +
+    ggplot2::theme_bw() +
+    ggplot2::scale_fill_manual(
+      values = c("Background" = "grey80",
+                 setNames(viridisLite::mako(length(levels(raw_data$fold_ids))),
+                          levels(raw_data$fold_ids)))
+    ) +
+    ggplot2::labs(
+      title = "Environmental Representativeness",
+      subtitle = "Folds vs. Background (Grey)",
+      fill = "Fold Group"
+    )
+
+  if (plot_type == "density") {
+    p <- p + ggplot2::geom_density(alpha = 0.4)
+  } else {
+    p <- p + ggplot2::geom_boxplot(ggplot2::aes(y = .data$Fold))
+  }
+
+  res <- list(summary = stats_df, plot = p)
+  class(res) <- "EnvDiagnostic"
+
+  return(res)
+}
+
+
+#' Print EnvDiagnostic
+#'
+#' @param x An \code{EnvDiagnostic} object.
+#' @param ... Additional arguments.
+#' @return The \code{EnvDiagnostic} object invisibly or \code{ggplot} object for covariate distributions.
+#' @export
+#' @family blocks diagnostics
+print.EnvDiagnostic <- function(x, ...) {
+  cat("\n=== isdmtools: Environmental Balance Diagnostic ===\n")
+  cat("Significance (p > 0.05 = Balanced)\n")
+  cat("Overlap (D > 0.6 = Representative)\n\n")
+
+  print(as.data.frame(x$summary[, c("Variable", "Type", "p_val", "Schoener_D")]))
+
+  low_overlap <- x$summary$Variable[x$summary$Schoener_D < 0.5]
+  if (length(low_overlap) > 0) {
+    cat("\nWARNING: Poor environmental representation (D < 0.5) in:",
+        paste(low_overlap, collapse = ", "), "\n")
+  }
+
+  cat("==================================================\n")
+  invisible(x)
+}
+
+#' @rdname print.EnvDiagnostic
+#' @export
+plot.EnvDiagnostic <- function(x, ...) {
+  if (is.null(x$plot)) {
+    stop("No plot was found in the EnvDiagnostic object.")
+  }
+  return(x$plot)
+}
+
+
+#' Summarise Fold Diagnostics
+#'
+#' @description Combines geographic and environmental diagnostics into a
+#' single unified report to evaluate the quality of a cross-validation scheme.
+#'
+#' @param geo_diag A \code{GeoDiagnostic} object.
+#' @param env_diag An \code{EnvDiagnostic} object.
+#'
+#' @return An object of class \code{FoldsSummary}, which inherits from \code{data.frame}.
+#' @export
+#' @family blocks diagnostics
+#'
+summarise_fold_diagnostics <- function(geo_diag, env_diag) {
+
+  if (!inherits(geo_diag, "GeoDiagnostic") || !inherits(env_diag, "EnvDiagnostic")) {
+    stop("Inputs must be 'GeoDiagnostic' and 'EnvDiagnostic' objects.")
+  }
+
+  # Captures spatial independence and fold size
+  geo_df <- data.frame(
+    Domain = "Geographic",
+    Metric = c("Avg Internal Distance (km)", "Avg Inter-Fold Gap (km)"),
+    Value = c(mean(geo_diag$summary$max_dist_km, na.rm = TRUE),
+              mean(geo_diag$summary$min_gap_km, na.rm = TRUE)),
+    Status = ifelse(any(geo_diag$summary$min_gap_km == 0), "Contiguous", "Separated"),
+    stringsAsFactors = FALSE
+  )
+
+  # Captures niche representation and internal balance across folds
+  env_summary <- env_diag$summary
+  env_df <- data.frame(
+    Domain = "Environmental",
+    Metric = c("Median Overlap (D)", "Minimum p-value"),
+    Value = c(stats::median(env_summary$Schoener_D, na.rm = TRUE),
+              min(env_summary$p_val, na.rm = TRUE)),
+    Status = ifelse(min(env_summary$p_val, na.rm = TRUE) < 0.05, "Biased", "Balanced"),
+    stringsAsFactors = FALSE
+  )
+
+  res <- dplyr::bind_rows(geo_df, env_df)
+  res$Value <- round(res$Value, 3)
+
+  class(res) <- c("FoldsSummary", "data.frame")
+  return(res)
+}
+
+
+#' Print FoldsSummary
+#'
+#' @param x An \code{EnvDiagnostic} object.
+#' @param ... Additional arguments.
+#' @return The \code{EnvDiagnostic} object invisibly.
+#' @export
+#' @family blocks diagnostics
+#'
+print.FoldsSummary <- function(x, ...) {
+  cat("\n==========================================\n")
+  cat("   isdmtools: INTEGRATED FOLD SUMMARY     \n")
+  cat("==========================================\n\n")
+
+  print.data.frame(x, row.names = FALSE)
+
+  cat("\n------------------------------------------\n")
+
+  # Schoener's D > 0.6 is a common threshold for good niche representativeness
+  is_sep  <- all(x$Status[x$Domain == "Geographic"] == "Separated")
+  is_bal  <- all(x$Status[x$Domain == "Environmental"] == "Balanced")
+  avg_d   <- x$Value[x$Metric == "Median Overlap (D)"]
+
+  cat("CONCLUSION: ")
+  if (is_sep && is_bal && (is.na(avg_d) || avg_d > 0.6)) {
+    cat("Folds are spatially independent \nand environmentally representative.\n")
+  } else {
+    cat("Potential issues detected. Review \nindividual diagnostic plots for bias.\n")
+  }
+  cat("==========================================\n")
+
+  invisible(x)
+}
