@@ -76,29 +76,34 @@
 #'
 #' @examples
 #' \dontrun{
-#' # Assuming you have dummy rasters and a list of sf objects
-#' # with 'counts' and 'present' columns.
+#' # Assuming you have dummy prediction rasters and a list of sf objects
+#' # with 'counts' and 'present' columns for counts and PA data, respectively.
 #'
 #' # Example 1: Compute metrics for a presence-absence model
-#' # my_metrics <- compute_metrics(
+#' # pa_metrics <- compute_metrics(
 #' #   test_data = list(ds1 = my_pa_sf),
-#' #   prob_raster = my_prob_raster  # compulsory prob_raster
+#' #   prob_raster = prob_raster,  # compulsory prob_raster
+#' #   response_pa = "present"     # default labels column for all PA data
 #' # )
 #'
 #' # Example 2: Compute continuous-outcome metrics for a count-based model
 #' # cont_metrics <- compute_metrics(
 #' #   test_data = list(ds1 = my_count_sf),
-#' #   expected_response = expected_raster, # prediction raster on count scale
+#' #   expected_response = expected_raster, # prediction on count scale
+#' #   response_count = "counts",           # default labels column for all counts
 #' #   metrics = c("rmse", "mae", "mape")
 #' # )
 #'
 #' # Example 3: Compute both continuous and ROC-based metrics for a count model
-#' # The user must first generate a suitability index (prob_raster)
+#' # The user must first generate a suitability index (prob_raster & expected_response)
 #' # from the linear scale prediction (pred_eta).
-#' # expected_raster <- suitability_index(pred_eta, response.type = "count",
-#' #                    output.format = "response")
-#' # suitability_raster <- suitability_index(pred_eta, response.type = "count",
-#' #                        output.format = "prob")
+#'
+#' # expected_raster <- suitability_index(pred_eta,
+#' #                    response_type = "count",
+#' #                    output_format = "response")
+#' # suitability_raster <- suitability_index(pred_eta,
+#' #                       response_type = "count",
+#' #                       output_format = "prob")
 #' # full_metrics <- compute_metrics(
 #' #   test_data = list(ds1 = my_count_sf),
 #' #   prob_raster = suitability_raster,
@@ -108,20 +113,23 @@
 #'
 #' # Example 4: Handle an inlabru-like model with an offset term
 #' # The `expected_response` raster is at the intensity scale (rate).
+#'
 #' # cont_metrics <- compute_metrics(
 #' #   test_data = list(ds1 = my_count_sf),
 #' #   prob_raster = suitability_raster,
 #' #   expected_response = expected_raster,
 #' #   metrics = c("rmse", "auc", "tss"),
 #' #   is_pred_rate = TRUE,
-#' #   exposure = "exposure_col"
+#' #   exposure = "exposure_col" # Exposure column (e.g. sampling unit area)
 #' # )
 #'
 #' # Example 5: Compute dataset-specific and weighted composite metrics for a joint model
-#' # expected_raster  <- suitability_index(pred_eta, response.type = "count.pa",
-#' #                  output.format = "response")
+#' # expected_raster  <- suitability_index(pred_eta,
+#' #                     response_type = "count.pa",
+#' #                     output_format = "response")
 #' # suitability_raster <- suitability_index(pred_eta,
-#' #                    response.type = "count.pa", has.offset = FALSE)
+#' #                       response_type = "count.pa",
+#' #                       has_offset = FALSE)
 #' # full_metrics <- compute_metrics(
 #' #   test_data = list(ds1 = my_count_sf, ds2 = my_pa_sf),
 #' #   prob_raster = suitability_raster,
@@ -719,7 +727,7 @@ summary.ISDMmetrics <- function(object, ...) {
 
   print(round(res_mat, 3), na.print = "N/A")
 
-  cat("\n--- Composite Scores (Weighted) ---\n")
+  cat("\n--- Weighted Composite Scores (Weighted) ---\n")
   comp_names <- all_names[grepl("_Comp$", all_names)]
 
   if(length(comp_names) > 0) {
