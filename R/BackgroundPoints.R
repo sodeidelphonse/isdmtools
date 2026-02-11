@@ -5,10 +5,10 @@
 #-----------------------------------------------------------------
 
 #' @title Generate background points
-#' @description A constructor function to generate background points for computing evaluation scores for presence-only data.
+#'
+#' @description A constructor function to generate background points for various purposes (e.g. computing evaluation scores for presence-only data).
 #' It exclude NA cells from the sample, and eventually the observed locations if needed.
 #'
-#' Inputs:
 #' @param mask `SpatRaster` object to be used as mask (preferably, the predicted intensity or habitat suitability).
 #' @param points Spatial points (`data.frame`, `sf` or `SpatVector` objects) that would be excluded from the background sample.
 #' @param method character. The sampling technique to select pixels from the raster mask (see \link[terra]{spatSample}). It defaults to `random`.
@@ -17,7 +17,7 @@
 #' @param xy logical. If `TRUE`, the locations of sampled cells will be returned. The default is `TRUE`.
 #' @param as.points logical. If `TRUE`, spatial points object will be returned. The default is `FALSE`.
 #' @param na.rm logical. If `TRUE`, NA values will be excluded from the raster mask. It defaults to `TRUE`.
-#' @param ... Additional arguments passed to the internal \link[terra]{spatSample} function.
+#' @param ... Additional arguments passed on to the internal \link[terra]{spatSample} function.
 #'
 #' @return An S3 object with class `BackgroundPoints`, containing the modified `SpatRaster` object and the generated background points.
 #' @export
@@ -120,41 +120,20 @@ sample_background <- function(mask, points = NULL, n = 1000, method = "random", 
 #--- S3 methods for class BackgroundPoints
 #--------------------------------------------
 
-#--- Print method for BackgroundPoints
-
-#' @title Print method for the class `BackgroundPoints`
+#' @title Methods for `BackgroundPoints` objects
 #'
 #' @description
-#' A method to print the Background points generated from `BackgroundPoints` object for model evaluation.
+#' \itemize{
+#'   \item `plot`: Visualizes the background points generated in `BackgroundPoints` object.
+#'   The plot shows cells with NA values or those of the locations excluded from the sample (white color) if the
+#'   `points` argument is provided to `sample_background`. The background points generated are colored red.
+#'   \item `print`: Display few points (first and last ones) in the R session.
+#' }
 #'
 #' @param x A `BackgroundPoints` S3 object.
 #' @param ... Additional arguments (not used by this method).
 #'
-#' @return The object invisibly.
-#' @method print BackgroundPoints
-#' @export
-#' @family BackgroundPoints methods
-#'
-print.BackgroundPoints <- function(x, ...) {
-  cat("Generated Background Points:\n")
-  print_bg(x$bg)
-  cat("Modified Mask available in `$mask`.\n")
-
-}
-
-#--- Plot method for BackgroundPoints objects ---
-#' @title Plot method for the class `BackgroundPoints`
-#'
-#' @description
-#' A method to visualize the background points generated in `BackgroundPoints` object for model evaluation.
-#' The plot shows cells with NA values or those of the locations excluded from the sample (white color) if the
-#' `points` argument is provided to `sample_background` constructor. The background points generated are colored red.
-#'
-#' @param x A `BackgroundPoints` S3 object.
-#' @param ... Additional arguments (not used by this method).
-#'
-#' @return The object invisibly.
-#' @method plot BackgroundPoints
+#' @return Invisibly returns the original object.
 #' @export
 #' @importFrom graphics points
 #' @family BackgroundPoints methods
@@ -199,6 +178,16 @@ plot.BackgroundPoints <- function(x, ...) {
   graphics::points(pts, col = "red", pch = 20, cex = 0.8)
 
   invisible(x)
+}
+
+
+#' @rdname plot.BackgroundPoints
+#' @export
+print.BackgroundPoints <- function(x, ...) {
+  cat("Generated Background Points:\n")
+  print_bg(x$bg)
+  cat("Modified Mask available in `$mask`.\n")
+
 }
 
 

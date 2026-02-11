@@ -2,9 +2,12 @@
 % Please edit documentation in R/backgroundPoints.R
 \name{plot.BackgroundPoints}
 \alias{plot.BackgroundPoints}
-\title{Plot method for the class \code{BackgroundPoints}}
+\alias{print.BackgroundPoints}
+\title{Methods for \code{BackgroundPoints} objects}
 \usage{
 \method{plot}{BackgroundPoints}(x, ...)
+
+\method{print}{BackgroundPoints}(x, ...)
 }
 \arguments{
 \item{x}{A \code{BackgroundPoints} S3 object.}
@@ -12,12 +15,15 @@
 \item{...}{Additional arguments (not used by this method).}
 }
 \value{
-The object invisibly.
+Invisibly returns the original object.
 }
 \description{
-A method to visualize the background points generated in \code{BackgroundPoints} object for model evaluation.
+\itemize{
+\item \code{plot}: Visualizes the background points generated in \code{BackgroundPoints} object.
 The plot shows cells with NA values or those of the locations excluded from the sample (white color) if the
-\code{points} argument is provided to \code{sample_background} constructor. The background points generated are colored red.
+\code{points} argument is provided to \code{sample_background}. The background points generated are colored red.
+\item \code{print}: Display few points (first and last ones) in the R session.
+}
 }
 \examples{
 \dontrun{
@@ -42,7 +48,6 @@ plot(bg_sample2)
 }
 \seealso{
 Other BackgroundPoints methods: 
-\code{\link{print.BackgroundPoints}()},
 \code{\link{sample_background}()}
 }
 \concept{BackgroundPoints methods}

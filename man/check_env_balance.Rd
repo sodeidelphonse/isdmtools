@@ -52,23 +52,52 @@ tested on environmental conditions it rarely encountered during training.
 }
 \examples{
 \dontrun{
-# 'datasets' is a list of sf objects (e.g. presence-only and presence-absence)
+library(sf)
+library(terra)
+library(ggplot2)
+library(isdmtools)
+
+# Generate data as a list of sf objects
+set.seed(42)
+presence_data <- data.frame(
+ x = runif(100, 0, 4),
+ y = runif(100, 6, 13),
+ site = rbinom(100, 1, 0.6)
+) \%>\% st_as_sf(coords = c("x", "y"), crs = 4326)
+
+count_data <- data.frame(
+  x = runif(50, 0, 4),
+ y = runif(50, 6, 13),
+ count = rpois(50, 5)
+) \%>\% st_as_sf(coords = c("x", "y"), crs = 4326)
+
 datasets_list <- list(Presence = presence_data, Count = count_data)
 
+ben_coords <- matrix(c(0, 6, 4, 6, 4, 13, 0, 13, 0, 6), ncol = 2, byrow = TRUE)
+ben_sf <- st_sfc(st_polygon(list(ben_coords)), crs = 4326)
+ben_sf <- st_sf(data.frame(name = "Benin"), ben_sf)
+
+# a) Continuous covariates
+r   <- rast(ben_sf, nrow = 100, ncol = 100, crs = 'epsg:4326')
+r[] <- rnorm(ncell(r))
+rtmp   <- r
+rtmp[] <- runif(ncell(r), 5, 10)
+
+r_stk <- c(r, rtmp + r)
+names(r_stk) <- c("cov1", "cov2")
+
 # Create Folds
-folds_obj <- create_folds(
-  datasets = my_data_list,
-  region_polygon = ben_utm,
-  k = 5,
-  seed = 23,
+folds <- create_folds(
+  datasets_list,
+  region_polygon = ben_sf,
   cv_method = "cluster"
 )
 
 # Check Environmental Representation
-env_diag <- check_env_balance(
-  object = folds_obj,
-  covariates = c("temp", "precip", "elevation"),
-  plot_type = "density"
+env_diag <- suppressWarnings(check_env_balance(
+  folds,
+  covariates = r_stk,
+  n_background = 5000)
 )
 
 # View p-values in console
@@ -77,21 +106,20 @@ print(env_diag)
 # View density plots
 plot(env_diag)
 
-
-#--- Mixture of continuous and categorical covariates
-r_temp <- terra::rast(extent = c(0, 10, 0, 10), res = 1, val = runif(100, 15, 25))
-r_land <- terra::rast(extent = c(0, 10, 0, 10), res = 1, val = sample(1:3, 100, TRUE))
+# b) Mixture of continuous and categorical covariates
+r_temp <- rast(extent = c(0, 4, 6, 13), res = 0.1, val = runif(2500, 15, 25))
+r_land <- rast(extent = c(0, 4, 6, 13), res = 0.1, val = sample(1:3, 2500, TRUE))
 
 # Set up land cover as a factor
 levels(r_land) <- data.frame(ID = 1:3, cover = c("Forest", "Grass", "Urban"))
 env_stack <- c(r_temp, r_land)
 names(env_stack) <- c("temperature", "land_use")
 
-# Run the diagnostic with 500 cells for a quick example
+# Run the diagnostic with 1000 cells over 2500 available
 env_diag <- check_env_balance(
-  object = folds_obj,
+  folds,
   covariates = env_stack,
-  n_background = 500,
+  n_background = 1000,
   plot_type = "boxplot"
 )
 
@@ -99,11 +127,8 @@ env_diag <- check_env_balance(
 # 'temperature' will show a p-value and Schoener's D
 # 'land_use' will show a p-value (Chi-sq) and Schoener_D as NA
 print(env_diag)
-
-# The plot will automatically facet both types
 plot(env_diag)
 }
-
 }
 \seealso{
 Other blocks diagnostics: 

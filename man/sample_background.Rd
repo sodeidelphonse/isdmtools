@@ -33,16 +33,14 @@ sample_background(
 
 \item{na.rm}{logical. If \code{TRUE}, NA values will be excluded from the raster mask. It defaults to \code{TRUE}.}
 
-\item{...}{Additional arguments passed to the internal \link[terra]{spatSample} function.}
+\item{...}{Additional arguments passed on to the internal \link[terra]{spatSample} function.}
 }
 \value{
 An S3 object with class \code{BackgroundPoints}, containing the modified \code{SpatRaster} object and the generated background points.
 }
 \description{
-A constructor function to generate background points for computing evaluation scores for presence-only data.
+A constructor function to generate background points for various purposes (e.g. computing evaluation scores for presence-only data).
 It exclude NA cells from the sample, and eventually the observed locations if needed.
-
-Inputs:
 }
 \examples{
 \dontrun{
@@ -67,7 +65,6 @@ plot(bg_sample2)
 }
 \seealso{
 Other BackgroundPoints methods: 
-\code{\link{plot.BackgroundPoints}()},
-\code{\link{print.BackgroundPoints}()}
+\code{\link{plot.BackgroundPoints}()}
 }
 \concept{BackgroundPoints methods}
