@@ -12,7 +12,7 @@
 \item{nrow}{An integer specifying the number of rows needed for the panel plot.
 The default is 1.}
 
-\item{annotate}{If \code{TRUE}, the north arrow and scale bar is added to the plot.}
+\item{annotate}{If \code{TRUE}, the north arrow and scale bar are added to the plot.}
 
 \item{...}{Additional arguments (not used by this method).}
 }

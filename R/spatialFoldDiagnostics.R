@@ -218,12 +218,17 @@ check_folds.DataFolds <- function(object, rho = NULL, plot = TRUE, ...) {
 }
 
 
-#' Print GeoDiagnostic
+#' Methods for GeoDiagnostic objects
 #'
 #' @param x A \code{GeoDiagnostic} object.
 #' @param ... Additional arguments.
 #'
-#' @return The \code{GeoDiagnostic} object invisibly or a \code{ggplot} object.
+#' @return
+#' \itemize{
+#'   \item \code{print}: Invisibly returns the original object.
+#'   \item \code{plot}: Returns a \code{ggplot2} object.
+#' }
+#'
 #' @export
 #' @family blocks diagnostics
 print.GeoDiagnostic <- function(x, ...) {
@@ -497,11 +502,17 @@ check_env_balance.DataFolds <- function(object, covariates, plot_type = c("densi
 }
 
 
-#' Print EnvDiagnostic
+#' Methods for EnvDiagnostic objects
 #'
 #' @param x An \code{EnvDiagnostic} object.
 #' @param ... Additional arguments.
-#' @return The \code{EnvDiagnostic} object invisibly or \code{ggplot} object for covariate distributions.
+#'
+#' @return
+#' \itemize{
+#'   \item \code{print}: Invisibly returns the original object.
+#'   \item \code{plot}: Returns a \code{ggplot2} object for covariates' density plots.
+#' }
+#'
 #' @export
 #' @family blocks diagnostics
 print.EnvDiagnostic <- function(x, ...) {

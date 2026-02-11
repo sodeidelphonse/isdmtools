@@ -3,7 +3,7 @@
 \name{print.GeoDiagnostic}
 \alias{print.GeoDiagnostic}
 \alias{plot.GeoDiagnostic}
-\title{Print GeoDiagnostic}
+\title{Methods for GeoDiagnostic objects}
 \usage{
 \method{print}{GeoDiagnostic}(x, ...)
 
@@ -15,10 +15,13 @@
 \item{...}{Additional arguments.}
 }
 \value{
-The \code{GeoDiagnostic} object invisibly or a \code{ggplot} object.
+\itemize{
+\item \code{print}: Invisibly returns the original object.
+\item \code{plot}: Returns a \code{ggplot2} object.
+}
 }
 \description{
-Print GeoDiagnostic
+Methods for GeoDiagnostic objects
 }
 \seealso{
 Other blocks diagnostics: 

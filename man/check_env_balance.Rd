@@ -115,11 +115,11 @@ levels(r_land) <- data.frame(ID = 1:3, cover = c("Forest", "Grass", "Urban"))
 env_stack <- c(r_temp, r_land)
 names(env_stack) <- c("temperature", "land_use")
 
-# Run the diagnostic with 1000 cells over 2500 available
+# Run the diagnostic with 2000 cells over 2800 available
 env_diag <- check_env_balance(
   folds,
   covariates = env_stack,
-  n_background = 1000,
+  n_background = 2000,
   plot_type = "boxplot"
 )
 

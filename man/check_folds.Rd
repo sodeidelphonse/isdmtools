@@ -44,25 +44,47 @@ is effectively zero, providing the most rigorous test of model extrapolation.
 }
 \examples{
 \dontrun{
-# 'datasets' is a list of sf objects (e.g. presence-only and presence-absence)
+library(sf)
+library(terra)
+library(ggplot2)
+library(isdmtools)
+
+# Generate the data as a list of sf objects
+set.seed(42)
+presence_data <- data.frame(
+ x = runif(100, 0, 4),
+ y = runif(100, 6, 13),
+ site = rbinom(100, 1, 0.6)
+) \%>\% st_as_sf(coords = c("x", "y"), crs = 4326)
+
+count_data <- data.frame(
+  x = runif(50, 0, 4),
+ y = runif(50, 6, 13),
+ count = rpois(50, 5)
+) \%>\% st_as_sf(coords = c("x", "y"), crs = 4326)
+
 datasets_list <- list(Presence = presence_data, Count = count_data)
 
+ben_coords <- matrix(c(0, 6, 4, 6, 4, 13, 0, 13, 0, 6), ncol = 2, byrow = TRUE)
+ben_sf <- st_sfc(st_polygon(list(ben_coords)), crs = 4326)
+ben_sf <- st_sf(data.frame(name = "Benin"), ben_sf)
+
 # Create Folds using create_folds()
-folds_obj <- create_folds(
-  datasets = datasets_list,
-  region_polygon = ben_utm,
+folds <- create_folds(
+  datasets_list,
+  region_polygon = ben_sf,
   k = 5,
-  seed = 23,
-  cv_method = "spatial",
-  size = estimated_range
+  cv_method = "cluster"
 )
 
-# Check Spatial Independence (Geometric check)
-# Assuming autocorrelation range (rho) is 'estimated_range' in km
-spat_diag <- check_folds(folds_obj, rho = estimated_range)
-print(spat_diag)
-}
+# Check Spatial Independence
+# Assuming autocorrelation range (rho) is 150 km
+spat_diag <- check_folds(folds, rho = 150, plot = TRUE)
 
+# View results
+print(spat_diag)
+plot(spat_diag)
+}
 }
 \references{
 \itemize{

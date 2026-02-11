@@ -3,7 +3,7 @@
 \name{print.EnvDiagnostic}
 \alias{print.EnvDiagnostic}
 \alias{plot.EnvDiagnostic}
-\title{Print EnvDiagnostic}
+\title{Methods for EnvDiagnostic objects}
 \usage{
 \method{print}{EnvDiagnostic}(x, ...)
 
@@ -15,10 +15,13 @@
 \item{...}{Additional arguments.}
 }
 \value{
-The \code{EnvDiagnostic} object invisibly or \code{ggplot} object for covariate distributions.
+\itemize{
+\item \code{print}: Invisibly returns the original object.
+\item \code{plot}: Returns a \code{ggplot2} object for covariates' density plots.
+}
 }
 \description{
-Print EnvDiagnostic
+Methods for EnvDiagnostic objects
 }
 \seealso{
 Other blocks diagnostics: 
