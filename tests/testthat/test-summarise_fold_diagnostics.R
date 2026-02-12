@@ -76,7 +76,7 @@ test_that("summarise_fold_diagnostics handles categorical-only NAs gracefully", 
     print(summary_obj)
   })
 
-  #-- Assertions ---
+  #-- Assertions
   expect_s3_class(summary_obj, "FoldsSummary")
 
   # Check that Median Overlap is NA but didn't break the function
@@ -85,7 +85,7 @@ test_that("summarise_fold_diagnostics handles categorical-only NAs gracefully", 
   # Check that the conclusion was reached correctly despite NAs
   expect_true(any(grepl("environmentally representative", output)))
 
-  #-- Verify biased scenario (p < 0.05)
+  # Verify biased scenario (p < 0.05)
   env_mock_biased <- env_mock
   env_mock_biased$summary$p_val <- 0.01
   summary_biased <- summarise_fold_diagnostics(geo_mock, env_mock_biased)
@@ -116,7 +116,7 @@ test_that("summarise_fold_diagnostics provides a unified report", {
   env_diag <- check_env_balance(mock_folds, covariates = r, n_background = 100)
   report <- summarise_fold_diagnostics(geo_diag, env_diag)
 
-  # Eexpectations
+  # Expectations
   expect_s3_class(report, "data.frame")
   expect_s3_class(report, "FoldsSummary")
   expect_true(all(c("Geographic", "Environmental") %in% report$Domain))
@@ -133,11 +133,11 @@ test_that("summarise_fold_diagnostics provides a unified report", {
 
   expect_true(all(expected_metrics %in% report$Metric))
 
-  # Check: With a gap of ~11 and rho of 0.5, Status should be 'Separated'
+  # With a gap of ~11 and rho of 0.5, Status should be 'Separated'
   geo_status <- report$Status[report$Metric == "Avg Inter-Fold Gap (km)"]
   expect_equal(geo_status, "Separated")
 
-  # Check: Since points are in corners, p-value should likely be significant (Biased)
-  env_status <- report$Status[report$Metric == "Min_P_Value"]
+  # Since points are in corners, p-value should likely be significant
+  env_status <- report$Status[report$Metric == "Minimum p-value"]
   expect_type(env_status, "character")
 })

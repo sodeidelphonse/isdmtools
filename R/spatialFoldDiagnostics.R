@@ -621,19 +621,30 @@ summarise_fold_diagnostics <- function(geo_diag, env_diag) {
 
   # Captures niche representation and internal balance across folds
   env_summary <- env_diag$summary
+  med_d <- stats::median(env_summary$Schoener_D, na.rm = TRUE)
+  min_p <- min(env_summary$p_val, na.rm = TRUE)
+
   env_df <- data.frame(
     Domain = "Environmental",
     Metric = c("Median Overlap (D)", "Minimum p-value"),
-    Value = c(stats::median(env_summary$Schoener_D, na.rm = TRUE),
-              min(env_summary$p_val, na.rm = TRUE)),
-    Status = ifelse(min(env_summary$p_val, na.rm = TRUE) < 0.05, "Biased", "Balanced"),
+    Value = c(med_d, min_p),
+    Status = c(
+      dplyr::case_when(
+        is.na(med_d) ~ "N/A",
+        med_d < 0.2  ~ "Very Low Overlap",
+        med_d < 0.4  ~ "Low Overlap",
+        med_d < 0.6  ~ "Moderate Overlap",
+        TRUE         ~ "Balanced"
+      ),
+      ifelse(min_p < 0.05, "Biased", "Balanced")
+    ),
     stringsAsFactors = FALSE
   )
 
   res <- dplyr::bind_rows(geo_df, env_df)
-  res$Value <- round(res$Value, 3)
-
+  res$Value  <- round(res$Value, 3)
   class(res) <- c("FoldsSummary", "data.frame")
+
   return(res)
 }
 
@@ -657,8 +668,11 @@ print.FoldsSummary <- function(x, ...) {
 
   # Schoener's D > 0.6 is a common threshold for good niche representativeness
   is_sep  <- all(x$Status[x$Domain == "Geographic"] == "Separated")
-  is_bal  <- all(x$Status[x$Domain == "Environmental"] == "Balanced")
-  avg_d   <- x$Value[x$Metric == "Median Overlap (D)"]
+
+  env_statuses <- x$Status[x$Domain == "Environmental"]
+  is_bal <- all(env_statuses %in% c("Balanced", "N/A"))
+
+  avg_d  <- x$Value[x$Metric == "Median Overlap (D)"]
 
   cat("CONCLUSION: ")
   if (is_sep && is_bal && (is.na(avg_d) || avg_d > 0.6)) {

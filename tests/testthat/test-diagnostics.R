@@ -107,9 +107,7 @@ test_that("EnvDiagnostic handles categorical variables correctly", {
   class(mock_folds) <- "DataFolds"
 
   # Diagnostic
-  env_diag <- suppressWarnings(
-    check_env_balance(mock_folds, covariates = r_cat, n_background = 100)
-  )
+  env_diag <- check_env_balance(mock_folds, covariates = r_cat, n_background = 100)
 
   # Expectations
   expect_s3_class(env_diag, "EnvDiagnostic")
@@ -158,7 +156,7 @@ test_that("Environmental overlap logic (Schoener's D) works correctly", {
   expect_type(env_diag$summary$Schoener_D, "double")
 
   # Points in a corner of the map should have lower overlap
-  expect_lt(env_diag$summary$Schoener_D, 1.0)
+  expect_lt(env_diag$summary$Schoener_D, 0.9)
 })
 
 

@@ -132,20 +132,29 @@ create_folds <- function(datasets, region_polygon = NULL, k = 5, seed = 23, cv_m
 }
 
 #--- S3 method for DataFolds objects ----
-#' @title Extract a specific fold from a DataFolds object
+
+#' @title Extract a specific fold from a data partition
 #'
 #' @description
-#' This method splits the data into training and testing sets for a given fold.
-#' It uses the original datasets to ensure each returned `sf` object contains only
-#' its original columns, avoiding `NA` values from the binding process.
+#' A generic method to extract a specific fold from an object that contains
+#' data partitions, for use in cross-validation. This method splits the data
+#' into training and testing sets for a given fold, using original datasets
+#' to ensure each returned `sf` object contains only original columns.
 #'
-#' @param object A `DataFolds` S3 object.
+#' @param object An object from which a spatial fold can be extracted (e.g. `DataFolds` object)
 #' @param fold An integer specifying the fold ID to be extracted as the test set.
-#' @param ... Additional arguments (not used by this method).
+#' @param ... Additional arguments passed to specific methods.
+#'
+#' @details
+#' This function is generic, meaning it provides a consistent interface for
+#' different types of objects. The method dispatched depends on the class of the `object` argument.
+#' The primary purpose is to abstract the process of accessing training and testing data for a given fold,
+#' making it easier to write generic cross-validation loops.
 #'
 #' @return A list containing two named elements: `train` and `test`.
-#' Each of these elements is a named list of `sf` objects, with names corresponding to the original datasets.
-#' @method extract_fold DataFolds
+#' The structure of these elements depends on the specific method used.
+#' For the `DataFolds` class, each element is a named list of `sf` objects,
+#' with names corresponding to the original datasets.
 #' @export
 #' @family spatial blocking methods
 #'
@@ -153,6 +162,7 @@ create_folds <- function(datasets, region_polygon = NULL, k = 5, seed = 23, cv_m
 #' \dontrun{
 #' # Create a list of some dummy sf data with different columns
 #' library(sf)
+#' library(dplyr)
 #' set.seed(42)
 #' presence_data <- data.frame(
 #'   x = runif(100, 0, 4),
@@ -187,7 +197,18 @@ create_folds <- function(datasets, region_polygon = NULL, k = 5, seed = 23, cv_m
 #' names(train_data_presence)
 #' names(test_data_count)
 #' }
-#'
+extract_fold <- function(object, ...) {
+  UseMethod("extract_fold")
+}
+
+#' @method extract_fold default
+extract_fold.default <- function(x) {
+  cat("Default method for class", sQuote(class(x)), ".\n")
+}
+
+#' @rdname extract_fold
+#' @method extract_fold DataFolds
+#' @export
 extract_fold.DataFolds <- function(object, fold, ...) {
   if (!(fold %in% 1:object$k)) {
     stop(paste("Invalid fold number. Must be between 1 and", object$k))
@@ -224,56 +245,9 @@ extract_fold.DataFolds <- function(object, fold, ...) {
   ))
 }
 
-# --- Generic method ---
-#' @title Extract a specific fold from a data partition
-#'
-#' @description
-#' A generic method to extract a specific fold from an object that contains
-#' data partitions, for use in cross-validation.
-#'
-#' @param object An object from which a spatial fold can be extracted (e.g. `DataFolds` object)
-#' @param ... Additional arguments passed to specific methods.
-#'
-#' @details
-#' This function is generic, meaning it provides a consistent interface for
-#' different types of objects. The method dispatched depends on the class of the `object` argument.
-#' The primary purpose is to abstract the process of accessing training and testing data for a given fold,
-#' making it easier to write generic cross-validation loops.
-#'
-#' @return A list containing two named elements: `train` and `test`.
-#' The structure of these elements depends on the specific method used.
-#' For the `DataFolds` class, each element is a named list of `sf` objects,
-#' with names corresponding to the original datasets.
-#'
-#' @export
-#' @family spatial blocking methods
-#'
-extract_fold <- function(object, ...) {
-  UseMethod("extract_fold")
-}
 
-# --- Default method ---
-#' @method extract_fold default
-extract_fold.default <- function(x) {
-  cat("Default method for class", sQuote(class(x)), ".\n")
-}
-
-#--- Print method ---
-#' @title Print a summary of a DataFolds object
-#'
-#' @description
-#' A method to print a concise summary of the `DataFolds` object, including the
-#' number of folds, the datasets included, and a breakdown of individuals per
-#' dataset across all folds.
-#'
-#' @param x A `DataFolds` S3 object.
-#' @param ... Additional arguments (not used by this method).
-#'
-#' @return The object invisibly.
-#' @method print DataFolds
+#' @rdname plot.DataFolds
 #' @export
-#' @family spatial blocking methods
-#'
 print.DataFolds <- function(x, ...) {
   cat("A DataFolds S3 object with", x$k, "folds.\n")
   cat("Datasets included:", paste(x$dataset_names, collapse = ", "), "\n\n")
@@ -289,24 +263,9 @@ print.DataFolds <- function(x, ...) {
   invisible(x)
 }
 
-#' Summary of DataFolds object
-#'
-#' @description Provides a global overview of the cross-validation setup, including
-#' the total number of observations, the number of folds, and a global tally of
-#' points assigned to each fold or excluded via spatial buffering.
-#'
-#' @param object A \code{DataFolds} object.
-#' @param ... Additional arguments (currently unused).
-#'
-#' @return Invisibly returns a \code{table} of observation counts per fold,
-#' including excluded points.
-#'
-#' @details This method provides an aggregated view across all datasets. For a
-#' breakdown by individual dataset source, use \code{print()}.
-#'
-#' @method summary DataFolds
+
+#' @rdname plot.DataFolds
 #' @export
-#' @family spatial blocking methods
 summary.DataFolds <- function(object, ...) {
   cat("DataFolds Object Summary\n")
   cat("------------------------\n")
@@ -314,12 +273,17 @@ summary.DataFolds <- function(object, ...) {
   cat("Number of folds (k):", object$k, "\n")
   cat("Datasets merged:", paste(object$dataset_names, collapse = ", "), "\n")
 
-  # Calculate global counts across all merged datasets
-  counts <- table(object$data_all$folds_ids, useNA = "always")
-  names(counts)[is.na(names(counts))] <- "Excluded (Buffer)"
+  df_plain <- sf::st_drop_geometry(object$data_all)
 
-  cat("\nGlobal Observations per Fold:\n")
-  print(counts)
+  df_plain$fold_label <- ifelse(
+    is.na(df_plain$folds_ids),
+    "Excluded",
+    as.character(df_plain$folds_ids)
+  )
+  counts <- table(df_plain$fold_label, df_plain$datasetName)
+
+  cat("\nGlobal Observations per Fold and Dataset:\n")
+  print(addmargins(counts))
 
   if (!is.null(object$region_polygon)) {
     cat("\nSpatial Context: Study area polygon is defined (available for plotting).\n")
@@ -330,21 +294,31 @@ summary.DataFolds <- function(object, ...) {
   invisible(counts)
 }
 
-#--- Plot method ---
-#' @title Plot block cross-validation folds for multisource datasets
+#' @title Methods for manipulating cross-validation folds from multisource datasets
 #'
 #' @description
-#' A method to visualize the spatial blocks and the corresponding train/test
-#' partitions for each fold of a `DataFolds` object.
+#' \itemize{
+#'   \item \code{plot}: A method to visualize the spatial blocks and the corresponding train/test
+#'   partitions of observations.
+#'   \item \code{print}: A method to print folds' information per dataset,
+#'   including the species geometry and the number of points excluded via spatial buffering.
+#'   \item \code{summary}: A method to print a concise summary of the `DataFolds` object.
+#' }
 #'
 #' @param x A `DataFolds` S3 object.
+#' @param object A `DataFolds` S3 object.
 #' @param nrow An integer specifying the number of rows needed for the panel plot.
 #' The default is 1.
 #' @param annotate If `TRUE`, the north arrow and scale bar are added to the plot.
 #' @param ... Additional arguments (not used by this method).
 #'
-#' @return A `ggplot2` object that can be printed or saved.
-#' @method plot DataFolds
+#' @return
+#' \itemize{
+#'   \item \code{plot}: Returns a \code{ggplot} object that can be modified.
+#'   \item \code{print}: Invisibly returns the original object.
+#'   \item \code{summary}: Invisibly returns the original object with a \code{table} of observation count.
+#' }
+#'
 #' @export
 #' @family spatial blocking methods
 #'
@@ -377,18 +351,22 @@ summary.DataFolds <- function(object, ...) {
 #' ben_sf <- st_sfc(st_polygon(list(ben_coords)), crs = 4326)
 #' ben_sf <- st_sf(data.frame(name = "Benin"), ben_sf)
 #'
-#' # Create a DataFolds object for the example
+#' # Create a DataFolds object
 #' my_folds <- create_folds(datasets_list, ben_sf, k = 5)
+#' print(my_folds)
 #'
-#' # Now you can plot the object
+#' # Plot the folds'
 #' plot_cv <- plot(my_folds)
 #' print(plot_cv)
 #'
-#' # You can even customize the plot output (e.g. adjusting the axes breaks)
+#' # You can even customize the plot (e.g. adjusting the axes breaks)
 #' plot_cv <- plot_cv +
 #'   ggplot2::scale_x_continuous(breaks = seq(0, 4, 1)) +
 #'   ggplot2::scale_y_continuous(breaks = seq(6, 13, 2))
 #' print(plot_cv)
+#'
+#' # Folds overview
+#' summary(my_folds)
 #' }
 #'
 plot.DataFolds <- function(x, nrow = 1, annotate = TRUE, ...) {
