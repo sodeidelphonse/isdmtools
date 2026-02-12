@@ -520,12 +520,20 @@ print.EnvDiagnostic <- function(x, ...) {
   cat("Significance (p > 0.05 = Balanced)\n")
   cat("Overlap (D > 0.6 = Representative)\n\n")
 
-  print(as.data.frame(x$summary[, c("Variable", "Type", "p_val", "Schoener_D")]))
+  print.data.frame(x$summary[, c("Variable", "Type", "p_val", "Schoener_D")], row.names = FALSE)
 
-  low_overlap <- x$summary$Variable[x$summary$Schoener_D < 0.5]
-  if (length(low_overlap) > 0) {
-    cat("\nWARNING: Poor environmental representation (D < 0.5) in:",
-        paste(low_overlap, collapse = ", "), "\n")
+  if (any(x$summary$Schoener_D < 0.6, na.rm = TRUE)) {
+    low_d_vars <- x$summary$Variable[!is.na(x$summary$Schoener_D) & x$summary$Schoener_D < 0.6]
+    if (length(low_d_vars) > 0) {
+      cat(paste("\nWARNING: Poor environmental representation (D < 0.6) in:",
+                paste(low_d_vars, collapse = ", "), "\n"))
+    }
+  }
+
+  if (any(x$summary$p_val < 0.05)) {
+    biased_p_vars <- x$summary$Variable[x$summary$p_val < 0.05]
+    cat(paste("WARNING: Significant differences between folds (p < 0.05) in:",
+              paste(biased_p_vars, collapse = ", "), "\n"))
   }
 
   cat("==================================================\n")
