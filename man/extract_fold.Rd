@@ -77,6 +77,6 @@ names(test_data_count)
 \seealso{
 Other spatial blocking methods: 
 \code{\link{create_folds}()},
-\code{\link{print.DataFolds}()}
+\code{\link{plot.DataFolds}()}
 }
 \concept{spatial blocking methods}

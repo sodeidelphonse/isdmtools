@@ -246,54 +246,6 @@ extract_fold.DataFolds <- function(object, fold, ...) {
 }
 
 
-#' @rdname plot.DataFolds
-#' @export
-print.DataFolds <- function(x, ...) {
-  cat("A DataFolds S3 object with", x$k, "folds.\n")
-  cat("Datasets included:", paste(x$dataset_names, collapse = ", "), "\n\n")
-  cat("Summary of individuals per dataset:\n")
-
-  summary_df <- x$data_all %>%
-    dplyr::mutate(fold = ifelse(is.na(.data$folds_ids), "Excluded (Buffer)", as.character(.data$folds_ids))) %>%
-    dplyr::group_by(.data$datasetName, .data$folds_ids) %>%
-    dplyr::summarise(n = dplyr::n(), .groups = "drop")
-
- print(summary_df)
-
-  invisible(x)
-}
-
-
-#' @rdname plot.DataFolds
-#' @export
-summary.DataFolds <- function(object, ...) {
-  cat("DataFolds Object Summary\n")
-  cat("------------------------\n")
-  cat("Total observations:", nrow(object$data_all), "\n")
-  cat("Number of folds (k):", object$k, "\n")
-  cat("Datasets merged:", paste(object$dataset_names, collapse = ", "), "\n")
-
-  df_plain <- sf::st_drop_geometry(object$data_all)
-
-  df_plain$fold_label <- ifelse(
-    is.na(df_plain$folds_ids),
-    "Excluded",
-    as.character(df_plain$folds_ids)
-  )
-  counts <- table(df_plain$fold_label, df_plain$datasetName)
-
-  cat("\nGlobal Observations per Fold and Dataset:\n")
-  print(addmargins(counts))
-
-  if (!is.null(object$region_polygon)) {
-    cat("\nSpatial Context: Study area polygon is defined (available for plotting).\n")
-  } else {
-    cat("\nSpatial Context: No study area polygon defined.\n")
-  }
-
-  invisible(counts)
-}
-
 #' @title Methods for manipulating cross-validation folds from multisource datasets
 #'
 #' @description
@@ -316,9 +268,8 @@ summary.DataFolds <- function(object, ...) {
 #' \itemize{
 #'   \item \code{plot}: Returns a \code{ggplot} object that can be modified.
 #'   \item \code{print}: Invisibly returns the original object.
-#'   \item \code{summary}: Invisibly returns the original object with a \code{table} of observation count.
+#'   \item \code{summary}: Invisibly returns the original object with a \code{table} of observations count.
 #' }
-#'
 #' @export
 #' @family spatial blocking methods
 #'
@@ -355,7 +306,7 @@ summary.DataFolds <- function(object, ...) {
 #' my_folds <- create_folds(datasets_list, ben_sf, k = 5)
 #' print(my_folds)
 #'
-#' # Plot the folds'
+#' # Plot the folds
 #' plot_cv <- plot(my_folds)
 #' print(plot_cv)
 #'
@@ -422,6 +373,56 @@ plot.DataFolds <- function(x, nrow = 1, annotate = TRUE, ...) {
 
   return(plot_cv)
 }
+
+#' @rdname plot.DataFolds
+#' @export
+print.DataFolds <- function(x, ...) {
+  cat("A DataFolds S3 object with", x$k, "folds.\n")
+  cat("Datasets included:", paste(x$dataset_names, collapse = ", "), "\n\n")
+  cat("Summary of individuals per dataset:\n")
+
+  summary_df <- x$data_all %>%
+    dplyr::mutate(fold = ifelse(is.na(.data$folds_ids), "Excluded (Buffer)", as.character(.data$folds_ids))) %>%
+    dplyr::group_by(.data$datasetName, .data$folds_ids) %>%
+    dplyr::summarise(n = dplyr::n(), .groups = "drop")
+
+  print(summary_df)
+
+  invisible(x)
+}
+
+
+#' @rdname plot.DataFolds
+#' @export
+#' @importFrom stats addmargins
+summary.DataFolds <- function(object, ...) {
+  cat("DataFolds Object Summary\n")
+  cat("------------------------\n")
+  cat("Total observations:", nrow(object$data_all), "\n")
+  cat("Number of folds (k):", object$k, "\n")
+  cat("Datasets merged:", paste(object$dataset_names, collapse = ", "), "\n")
+
+  df_plain <- sf::st_drop_geometry(object$data_all)
+
+  df_plain$fold_label <- ifelse(
+    is.na(df_plain$folds_ids),
+    "Excluded",
+    as.character(df_plain$folds_ids)
+  )
+  counts <- table(df_plain$fold_label, df_plain$datasetName)
+
+  cat("\nGlobal Observations per Fold and Dataset:\n")
+  print(addmargins(counts))
+
+  if (!is.null(object$region_polygon)) {
+    cat("\nSpatial Context: Study area polygon is defined (available for plotting).\n")
+  } else {
+    cat("\nSpatial Context: No study area polygon defined.\n")
+  }
+
+  invisible(counts)
+}
+
 
 #-- Helper function to bind sf objects into a single object ----
 

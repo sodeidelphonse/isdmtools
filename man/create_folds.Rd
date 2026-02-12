@@ -102,9 +102,6 @@ Valavi R, Elith J, Lahoz-Monfort JJ, Guillera-Arroita G. blockCV: an R package f
 \seealso{
 Other spatial blocking methods: 
 \code{\link{extract_fold}()},
-\code{\link{extract_fold.DataFolds}()},
-\code{\link{plot.DataFolds}()},
-\code{\link{print.DataFolds}()},
-\code{\link{summary.DataFolds}()}
+\code{\link{plot.DataFolds}()}
 }
 \concept{spatial blocking methods}
