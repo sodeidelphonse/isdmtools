@@ -4,13 +4,16 @@
 \alias{plot.DataFolds}
 \alias{print.DataFolds}
 \alias{summary.DataFolds}
-\title{Methods for manipulating cross-validation folds from multisource datasets}
+\alias{autoplot.DataFolds}
+\title{Method for manipulating cross-validation folds from multisource datasets}
 \usage{
 \method{plot}{DataFolds}(x, nrow = 1, annotate = TRUE, ...)
 
 \method{print}{DataFolds}(x, ...)
 
 \method{summary}{DataFolds}(object, ...)
+
+\method{autoplot}{DataFolds}(object, ...)
 }
 \arguments{
 \item{x}{A \code{DataFolds} S3 object.}
@@ -27,6 +30,7 @@ The default is 1.}
 \value{
 \itemize{
 \item \code{plot}: Returns a \code{ggplot} object that can be modified.
+\item \code{autoplot}: Returns a \code{ggplot} object.
 \item \code{print}: Invisibly returns the original object.
 \item \code{summary}: Invisibly returns the original object with a \code{table} of observations count.
 }
@@ -35,6 +39,7 @@ The default is 1.}
 \itemize{
 \item \code{plot}: A method to visualize the spatial blocks and the corresponding train/test
 partitions of observations.
+\item \code{autoplot}: A method for the native visualisation of \code{spatialsample} objects.
 \item \code{print}: A method to print folds' information per dataset,
 including the species geometry and the number of points excluded via spatial buffering.
 \item \code{summary}: A method to print a concise summary of the \code{DataFolds} object.
@@ -69,12 +74,12 @@ ben_coords <- matrix(c(0, 6, 4, 6, 4, 13, 0, 13, 0, 6), ncol = 2, byrow = TRUE)
 ben_sf <- st_sfc(st_polygon(list(ben_coords)), crs = 4326)
 ben_sf <- st_sf(data.frame(name = "Benin"), ben_sf)
 
-# Create a DataFolds object
-my_folds <- create_folds(datasets_list, ben_sf, k = 5)
-print(my_folds)
+# Create a DataFolds object with the default `cluster` blocking
+folds_clus <- create_folds(datasets_list, ben_sf, k = 5)
+print(folds_clus)
 
 # Plot the folds
-plot_cv <- plot(my_folds)
+plot_cv <- plot(folds_clus)
 print(plot_cv)
 
 # You can even customize the plot (e.g. adjusting the axes breaks)
@@ -84,9 +89,13 @@ plot_cv <- plot_cv +
 print(plot_cv)
 
 # Folds overview
-summary(my_folds)
-}
+summary(folds_clus)
 
+# Run the native autoplot for a spatialsample blocking method
+fold_ss <- create_folds(datasets_list, ben_sf, cv_method = "block", k = 5)
+autoplot(fold_ss)
+plot(fold_ss)
+}
 }
 \seealso{
 Other spatial blocking methods: 

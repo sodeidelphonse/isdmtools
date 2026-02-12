@@ -93,12 +93,12 @@ create_folds <- function(datasets, region_polygon = NULL, k = 5, seed = 23, cv_m
                      "nndm" = {
                        .check_suggests("spatialsample")
                        res <- spatialsample::spatial_nndm_cv(xy_all, ...)
-                       list(folds_ids = .extract_spatialsample_ids(res, n_obs))
+                       list(folds_ids = .extract_spatialsample_ids(res, n_obs), folds_data = res)
                      },
                      "buffer" = {
                        .check_suggests("spatialsample")
                        res <- spatialsample::spatial_buffer_vfold_cv(xy_all, v = k, ...)
-                       list(folds_ids = .extract_spatialsample_ids(res, n_obs))
+                       list(folds_ids = .extract_spatialsample_ids(res, n_obs), folds_data = res)
                      },
                      "location" = {
                        .check_suggests("spatialsample")
@@ -107,12 +107,12 @@ create_folds <- function(datasets, region_polygon = NULL, k = 5, seed = 23, cv_m
                          stop("The 'group' argument (column name) is required for 'location out' CV.")
                        }
                        res <- spatialsample::spatial_leave_location_out_cv(xy_all, v = k, ...)
-                       list(folds_ids = .extract_spatialsample_ids(res, n_obs))
+                       list(folds_ids = .extract_spatialsample_ids(res, n_obs), folds_data = res)
                      },
                      "block" = {
                        .check_suggests("spatialsample")
                        res <- spatialsample::spatial_block_cv(xy_all, v = k, ...)
-                       list(folds_ids = .extract_spatialsample_ids(res, n_obs))
+                       list(folds_ids = .extract_spatialsample_ids(res, n_obs), folds_data = res)
                      },
                      stop("Invalid `cv_method`. Supported: 'cluster', 'spatial', 'block', 'buffer', 'location', 'nndm'.")
                      )
@@ -125,6 +125,8 @@ create_folds <- function(datasets, region_polygon = NULL, k = 5, seed = 23, cv_m
     folds_info = folds_cv,
     dataset_names = names(datasets),
     k = k,
+    cv_method = cv_method,
+    seed = seed,
     region_polygon = region_polygon
   )
   class(object) <- "DataFolds"
@@ -246,12 +248,13 @@ extract_fold.DataFolds <- function(object, fold, ...) {
 }
 
 
-#' @title Methods for manipulating cross-validation folds from multisource datasets
+#' @title Method for manipulating cross-validation folds from multisource datasets
 #'
 #' @description
 #' \itemize{
 #'   \item \code{plot}: A method to visualize the spatial blocks and the corresponding train/test
 #'   partitions of observations.
+#'   \item \code{autoplot}: A method for the native visualisation of `spatialsample` objects.
 #'   \item \code{print}: A method to print folds' information per dataset,
 #'   including the species geometry and the number of points excluded via spatial buffering.
 #'   \item \code{summary}: A method to print a concise summary of the `DataFolds` object.
@@ -267,6 +270,7 @@ extract_fold.DataFolds <- function(object, fold, ...) {
 #' @return
 #' \itemize{
 #'   \item \code{plot}: Returns a \code{ggplot} object that can be modified.
+#'   \item \code{autoplot}: Returns a \code{ggplot} object.
 #'   \item \code{print}: Invisibly returns the original object.
 #'   \item \code{summary}: Invisibly returns the original object with a \code{table} of observations count.
 #' }
@@ -302,12 +306,12 @@ extract_fold.DataFolds <- function(object, fold, ...) {
 #' ben_sf <- st_sfc(st_polygon(list(ben_coords)), crs = 4326)
 #' ben_sf <- st_sf(data.frame(name = "Benin"), ben_sf)
 #'
-#' # Create a DataFolds object
-#' my_folds <- create_folds(datasets_list, ben_sf, k = 5)
-#' print(my_folds)
+#' # Create a DataFolds object with the default `cluster` blocking
+#' folds_clus <- create_folds(datasets_list, ben_sf, k = 5)
+#' print(folds_clus)
 #'
 #' # Plot the folds
-#' plot_cv <- plot(my_folds)
+#' plot_cv <- plot(folds_clus)
 #' print(plot_cv)
 #'
 #' # You can even customize the plot (e.g. adjusting the axes breaks)
@@ -317,9 +321,13 @@ extract_fold.DataFolds <- function(object, fold, ...) {
 #' print(plot_cv)
 #'
 #' # Folds overview
-#' summary(my_folds)
-#' }
+#' summary(folds_clus)
 #'
+#' # Run the native autoplot for a spatialsample blocking method
+#' fold_ss <- create_folds(datasets_list, ben_sf, cv_method = "block", k = 5)
+#' autoplot(fold_ss)
+#' plot(fold_ss)
+#' }
 plot.DataFolds <- function(x, nrow = 1, annotate = TRUE, ...) {
 
   num_datasets <- length(x$dataset_names)
@@ -423,6 +431,25 @@ summary.DataFolds <- function(object, ...) {
   invisible(counts)
 }
 
+#' @rdname plot.DataFolds
+#' @importFrom ggplot2 autoplot
+#' @export
+autoplot.DataFolds <- function(object, ...) {
+
+  engine_data      <- object$folds_info$folds_data
+  is_spatial_style <- inherits(engine_data, "rset") || inherits(engine_data, "rsplit")
+
+  if (is_spatial_style) {
+    if (requireNamespace("spatialsample", quietly = TRUE)) {
+      return(ggplot2::autoplot(engine_data, ...))
+    } else {
+      message("Note: 'spatialsample' is required for its native autoplot visualization.")
+      message("Falling back to the default isdmtools::plot() method.")
+    }
+  }
+
+  return(plot(object, ...))
+}
 
 #-- Helper function to bind sf objects into a single object ----
 
