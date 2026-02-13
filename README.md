@@ -1,4 +1,10 @@
 # isdmtools
+[![R-CMD-check](https://github.com/sodeidelphonse/isdmtools/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/sodeidelphonse/isdmtools/actions/workflows/R-CMD-check.yaml)
+
+[![pkgcheck](https://github.com/sodeidelphonse/isdmtools/workflows/pkgcheck/badge.svg)](https://github.com/sodeidelphonse/isdmtools/actions?query=workflow%3Apkgcheck)
+
+[![Codecov test coverage](https://codecov.io/gh/sodeidelphonse/isdmtools/graph/badge.svg)](https://app.codecov.io/gh/sodeidelphonse/isdmtools)
+
 `isdmtools` is an R package designed to streamline the process of preparing and visualizing spatial data for biodiversity distribution modeling and evaluating the resulting models. 
 The package has been designed with a specific focus on **integrated species distribution models (ISDMs)** based on multisource geospatial datasets within a Bayesian framework. 
 This includes presence-only, count and presence-absence data. It provides a set of tools for producing robust and reproducible workflows for block cross-validation, data management and visualization, and model evaluation, leveraging the power of `sf`, `dplyr`, and `ggplot2` packages.
