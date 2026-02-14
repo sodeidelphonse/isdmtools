@@ -50,15 +50,18 @@ Use \code{"spatial"} for \code{blockCV} grid-blocking, or \code{"block"} for \co
 The behavior of \code{create_folds} depends on the \code{cv_method} chosen.
 Several methods require specific arguments passed via the ellipsis (\code{...}):
 \itemize{
+\item \bold{\code{block} & \code{buffer}}: Accept \code{radius} and \code{buffer}
+arguments to define the size of the test/assessment areas and the width of
+the exclusion zones, respectively. Particularly, for grid-blocking with \code{"block"} scheme,
+additional arguments to \link[sf]{st_make_grid} can be provided.
+\item \bold{\code{nndm}}: Requires \code{prediction_sites}, an \code{sf}
+object representing the area where the model will be projected.
 \item \bold{\code{location}}: Requires a \code{group} argument (character).
 This should be the name of a column in your datasets representing
 independent units like \code{"site_id"}, \code{"year"}, or \code{"observer"}.
-This tests model generalizability across these factors.
-\item \bold{\code{block} & \code{buffer}}: Accept \code{radius} and \code{buffer}
-arguments to define the size of the test/assessment areas and the width of
-the exclusion zones, respectively.
-\item \bold{\code{nndm}}: Requires \code{prediction_sites}, an \code{sf}
-object representing the area where the model will be projected.
+This tests model generalizability across these factors. It also accepts
+\code{radius} and \code{buffer} arguments for the size of assessment areas
+and the width of the exclusion zones, respectively.
 }
 }
 \examples{

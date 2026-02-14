@@ -799,7 +799,7 @@ plot.ISDMmetrics <- function(x, include_composite = TRUE, ...) {
   names(cols) <- unique_sources
 
   if ("Composite" %in% names(cols)) {
-    cols["Composite"] <- "#CC0000"
+    cols["Composite"] <- "#228B22"
   }
 
   p <- ggplot2::ggplot(plot_data, ggplot2::aes(x = .data$Source, y = .data$Value, fill = .data$Source)) +

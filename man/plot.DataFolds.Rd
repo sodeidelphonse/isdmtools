@@ -5,7 +5,7 @@
 \alias{print.DataFolds}
 \alias{summary.DataFolds}
 \alias{autoplot.DataFolds}
-\title{Method for manipulating cross-validation folds from multisource datasets}
+\title{Method for manipulating cross-validation folds for multisource datasets}
 \usage{
 \method{plot}{DataFolds}(x, nrow = 1, annotate = TRUE, ...)
 

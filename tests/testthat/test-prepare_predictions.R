@@ -3,6 +3,7 @@
 
 library(testthat)
 library(sf)
+library(terra)
 
 test_that("prepare_predictions handles sf inputs and converts to clean x/y", {
 
@@ -72,7 +73,6 @@ test_that("prepare_predictions performs CRS-aware spatial filtering", {
                   coords = c("x", "y"), crs = 32631)
 
   # Case 2: Base map in LongLat (degrees)
-  # A polygon that would contain the points once transformed
   poly <- st_as_sfc("POLYGON ((4.3 50.8, 4.5 50.8, 4.5 51.0, 4.3 51.0, 4.3 50.8))", crs = 4326)
   base_map <- st_sf(geometry = poly)
 
@@ -103,3 +103,51 @@ test_that("error handling for invalid inputs", {
   expect_error(prepare_predictions(data.frame(val = 1:5)),
                "Input data lacks 'x' and 'y' coordinate columns")
 })
+
+if (require(fmesher, quietly = TRUE)) {
+
+  test_that("prepare_predictions correctly handles and preserves bru_prediction structures", {
+    set.seed(42)
+    grid_df <- expand.grid(x = 0:20, y = 0:20)
+    grid_df$mu <- (grid_df$x + grid_df$y) / 10 + rnorm(nrow(grid_df), 0, 0.1)
+    grid_df$sd <- runif(nrow(grid_df), 0.1, 0.5)
+
+    grid_r <- terra::rast(grid_df, crs = "epsg:4326")
+
+    #--- Create Mesh and Vertices
+    bnd  <- fm_nonconvex_hull(as.matrix(grid_df[, c("x", "y")]), convex = -0.10)
+    mesh <- fm_mesh_2d(boundary = bnd, max.edge = c(5, 20), crs = "epsg:4326")
+    vt   <- fm_vertices(mesh, format = "sf")
+
+    #--- Extract outputs and Fill Buffer NAs with global values
+    sampled_vals <- terra::extract(grid_r, vt)
+
+    field_sim <- vt %>%
+      dplyr::mutate(
+        mean   = dplyr::coalesce(sampled_vals$mu, mean(grid_df$mu, na.rm = TRUE)),
+        sd     = dplyr::coalesce(sampled_vals$sd, mean(grid_df$sd, na.rm = TRUE)),
+        q0.025 = mean - 1.96 * sd,
+        q0.975 = mean + 1.96 * sd,
+        median = mean
+      )
+
+    # Mimic inlabru-like output
+    class(field_sim) <- c("bru_prediction", "sf", "data.frame")
+
+    # Assertions
+    grid_pp3 <- prepare_predictions(field_sim)
+
+    # Verify the class is maintained or transformed correctly
+    expect_s3_class(grid_pp3, "bru_prediction")
+    expect_s3_class(grid_pp3, "sf")
+
+    # Verify crucial inlabru columns are present
+    expect_true(".vertex" %in% names(grid_pp3))
+    expect_true("mean" %in% names(grid_pp3))
+
+    expect_false(any(is.na(grid_pp3$mean)))
+
+    # Check that geometry is intact
+    expect_true(inherits(sf::st_geometry(grid_pp3), "sfc_POINT"))
+  })
+}
