@@ -21,6 +21,31 @@ into an sf object if it is from points predictions (e.g., \link[fmesher]{fm_vert
 the corresponding locations if it is from pixel grids (see \link[fmesher]{fm_pixels}). Spatial prediction data can also be obtained across a given region
 using \code{expand.grid(x, y)} function, where 'x' and 'y' are geographical coordinates of the grids locations.
 }
+\examples{
+\dontrun{
+library(dplyr)
+library(sf)
+set.seed(42)
+
+# Simulate the prediction data
+grid_df <- expand.grid(x = 0:50, y = 0:50)
+grid_df <-  grid_df \%>\%
+  mutate(mu = (x + y) / 10 + rnorm(nrow(grid_df))) \%>\%
+  mutate(sd = runif(nrow(grid_df), 0.5, 1.5))
+head(grid_df)
+
+# a) A standard data.frame returns the same object
+grid_pp1 <- prepare_predictions(grid_df)
+class(grid_pp1)
+
+# b) A bru_prediction object returns a data.frame
+grid_sf <- st_as_sf(grid_df, coords = c("x", "y"), crs = "epsg:4326")
+class(grid_sf) <- c("bru_prediction", "sf", "data.frame")
+
+grid_pp2 <- prepare_predictions(grid_sf)
+class(grid_pp2)
+}
+}
 \seealso{
 Other prediction analyses: 
 \code{\link{generate_maps}()},

@@ -68,13 +68,13 @@
 #' plot(binary_map)
 #'
 #' # Generate an expected mean (assume "eta" is from a count model)
-#' count_expected_mean <- suitability_index(
+#' expected_mean <- suitability_index(
 #'   x_rast,
 #'   post_stat = "eta",
 #'   response_type = "count",
 #'   output_format = "response"
 #' )
-#' plot(count_expected_mean)
+#' plot(expected_mean)
 #' }
 #'
 #' @references
@@ -184,6 +184,30 @@ inv_cloglog <- function(eta, scaling = 1) {
 #' @export
 #' @family prediction analyses
 #'
+#' @examples
+#' \dontrun{
+#' library(dplyr)
+#' library(sf)
+#' set.seed(42)
+#'
+#' # Simulate the prediction data
+#' grid_df <- expand.grid(x = 0:50, y = 0:50)
+#' grid_df <-  grid_df %>%
+#'   mutate(mu = (x + y) / 10 + rnorm(nrow(grid_df))) %>%
+#'   mutate(sd = runif(nrow(grid_df), 0.5, 1.5))
+#' head(grid_df)
+#'
+#' # a) A standard data.frame returns the same object
+#' grid_pp1 <- prepare_predictions(grid_df)
+#' class(grid_pp1)
+#'
+#' # b) A bru_prediction object returns a data.frame
+#' grid_sf <- st_as_sf(grid_df, coords = c("x", "y"), crs = "epsg:4326")
+#' class(grid_sf) <- c("bru_prediction", "sf", "data.frame")
+#'
+#' grid_pp2 <- prepare_predictions(grid_sf)
+#' class(grid_pp2)
+#' }
 prepare_predictions <- function(prediction_data, base_map = NULL) {
 
   if(!is.null(base_map)) {

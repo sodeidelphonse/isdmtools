@@ -591,7 +591,7 @@ compute_metrics <- function(test_data,
 
 #--- Methods associated to ISDMmetrics ------------------------
 
-#' @title Methods for ISDMmetrics Objects
+#' @title Method for ISDMmetrics Objects
 #'
 #' @description Objects of class \code{ISDMmetrics} are returned by \code{\link{compute_metrics}}.
 #' These methods provide structured ways to view, summarize and manipulate the evaluation results.

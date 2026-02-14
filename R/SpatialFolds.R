@@ -248,7 +248,7 @@ extract_fold.DataFolds <- function(object, fold, ...) {
 }
 
 
-#' @title Method for manipulating cross-validation folds from multisource datasets
+#' @title Method for manipulating cross-validation folds for multisource datasets
 #'
 #' @description
 #' \itemize{

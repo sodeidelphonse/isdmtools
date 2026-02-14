@@ -84,13 +84,13 @@ binary_map <- app(pa_probability, function(x) ifelse(x < 0.5, 0, 1))
 plot(binary_map)
 
 # Generate an expected mean (assume "eta" is from a count model)
-count_expected_mean <- suitability_index(
+expected_mean <- suitability_index(
   x_rast,
   post_stat = "eta",
   response_type = "count",
   output_format = "response"
 )
-plot(count_expected_mean)
+plot(expected_mean)
 }
 
 }

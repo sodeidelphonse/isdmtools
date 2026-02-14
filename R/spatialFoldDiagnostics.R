@@ -218,7 +218,7 @@ check_folds.DataFolds <- function(object, rho = NULL, plot = TRUE, ...) {
 }
 
 
-#' Methods for GeoDiagnostic objects
+#' Method for GeoDiagnostic objects
 #'
 #' @param x A \code{GeoDiagnostic} object.
 #' @param ... Additional arguments.
@@ -502,7 +502,7 @@ check_env_balance.DataFolds <- function(object, covariates, plot_type = c("densi
 }
 
 
-#' Methods for EnvDiagnostic objects
+#' Method for EnvDiagnostic objects
 #'
 #' @param x An \code{EnvDiagnostic} object.
 #' @param ... Additional arguments.

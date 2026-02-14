@@ -3,7 +3,7 @@
 \name{print.EnvDiagnostic}
 \alias{print.EnvDiagnostic}
 \alias{plot.EnvDiagnostic}
-\title{Methods for EnvDiagnostic objects}
+\title{Method for EnvDiagnostic objects}
 \usage{
 \method{print}{EnvDiagnostic}(x, ...)
 
@@ -21,7 +21,7 @@
 }
 }
 \description{
-Methods for EnvDiagnostic objects
+Method for EnvDiagnostic objects
 }
 \seealso{
 Other blocks diagnostics: 

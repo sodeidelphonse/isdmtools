@@ -7,7 +7,7 @@
 \alias{plot.ISDMmetrics}
 \alias{as.data.frame.ISDMmetrics}
 \alias{get_background}
-\title{Methods for ISDMmetrics Objects}
+\title{Method for ISDMmetrics Objects}
 \usage{
 \method{print}{ISDMmetrics}(x, ...)
 

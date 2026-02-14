@@ -3,7 +3,7 @@
 \name{print.GeoDiagnostic}
 \alias{print.GeoDiagnostic}
 \alias{plot.GeoDiagnostic}
-\title{Methods for GeoDiagnostic objects}
+\title{Method for GeoDiagnostic objects}
 \usage{
 \method{print}{GeoDiagnostic}(x, ...)
 
@@ -21,7 +21,7 @@
 }
 }
 \description{
-Methods for GeoDiagnostic objects
+Method for GeoDiagnostic objects
 }
 \seealso{
 Other blocks diagnostics: 

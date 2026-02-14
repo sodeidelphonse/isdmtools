@@ -120,7 +120,7 @@ sample_background <- function(mask, points = NULL, n = 1000, method = "random", 
 #--- S3 methods for class BackgroundPoints
 #--------------------------------------------
 
-#' @title Methods for `BackgroundPoints` objects
+#' @title Method for `BackgroundPoints` objects
 #'
 #' @description
 #' \itemize{

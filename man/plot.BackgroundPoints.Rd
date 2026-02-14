@@ -3,7 +3,7 @@
 \name{plot.BackgroundPoints}
 \alias{plot.BackgroundPoints}
 \alias{print.BackgroundPoints}
-\title{Methods for \code{BackgroundPoints} objects}
+\title{Method for \code{BackgroundPoints} objects}
 \usage{
 \method{plot}{BackgroundPoints}(x, ...)
 
