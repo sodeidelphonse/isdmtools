@@ -66,13 +66,16 @@
 #' A `total composite score` (`TOT_ROC_SCORE` or `TOT_ERROR_SCORE`) is also computed by averaging the selected metrics in the corresponding 'overall metrics' character vector.
 #' It can be viewed as a quick *multi-criterion decision metric* for multiple models comparison.
 #'
-#' @return A named `list` containing all requested metrics. The names follow a consistent convention:
+#' @return An object of class `ISDMmetrics`. It is named `list` containing all requested metrics. The names follow a consistent convention:
 #' \itemize{
 #'   \item `"<METRIC>_<DATASET_NAME>"`: Individual metric score for each dataset.
 #'   \item `"<METRIC>_Comp"`: The sample-size-weighted composite score for a given metric across all valid datasets.
 #'   \item `"TOT_ROC_SCORE"`: The overall ROC-based composite score, averaged across the selected `overall_roc_metrics`.
 #'   \item `"TOT_ERROR_SCORE"`: The overall error-based composite score, averaged across `overall_error_metrics`.
 #' }
+#'
+#' The \code{ISDMmetrics} object is a list containing performance values for individual datasets and composite scores.
+#' Use \code{as.data.frame()} to flatten these for cross-validation summaries.
 #'
 #' @examples
 #' \dontrun{
@@ -591,7 +594,7 @@ compute_metrics <- function(test_data,
 
 #--- Methods associated to ISDMmetrics ------------------------
 
-#' @title Method for ISDMmetrics Objects
+#' @title Methods for ISDMmetrics Objects
 #'
 #' @description Objects of class \code{ISDMmetrics} are returned by \code{\link{compute_metrics}}.
 #' These methods provide structured ways to view, summarize and manipulate the evaluation results.
@@ -610,6 +613,8 @@ compute_metrics <- function(test_data,
 #'   \item \code{as.data.frame}: Returns a tidy \code{data.frame} in long format.
 #' }
 #'
+#' @name ISDMmetrics-methods
+#' @rdname ISDMmetrics-methods
 #' @family ISDM evaluation methods
 #' @export
 #'
@@ -678,7 +683,7 @@ print.ISDMmetrics <- function(x, ...) {
   invisible(x)
 }
 
-#' @rdname print.ISDMmetrics
+#' @rdname ISDMmetrics-methods
 #' @export
 summary.ISDMmetrics <- function(object, ...) {
 
@@ -752,7 +757,7 @@ summary.ISDMmetrics <- function(object, ...) {
 }
 
 
-#' @rdname print.ISDMmetrics
+#' @rdname ISDMmetrics-methods
 #' @export
 `[.ISDMmetrics` <- function(x, ...) {
 
@@ -769,7 +774,7 @@ summary.ISDMmetrics <- function(object, ...) {
 }
 
 
-#' @rdname print.ISDMmetrics
+#' @rdname ISDMmetrics-methods
 #' @export
 plot.ISDMmetrics <- function(x, include_composite = TRUE, ...) {
 
@@ -819,7 +824,7 @@ plot.ISDMmetrics <- function(x, include_composite = TRUE, ...) {
 }
 
 
-#' @rdname print.ISDMmetrics
+#' @rdname ISDMmetrics-methods
 #' @export
 as.data.frame.ISDMmetrics <- function(x, ...) {
 
@@ -849,7 +854,7 @@ as.data.frame.ISDMmetrics <- function(x, ...) {
   return(df[, c("Full_Name", "Metric", "Source", "Value")])
 }
 
-#' @rdname print.ISDMmetrics
+#' @rdname ISDMmetrics-methods
 #' @description \code{get_background} is a helper function to extract the
 #' \code{BackgroundPoints} object from an \code{ISDMmetrics} object.
 #'

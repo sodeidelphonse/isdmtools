@@ -2,6 +2,7 @@
 % Please edit documentation in R/SpatialFolds.R
 \name{create_folds}
 \alias{create_folds}
+\alias{bind_datasets}
 \title{Create block cross-validation folds for multisource spatial datasets}
 \usage{
 create_folds(
@@ -12,10 +13,13 @@ create_folds(
   cv_method = "cluster",
   ...
 )
+
+bind_datasets(datasets)
 }
 \arguments{
 \item{datasets}{A named list of \code{sf} objects. Each list element should be a
-spatial dataset with its name corresponding to the list element's name.}
+spatial dataset with its name corresponding to the list element's name.
+The list elements must have the same geographical projection and coordinates reference system (CRS).}
 
 \item{region_polygon}{An \code{sf} object representing the study area polygon.}
 
@@ -31,7 +35,9 @@ For \code{"block"}, \code{"buffer"}, \code{"location"}, or \code{"nndm"}, see th
 }
 \value{
 An S3 object of class \code{DataFolds} containing the combined data,
-fold information, and the original datasets.
+fold information, the region polygon, and the original datasets.
+
+An \code{sf} object containing all datasets along with their corresponding name.
 }
 \description{
 A constructor function for the \code{DataFolds} S3 class. It binds multiple \code{sf} datasets
@@ -104,7 +110,7 @@ Valavi R, Elith J, Lahoz-Monfort JJ, Guillera-Arroita G. blockCV: an R package f
 }
 \seealso{
 Other spatial blocking methods: 
-\code{\link{extract_fold}()},
-\code{\link{plot.DataFolds}()}
+\code{\link{DataFolds-methods}}
 }
 \concept{spatial blocking methods}
+\keyword{internal}

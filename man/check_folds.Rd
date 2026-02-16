@@ -92,11 +92,12 @@ plot(spat_diag)
 }
 }
 \seealso{
-Other blocks diagnostics: 
+\code{\link{DataFolds-methods}} for interacting with \code{DataFolds} objects.
+
+Other diagnostic tools: 
+\code{\link{EnvDiagnostic-methods}},
+\code{\link{GeoDiagnostic-methods}},
 \code{\link{check_env_balance}()},
-\code{\link{print.EnvDiagnostic}()},
-\code{\link{print.FoldsSummary}()},
-\code{\link{print.GeoDiagnostic}()},
 \code{\link{summarise_fold_diagnostics}()}
 }
-\concept{blocks diagnostics}
+\concept{diagnostic tools}

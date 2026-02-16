@@ -14,6 +14,7 @@ by computing a comprehensive evaluation metrics for the joint model, including R
 \seealso{
 Useful links:
 \itemize{
+  \item \url{https://sodeidelphonse.github.io/isdmtools/}
   \item \url{https://github.com/sodeidelphonse/isdmtools}
   \item Report bugs at \url{https://github.com/sodeidelphonse/isdmtools/issues}
 }

@@ -107,6 +107,7 @@ print(env_diag)
 plot(env_diag)
 
 # b) Mixture of continuous and categorical covariates
+set.seed(42)
 r_temp <- rast(extent = c(0, 4, 6, 13), res = 0.1, val = runif(2500, 15, 25))
 r_land <- rast(extent = c(0, 4, 6, 13), res = 0.1, val = sample(1:3, 2500, TRUE))
 
@@ -131,11 +132,12 @@ plot(env_diag)
 }
 }
 \seealso{
-Other blocks diagnostics: 
+\code{\link{DataFolds-methods}} for interacting with \code{DataFolds} objects.
+
+Other diagnostic tools: 
+\code{\link{EnvDiagnostic-methods}},
+\code{\link{GeoDiagnostic-methods}},
 \code{\link{check_folds}()},
-\code{\link{print.EnvDiagnostic}()},
-\code{\link{print.FoldsSummary}()},
-\code{\link{print.GeoDiagnostic}()},
 \code{\link{summarise_fold_diagnostics}()}
 }
-\concept{blocks diagnostics}
+\concept{diagnostic tools}

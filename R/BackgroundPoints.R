@@ -120,7 +120,7 @@ sample_background <- function(mask, points = NULL, n = 1000, method = "random", 
 #--- S3 methods for class BackgroundPoints
 #--------------------------------------------
 
-#' @title Method for `BackgroundPoints` objects
+#' @title Methods for `BackgroundPoints` objects
 #'
 #' @description
 #' \itemize{
@@ -132,8 +132,10 @@ sample_background <- function(mask, points = NULL, n = 1000, method = "random", 
 #'
 #' @param x A `BackgroundPoints` S3 object.
 #' @param ... Additional arguments (not used by this method).
-#'
 #' @return Invisibly returns the original object.
+#'
+#' @name BackgroundPoints-methods
+#' @rdname BackgroundPoints-methods
 #' @export
 #' @importFrom graphics points
 #' @family BackgroundPoints methods
@@ -181,7 +183,7 @@ plot.BackgroundPoints <- function(x, ...) {
 }
 
 
-#' @rdname plot.BackgroundPoints
+#' @rdname BackgroundPoints-methods
 #' @export
 print.BackgroundPoints <- function(x, ...) {
   cat("Generated Background Points:\n")

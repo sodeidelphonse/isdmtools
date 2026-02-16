@@ -67,13 +67,16 @@ If \code{is_pred_rate} is \code{TRUE}, observed counts are rescaled by this expo
 \item{...}{Additional arguments to be passed on to internal functions, particularly \link[pROC]{coords} function.}
 }
 \value{
-A named \code{list} containing all requested metrics. The names follow a consistent convention:
+An object of class \code{ISDMmetrics}. It is named \code{list} containing all requested metrics. The names follow a consistent convention:
 \itemize{
 \item \code{"<METRIC>_<DATASET_NAME>"}: Individual metric score for each dataset.
 \item \code{"<METRIC>_Comp"}: The sample-size-weighted composite score for a given metric across all valid datasets.
 \item \code{"TOT_ROC_SCORE"}: The overall ROC-based composite score, averaged across the selected \code{overall_roc_metrics}.
 \item \code{"TOT_ERROR_SCORE"}: The overall error-based composite score, averaged across \code{overall_error_metrics}.
 }
+
+The \code{ISDMmetrics} object is a list containing performance values for individual datasets and composite scores.
+Use \code{as.data.frame()} to flatten these for cross-validation summaries.
 }
 \description{
 This function computes a wide range of evaluation metrics for a single-layer raster of model predictions against a list of one or more point-based datasets. It is designed to handle different data types (presence-only, presence-absence, and count data) and provides individual metrics as well as dataset-weighted composite scores.
@@ -184,6 +187,6 @@ It can be viewed as a quick \emph{multi-criterion decision metric} for multiple 
 \code{\link{extract_fold}}, \code{\link{sample_background}}
 
 Other ISDM evaluation methods: 
-\code{\link{print.ISDMmetrics}()}
+\code{\link{ISDMmetrics-methods}}
 }
 \concept{ISDM evaluation methods}

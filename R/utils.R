@@ -2,13 +2,26 @@
 #' Calculate Niche Overlap (Schoener's D)
 #'
 #' @description Computes the overlap between two distributions.
-#' @param x Numeric vector (e.g., predictions or fold values).
+#' @param x Numeric vector (e.g., predictions or spatial fold values).
 #' @param y Numeric vector (e.g., observations or background values).
 #'
 #' @param n Numeric. Number of points for density estimation. Default 512.
 #' @return Numeric value between 0 and 1.
-#' @noRd
+#' @export
 #'
+#' @examples
+#' \dontrun{
+#' library(isdmtools)
+#'
+#' # Create two identical distributions (should have high overlap)
+#' v1 <- rnorm(1000, mean = 10, sd = 1)
+#' v2 <- rnorm(1000, mean = 10, sd = 1)
+#' overlap_high <- calc_niche_overlap(v1, v2)
+#'
+#' # Create two divergent distributions (should have low overlap)
+#' v3 <- rnorm(1000, mean = 20, sd = 1)
+#' overlap_low <- calc_niche_overlap(v1, v3)
+#' }
 calc_niche_overlap <- function(x, y, n = 512) {
   if (!is.numeric(x) || !is.numeric(y)) return(NA_real_)
   if (length(stats::na.omit(x)) < 2 || length(stats::na.omit(y)) < 2) return(NA_real_)
@@ -37,5 +50,13 @@ calc_niche_overlap <- function(x, y, n = 512) {
     return(mako_hex[seq_len(n)])
   } else { # Fallback for very high k
     return(grDevices::colorRampPalette(mako_hex)(n))
+  }
+}
+
+# Check a package Namespace
+.check_suggests <- function(pkg) {
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+    stop(sprintf("Package '%s' is required for this function or option. Please install it.", pkg),
+         call. = FALSE)
   }
 }

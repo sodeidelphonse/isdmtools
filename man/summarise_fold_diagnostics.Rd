@@ -2,17 +2,28 @@
 % Please edit documentation in R/spatialFoldDiagnostics.R
 \name{summarise_fold_diagnostics}
 \alias{summarise_fold_diagnostics}
+\alias{print.FoldsSummary}
 \title{Summarise Fold Diagnostics}
 \usage{
 summarise_fold_diagnostics(geo_diag, env_diag)
+
+\method{print}{FoldsSummary}(x, ...)
 }
 \arguments{
 \item{geo_diag}{A \code{GeoDiagnostic} object.}
 
 \item{env_diag}{An \code{EnvDiagnostic} object.}
+
+\item{x}{A \code{FoldsSummary} object.}
+
+\item{...}{Additional arguments}
 }
 \value{
-An object of class \code{FoldsSummary}, which inherits from \code{data.frame}.
+\itemize{
+\item \code{summarise_fold_diagnostics}: An object of class \code{FoldsSummary},
+which inherits from \code{data.frame}.
+\item \code{print}: The \code{FoldsSummary} object invisibly.
+}
 }
 \description{
 Combines geographic and environmental diagnostics into a
@@ -65,15 +76,18 @@ env_diag <- suppressWarnings(check_env_balance(
 )
 
 # Combined diagnostics
-summarise_fold_diagnostics(spat_diag, env_diag)
+sum_diag <- summarise_fold_diagnostics(spat_diag, env_diag)
+print(sum_diag)
 }
+
 }
 \seealso{
-Other blocks diagnostics: 
+\code{\link{DataFolds-methods}} for interacting with \code{DataFolds} objects.
+
+Other diagnostic tools: 
+\code{\link{EnvDiagnostic-methods}},
+\code{\link{GeoDiagnostic-methods}},
 \code{\link{check_env_balance}()},
-\code{\link{check_folds}()},
-\code{\link{print.EnvDiagnostic}()},
-\code{\link{print.FoldsSummary}()},
-\code{\link{print.GeoDiagnostic}()}
+\code{\link{check_folds}()}
 }
-\concept{blocks diagnostics}
+\concept{diagnostic tools}

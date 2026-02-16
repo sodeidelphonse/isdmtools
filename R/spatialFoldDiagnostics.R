@@ -148,7 +148,9 @@ check_spatial_geometry <- function(data_all, fold_col = "folds_ids", rho = NULL,
 #'
 #' @return An object of class \code{GeoDiagnostic}.
 #' @export
-#' @family blocks diagnostics
+#'
+#' @family diagnostic tools
+#' @seealso \code{\link{DataFolds-methods}} for interacting with `DataFolds` objects.
 #'
 #' @references
 #' \itemize{
@@ -218,7 +220,7 @@ check_folds.DataFolds <- function(object, rho = NULL, plot = TRUE, ...) {
 }
 
 
-#' Method for GeoDiagnostic objects
+#' Methods for GeoDiagnostic objects
 #'
 #' @param x A \code{GeoDiagnostic} object.
 #' @param ... Additional arguments.
@@ -229,8 +231,10 @@ check_folds.DataFolds <- function(object, rho = NULL, plot = TRUE, ...) {
 #'   \item \code{plot}: Returns a \code{ggplot2} object.
 #' }
 #'
+#' @name GeoDiagnostic-methods
+#' @rdname GeoDiagnostic-methods
+#' @family diagnostic tools
 #' @export
-#' @family blocks diagnostics
 print.GeoDiagnostic <- function(x, ...) {
   cat("\n=== isdmtools: Spatial Fold Diagnostic ===\n")
 
@@ -258,7 +262,7 @@ print.GeoDiagnostic <- function(x, ...) {
   invisible(x)
 }
 
-#' @rdname print.GeoDiagnostic
+#' @rdname GeoDiagnostic-methods
 #' @export
 plot.GeoDiagnostic <- function(x, ...) {
   if (is.null(x$plot)) stop("No plot found.")
@@ -306,7 +310,8 @@ plot.GeoDiagnostic <- function(x, ...) {
 #'
 #' @return An object of class \code{EnvDiagnostic}.
 #' @export
-#' @family blocks diagnostics
+#' @family diagnostic tools
+#' @seealso \code{\link{DataFolds-methods}} for interacting with `DataFolds` objects.
 #'
 #' @examples
 #' \dontrun{
@@ -365,6 +370,7 @@ plot.GeoDiagnostic <- function(x, ...) {
 #' plot(env_diag)
 #'
 #' # b) Mixture of continuous and categorical covariates
+#' set.seed(42)
 #' r_temp <- rast(extent = c(0, 4, 6, 13), res = 0.1, val = runif(2500, 15, 25))
 #' r_land <- rast(extent = c(0, 4, 6, 13), res = 0.1, val = sample(1:3, 2500, TRUE))
 #'
@@ -502,7 +508,7 @@ check_env_balance.DataFolds <- function(object, covariates, plot_type = c("densi
 }
 
 
-#' Method for EnvDiagnostic objects
+#' Methods for EnvDiagnostic objects
 #'
 #' @param x An \code{EnvDiagnostic} object.
 #' @param ... Additional arguments.
@@ -513,8 +519,10 @@ check_env_balance.DataFolds <- function(object, covariates, plot_type = c("densi
 #'   \item \code{plot}: Returns a \code{ggplot2} object for covariates' density plots.
 #' }
 #'
+#' @name EnvDiagnostic-methods
+#' @rdname EnvDiagnostic-methods
 #' @export
-#' @family blocks diagnostics
+#' @family diagnostic tools
 print.EnvDiagnostic <- function(x, ...) {
   cat("\n=== isdmtools: Environmental Balance Diagnostic ===\n")
   cat("Significance (p > 0.05 = Balanced)\n")
@@ -540,7 +548,7 @@ print.EnvDiagnostic <- function(x, ...) {
   invisible(x)
 }
 
-#' @rdname print.EnvDiagnostic
+#' @rdname EnvDiagnostic-methods
 #' @export
 plot.EnvDiagnostic <- function(x, ...) {
   if (is.null(x$plot)) {
@@ -557,10 +565,19 @@ plot.EnvDiagnostic <- function(x, ...) {
 #'
 #' @param geo_diag A \code{GeoDiagnostic} object.
 #' @param env_diag An \code{EnvDiagnostic} object.
+#' @param x A \code{FoldsSummary} object.
+#' @param ... Additional arguments
 #'
-#' @return An object of class \code{FoldsSummary}, which inherits from \code{data.frame}.
+#' @return
+#' \itemize{
+#'  \item \code{summarise_fold_diagnostics}: An object of class \code{FoldsSummary},
+#'  which inherits from \code{data.frame}.
+#'  \item \code{print}: The \code{FoldsSummary} object invisibly.
+#' }
+#'
 #' @export
-#' @family blocks diagnostics
+#' @family diagnostic tools
+#' @seealso \code{\link{DataFolds-methods}} for interacting with `DataFolds` objects.
 #'
 #' @examples
 #' \dontrun{
@@ -609,8 +626,10 @@ plot.EnvDiagnostic <- function(x, ...) {
 #' )
 #'
 #' # Combined diagnostics
-#' summarise_fold_diagnostics(spat_diag, env_diag)
+#' sum_diag <- summarise_fold_diagnostics(spat_diag, env_diag)
+#' print(sum_diag)
 #' }
+#'
 summarise_fold_diagnostics <- function(geo_diag, env_diag) {
 
   if (!inherits(geo_diag, "GeoDiagnostic") || !inherits(env_diag, "EnvDiagnostic")) {
@@ -657,14 +676,8 @@ summarise_fold_diagnostics <- function(geo_diag, env_diag) {
 }
 
 
-#' Print FoldsSummary
-#'
-#' @param x An \code{EnvDiagnostic} object.
-#' @param ... Additional arguments.
-#' @return The \code{EnvDiagnostic} object invisibly.
+#' @rdname summarise_fold_diagnostics
 #' @export
-#' @family blocks diagnostics
-#'
 print.FoldsSummary <- function(x, ...) {
   cat("\n==========================================\n")
   cat("   isdmtools: INTEGRATED FOLD SUMMARY     \n")
