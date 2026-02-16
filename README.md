@@ -1,5 +1,10 @@
 # isdmtools
-[![R-CMD-check](https://github.com/sodeidelphonse/isdmtools/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/sodeidelphonse/isdmtools/actions/workflows/R-CMD-check.yaml) [![pkgcheck](https://github.com/sodeidelphonse/isdmtools/workflows/pkgcheck/badge.svg)](https://github.com/sodeidelphonse/isdmtools/actions?query=workflow%3Apkgcheck) [![Codecov test coverage](https://codecov.io/gh/sodeidelphonse/isdmtools/graph/badge.svg)](https://app.codecov.io/gh/sodeidelphonse/isdmtools)
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/sodeidelphonse/isdmtools/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/sodeidelphonse/isdmtools/actions/workflows/R-CMD-check.yaml) 
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental) 
+[![pkgcheck](https://github.com/sodeidelphonse/isdmtools/workflows/pkgcheck/badge.svg)](https://github.com/sodeidelphonse/isdmtools/actions?query=workflow%3Apkgcheck) 
+[![Codecov test coverage](https://codecov.io/gh/sodeidelphonse/isdmtools/graph/badge.svg)](https://app.codecov.io/gh/sodeidelphonse/isdmtools)
+<!-- badges: end -->
 
 `isdmtools` is an R package designed to streamline the process of preparing and visualizing spatial data for biodiversity distribution modeling and evaluating the resulting models. 
 The package has been designed with a specific focus on **integrated species distribution models (ISDMs)** based on multisource geospatial datasets within a Bayesian framework. 

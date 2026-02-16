@@ -1,0 +1,19 @@
+---
+title: "ISDM Evaluation Workflow"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{ISDM Evaluation Workflow}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(isdmtools)
+```

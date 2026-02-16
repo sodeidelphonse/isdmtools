@@ -1,6 +1,6 @@
 Package: isdmtools
 Type: Package
-Title: Toolkit for Facilitating Integrated Species Distribution Modeling
+Title: Toolkit for Evaluating and Analysing Integrated Species Distribution Models in R
 Version: 0.2.0
 Authors@R: 
     c(person(given = "Akoeugnigan Idelphonse", family = "SODE",
@@ -14,9 +14,9 @@ Authors@R:
              role = "ctb"))
 Date: 2025-09-08
 Maintainer: <sdidelphonse@gmail.com>
-Description: A suite of tools for manipulating and visualising spatial data, preparing folds for block cross-validation and evaluating spatial models with multisource point datasets. 
-    These tools are designed to assist with building and analyzing Integrated Species Distribution Models (ISDMs) with a focus on the Bayesian framework.
-URL: https://github.com/sodeidelphonse/isdmtools
+Description: A suite of tools for preparing spatial folds for block cross-validation, evaluating integrated models built from multisource spatial datasets and manipulating and visualising outputs. 
+    These tools are designed to assist with building and analyzing Integrated Species Distribution Models (ISDMs) with a particular focus on the Bayesian modelling framework.
+URL: https://sodeidelphonse.github.io/isdmtools/, https://github.com/sodeidelphonse/isdmtools
 BugReports: https://github.com/sodeidelphonse/isdmtools/issues
 License: MIT + file LICENSE
 Encoding: UTF-8
@@ -39,5 +39,8 @@ Suggests:
     inlabru (>= 2.13.0),
     fmesher (>= 0.6.1),
     ggspatial (>= 1.1.10),
-    spatialsample
+    spatialsample,
+    knitr,
+    rmarkdown
 Config/testthat/edition: 3
+VignetteBuilder: knitr
