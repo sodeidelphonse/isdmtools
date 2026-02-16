@@ -29,5 +29,4 @@ jobs:
         uses: ropensci-review-tools/pkgcheck-action@main
         id: pkgcheck
         with:
-          # Update the gh-pages branch with the badge stats
-          render-checks: true
+          post-to-issue: true
