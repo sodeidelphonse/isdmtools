@@ -18,6 +18,16 @@ jobs:
   pkgcheck:
     runs-on: ubuntu-latest
     permissions:
+      contents: write
       issues: write
+      pull-requests: write
     steps:
-      - uses: ropensci-review-tools/pkgcheck-action@main
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Pkgcheck
+        uses: ropensci-review-tools/pkgcheck-action@main
+        id: pkgcheck
+        with:
+          # Update the gh-pages branch with the badge stats
+          render-checks: true

@@ -2,7 +2,7 @@
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/sodeidelphonse/isdmtools/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/sodeidelphonse/isdmtools/actions/workflows/R-CMD-check.yaml) 
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental) 
-[![pkgcheck](https://github.com/sodeidelphonse/isdmtools/workflows/pkgcheck/badge.svg)](https://github.com/sodeidelphonse/isdmtools/actions?query=workflow%3Apkgcheck) 
+[![pkgcheck](https://img.shields.io)](https://github.com/sodeidelphonse/isdmtools/workflows/pkgcheck/badge.svg)](https://github.com/sodeidelphonse/isdmtools/actions?query=workflow%3Apkgcheck) 
 [![Codecov test coverage](https://codecov.io/gh/sodeidelphonse/isdmtools/graph/badge.svg)](https://app.codecov.io/gh/sodeidelphonse/isdmtools)
 <!-- badges: end -->
 
