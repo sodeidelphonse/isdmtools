@@ -2,38 +2,35 @@ url: https://sodeidelphonse.github.io/isdmtools/
 template:
   bootstrap: 5
 reference:
-  - title: "Folds Creation & Management"
-    desc: "Core functions for spatial partitioning."
-    contents:
-      - create_folds
-      - DataFolds-methods
+- title: Folds Creation & Management
+  desc: Core functions for spatial partitioning.
+  contents:
+  - create_folds
+  - DataFolds-methods
+- title: Spatial Folds Diagnostics
+  desc: Evaluate the balance and quality of spatial folds.
+  contents:
+  - check_folds
+  - check_env_balance
+  - summarise_fold_diagnostics
+  - GeoDiagnostic-methods
+  - EnvDiagnostic-methods
+- title: Model Evaluation
+  desc: Background sampling and model performance evaluation.
+  contents:
+  - compute_metrics
+  - sample_background
+  - BackgroundPoints-methods
+  - get_background
+- title: Post-modelling analysis
+  desc: Habitat suitability and niche overlap analysis.
+  contents:
+  - suitability_index
+  - prepare_predictions
+  - calc_niche_overlap
+- title: Utilities & Helpers
+  desc: Data cleaning and visualisation.
+  contents:
+  - fill_na_near
+  - generate_maps
 
-  - title: "Spatial Folds Diagnostics"
-    desc: "Evaluate the balance and quality of spatial folds."
-    contents:
-      - check_folds
-      - check_env_balance
-      - summarise_fold_diagnostics
-      - GeoDiagnostic-methods
-      - EnvDiagnostic-methods
-
-  - title: "Model Evaluation"
-    desc: "Background sampling and model performance evaluation."
-    contents:
-      - compute_metrics
-      - sample_background
-      - BackgroundPoints-methods
-      - get_background
-
-  - title: "Tools for post-modelling analysis"
-    desc: "Habitat suitability and niche overlap analysis."
-    contents:
-      - suitability_index
-      - prepare_predictions
-      - calc_niche_overlap
-
-  - title: "Utilities & Helpers"
-    desc: "Data cleaning and visualisation."
-    contents:
-      - fill_na_near
-      - generate_maps
