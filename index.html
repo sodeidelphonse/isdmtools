@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">isdmtools</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,7 +36,11 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="articles/isdm-evaluation-workflow.html">ISDM Evaluation Workflow</a></li>
+<li><h6 class="dropdown-header" data-toc-skip>Tutorials</h6></li>
+    <li><a class="dropdown-item" href="articles/isdmtools.html">Get Started</a></li>
+    <li><a class="dropdown-item" href="articles/isdm-evaluation-workflow.html">ISDM Evaluation Workflow</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item" href="articles/index.html">All Articles</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
@@ -95,16 +99,16 @@
 <p><strong>Suitability Analysis</strong>: Standardize model predictions for consistent mapping and compute a final habitat suitability index. The <code><a href="reference/suitability_index.html">suitability_index()</a></code> function transforms raw integrated model predictions into a suitability score using the inverse of the complementary log-log transform (<code>cloglog</code>).</p>
 <p><strong>Model Evaluation</strong>: Compute comprehensive evaluation metrics, including ROC-based and continuous-outcome metrics for each dataset (<code>"&lt;METRIC&gt;_DatasetName"</code>) using the <code><a href="reference/compute_metrics.html">compute_metrics()</a></code> constructor. The package also handles <em>dataset-weighted composite scores</em> (<code>"&lt;METRIC&gt;_Comp"</code>), providing a holistic view of model performance. Note that the <code><a href="reference/sample_background.html">sample_background()</a></code> constructor is called internally to sample pseudo-absences for presence-only data. However, users have the option of extracting the <code>BackgroundPoints</code> object with the <code><a href="reference/ISDMmetrics-methods.html">get_background()</a></code> helper in order to print and visualise the generated pseudo-absences.</p>
 <p><strong>Mapping &amp; Visualization</strong>: Visualize model predictions and final habitat suitability maps. The plotting method <code><a href="reference/generate_maps.html">generate_maps()</a></code> is designed to provide a clear and informative map by visualizing multiple variables of model predictions (e.g. mean, median, standard deviation or quantiles), providing an easy way to interpret models’ results. Users can customize the final <code>ggplot2</code> object if needed.</p>
-<p><strong>S3 Methods</strong>: The package includes <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> and <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> methods for <code>DataFolds</code> and <code>ISDMmetrics</code> classes, which provide a concise summary and a clear visualization of the block cross-validation partitions and model evaluation. Other methods for <code>ISDMmetrics</code> and folds diagnostics objects are provided in the worked example or the vignette.</p>
+<p><strong>S3 Methods</strong>: The package includes <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code>, <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> and <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> methods for different classes to provide a concise summary and a clear visualization of spatial data partitions, folds diagnostics and evaluation metrics. Other methods are discussed in the package vignettes.</p>
 </div>
 <div class="section level1">
-<h1 id="getting-started-a-complete-worked-example">Getting Started: A Complete Worked Example<a class="anchor" aria-label="anchor" href="#getting-started-a-complete-worked-example"></a>
+<h1 id="how-does-it-work">How does it work?<a class="anchor" aria-label="anchor" href="#how-does-it-work"></a>
 </h1>
 <p>The core workflow of <code>isdmtools</code> involves creating a <code>DataFolds</code> object and then extracting specific folds for a modeling pipeline.</p>
-<div class="section level2">
-<h2 id="data-preparation">Data preparation<a class="anchor" aria-label="anchor" href="#data-preparation"></a>
-</h2>
-<p>First, let’s load the package and create some dummy data for a hypothetical study region.</p>
+<div class="section level3">
+<h3 id="data-preparation">Data preparation<a class="anchor" aria-label="anchor" href="#data-preparation"></a>
+</h3>
+<p>First, let’s load the package and create some dummy data.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://sodeidelphonse.github.io/isdmtools/">isdmtools</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span>
@@ -130,231 +134,30 @@
 <span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span>coords <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span>, crs <span class="op">=</span> <span class="fl">4326</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Create a list of datasets</span></span>
-<span><span class="va">datasets_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Presence <span class="op">=</span> <span class="va">presence_data</span>, Count <span class="op">=</span> <span class="va">count_data</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Define a dummy study region (e.g. Benin's minimum boundary rectangle)</span></span>
-<span><span class="va">ben_coords</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">6</span>, <span class="fl">4</span>, <span class="fl">6</span>, <span class="fl">4</span>, <span class="fl">13</span>, <span class="fl">0</span>, <span class="fl">13</span>, <span class="fl">0</span>, <span class="fl">6</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fl">2</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="va">ben_sf</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_polygon</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">ben_coords</span><span class="op">)</span><span class="op">)</span>, crs <span class="op">=</span> <span class="fl">4326</span><span class="op">)</span></span>
-<span><span class="va">ben_sf</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sf.html" class="external-link">st_sf</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"Region"</span><span class="op">)</span>, <span class="va">ben_sf</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Create the DataFolds object</span></span>
-<span><span class="va">my_folds</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/create_folds.html">create_folds</a></span><span class="op">(</span><span class="va">datasets_list</span>, <span class="va">ben_sf</span>, k <span class="op">=</span> <span class="fl">5</span>, seed <span class="op">=</span> <span class="fl">23</span><span class="op">)</span></span>
+<span><span class="va">datasets_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Presence <span class="op">=</span> <span class="va">presence_data</span>, Count <span class="op">=</span> <span class="va">count_data</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="spatial-partitioning">Spatial partitioning<a class="anchor" aria-label="anchor" href="#spatial-partitioning"></a>
+</h3>
+<p>We can now create spatial folds using the default blocking engine.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Create the DataFolds object</span></span>
+<span><span class="va">my_folds</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/create_folds.html">create_folds</a></span><span class="op">(</span><span class="va">datasets_list</span>, k <span class="op">=</span> <span class="fl">5</span>, seed <span class="op">=</span> <span class="fl">23</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">my_folds</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Visualize the folds</span></span>
-<span><span class="va">plot_cv</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">my_folds</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">plot_cv</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">my_folds</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Extract a specific fold (e.g., Fold 3) for modeling and evaluation</span></span>
 <span><span class="va">splits_fold_3</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/DataFolds-methods.html">extract_fold</a></span><span class="op">(</span><span class="va">my_folds</span>, fold <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># You can access both 'train' and "test" sets and their corresponding datasets</span></span>
+<span><span class="co"># You can access both 'train' and 'test' sets and their corresponding datasets</span></span>
 <span> <span class="va">train_data</span> <span class="op">&lt;-</span> <span class="va">splits_fold_3</span><span class="op">$</span><span class="va">train</span></span>
 <span> <span class="va">test_data</span> <span class="op">&lt;-</span> <span class="va">splits_fold_3</span><span class="op">$</span><span class="va">test</span></span></code></pre></div>
 <div class="float">
 <img src="reference/figures/readme_blockCV_map.png" alt="The figure above shows the block cross-validation folds."><div class="figcaption">The figure above shows the block cross-validation folds.</div>
 </div>
-</div>
-<div class="section level2">
-<h2 id="usage-with-predictive-models">Usage with Predictive Models<a class="anchor" aria-label="anchor" href="#usage-with-predictive-models"></a>
-</h2>
-<p>This first output above from the <code>isdmtools</code> package is a set of clean <code>sf</code> objects, which makes it easy to integrate with various spatial modeling tools using block cross-validation techniques. The extracted train and test data can be directly fed into your preferred interated modeling tools such as <code>inlabru</code>, <code>PointedSDMs</code>, or any <code>GLMs/GAMs</code> tools that can accommodate multisource spatial datasets. This ensures that your model predictions are validated using a robust spatial cross-validation approach and comprehensive evaluation metrics.</p>
-<div class="section level3">
-<h3 id="step-1-fitting-a-bayesian-integrated-model-with-the-inlabru-package">Step 1: Fitting a Bayesian integrated model with the <code>inlabru</code> package<a class="anchor" aria-label="anchor" href="#step-1-fitting-a-bayesian-integrated-model-with-the-inlabru-package"></a>
-</h3>
-<p>The <code>inlabru</code> package is a wrapper for the <code>R-INLA</code> package which is designed for Bayesian Latent Gaussian Modelling using INLA (Integrated Laplace Nested Approximations) and Extensions. Let’s develop a Bayesian spatial model with the fake data above. We assume the following basic joint model with a shared latent signal <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ξ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>.</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\xi(.)</annotation></semantics></math> (i.e. a Gaussian random field):</p>
-<pre class="math"><code> \begin{matrix}
- Y_{\mathrm{count},i}|\xi(.) \sim \mathrm{Pois} \left(\mu_i \right), \quad i = 1,\ldots,n,\\
- \log(\mu_i) = \beta_{0,\mathrm{count}} + \xi(\mathbf{s}_i)\\[3mm]
- X_{\mathrm{presence}}|\xi(.) \sim \mathrm{IPP} \left(\lambda(\mathbf{s}) \right),\\
-\log (\lambda(\mathbf{s})) = \beta_{0,\mathrm{presence}} + \xi(\mathbf{s})\\
-\end{matrix}</code></pre>
-<p>where <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">I</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">P</mi></mrow><annotation encoding="application/x-tex">\mathrm{IPP}</annotation></semantics></math> means a <em>Inhomogeneous Poisson Process</em> and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐬</mi><annotation encoding="application/x-tex">\mathbf{s}</annotation></semantics></math> the vector of a location coordinates.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># You can now prepare the remaining data required and fit the model</span></span>
-<span> </span>
-<span> <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"INLA"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">&amp;&amp;</span></span>
-<span>     <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"fmesher"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">&amp;&amp;</span></span>
-<span>     <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"inlabru"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span></span>
-<span>   <span class="co"># Create a "mesh" for the latent field </span></span>
-<span>   <span class="va">mesh</span> <span class="op">&lt;-</span> <span class="fu">fmesher</span><span class="fu">::</span><span class="fu"><a href="https://inlabru-org.github.io/fmesher/reference/fm_mesh_2d.html" class="external-link">fm_mesh_2d</a></span><span class="op">(</span></span>
-<span>     boundary <span class="op">=</span> <span class="va">ben_sf</span>,</span>
-<span>     max.edge <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">0.5</span><span class="op">)</span>,</span>
-<span>     offset <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1e-3</span>, <span class="fl">0.6</span><span class="op">)</span>,</span>
-<span>     cutoff <span class="op">=</span> <span class="fl">0.10</span>,</span>
-<span>     crs <span class="op">=</span> <span class="st">"epsg:4326"</span></span>
-<span>   <span class="op">)</span></span>
-<span>   </span>
-<span>   <span class="co"># Visualize the mesh</span></span>
-<span>   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu">inlabru</span><span class="fu">::</span><span class="fu"><a href="https://inlabru-org.github.io/inlabru/reference/gg.html" class="external-link">gg</a></span><span class="op">(</span><span class="va">mesh</span><span class="op">)</span></span>
-<span>   </span>
-<span>   <span class="co"># Set the PC-prior for the SPDE model. We estimate a longer range value as no spatial </span></span>
-<span>   <span class="co"># autocorrelation was defined in the generated data:</span></span>
-<span>   <span class="va">pcmatern</span> <span class="op">&lt;-</span> <span class="fu">INLA</span><span class="fu">::</span><span class="fu">inla.spde2.pcmatern</span><span class="op">(</span><span class="va">mesh</span>,</span>
-<span>                                       prior.range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">0.1</span><span class="op">)</span>, <span class="co"># P(spatial range &lt; 1) = 0.1</span></span>
-<span>                                       prior.sigma <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">0.1</span><span class="op">)</span>  <span class="co"># P(sigma &gt; 1) = 0.1</span></span>
-<span>                                       <span class="op">)</span></span>
-<span>   </span>
-<span>   <span class="co"># The shared spatial latent component is denoted by 'spde'</span></span>
-<span>   <span class="va">jcmp</span> <span class="op">&lt;-</span> <span class="op">~</span> <span class="op">-</span><span class="fl">1</span> <span class="op">+</span> <span class="fu">Presence_intercept</span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op">+</span> <span class="fu">Count_intercept</span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
-<span>                  <span class="fu">spde</span><span class="op">(</span><span class="va">geometry</span>, model <span class="op">=</span> <span class="va">pcmatern</span><span class="op">)</span></span>
-<span>   </span>
-<span>   <span class="co"># Count observation model</span></span>
-<span>   <span class="va">obs_model_count</span> <span class="op">&lt;-</span> <span class="fu">inlabru</span><span class="fu">::</span><span class="fu"><a href="https://inlabru-org.github.io/inlabru/reference/bru_obs.html" class="external-link">bru_obs</a></span><span class="op">(</span></span>
-<span>     formula <span class="op">=</span> <span class="va">count</span> <span class="op">~</span>  <span class="op">+</span> <span class="va">Count_intercept</span> <span class="op">+</span> <span class="va">spde</span>,</span>
-<span>     family <span class="op">=</span> <span class="st">"poisson"</span>,</span>
-<span>     data <span class="op">=</span> <span class="va">train_data</span><span class="op">$</span><span class="va">Count</span></span>
-<span>   <span class="op">)</span></span>
-<span>   </span>
-<span>   <span class="co"># Presence-only observation model (LGCP)</span></span>
-<span>   <span class="va">obs_model_pres</span> <span class="op">&lt;-</span> <span class="fu">inlabru</span><span class="fu">::</span><span class="fu"><a href="https://inlabru-org.github.io/inlabru/reference/bru_obs.html" class="external-link">bru_obs</a></span><span class="op">(</span></span>
-<span>     formula <span class="op">=</span> <span class="va">geometry</span> <span class="op">~</span> <span class="va">Presence_intercept</span> <span class="op">+</span> <span class="va">spde</span>,</span>
-<span>     family <span class="op">=</span> <span class="st">"cp"</span>,</span>
-<span>     data <span class="op">=</span> <span class="va">train_data</span><span class="op">$</span><span class="va">Presence</span>,</span>
-<span>     domain <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>geometry <span class="op">=</span> <span class="va">mesh</span><span class="op">)</span>,</span>
-<span>     samplers <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>geometry <span class="op">=</span> <span class="va">ben_sf</span><span class="op">)</span></span>
-<span>   <span class="op">)</span></span>
-<span>   </span>
-<span>   <span class="co"># Model fit</span></span>
-<span>   <span class="va">jfit</span> <span class="op">&lt;-</span> <span class="fu">inlabru</span><span class="fu">::</span><span class="fu"><a href="https://inlabru-org.github.io/inlabru/reference/bru.html" class="external-link">bru</a></span><span class="op">(</span><span class="va">jcmp</span>, <span class="va">obs_model_count</span>, <span class="va">obs_model_pres</span>,</span>
-<span>                        options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>control.inla <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>int.strategy <span class="op">=</span> <span class="st">"eb"</span><span class="op">)</span>,</span>
-<span>                                       bru_max_iter <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span>
-<span>                       <span class="op">)</span></span>
-<span> <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
-<span>   <span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="st">"'INLA', 'fmesher', and 'inlabru' are required to run this example."</span><span class="op">)</span></span>
-<span> <span class="op">}</span></span>
-<span> </span>
-<span> <span class="co"># Model results</span></span>
-<span> <span class="va">jfit</span><span class="op">$</span><span class="va">summary.fixed</span></span>
-<span> <span class="co">#&gt;                     mean        sd      0.025quant  0.5quant   0.975quant  mode      kld</span></span>
-<span> <span class="co">#&gt; Count_intercept    -0.2497590 0.3086958 -0.8547916 -0.2497590  0.3552737  -0.2497590  0</span></span>
-<span> <span class="co">#&gt; Presence_intercept  0.9269141 0.2836352  0.3709992  0.9269141  1.4828289   0.9269141  0</span></span>
-<span>   </span>
-<span> <span class="va">jfit</span><span class="op">$</span><span class="va">summary.hyperpar</span></span>
-<span> <span class="co">#&gt;                mean        sd      0.025quant  0.5quant   0.975quant  mode</span></span>
-<span> <span class="co">#&gt; Range for spde 3.535334 2.5240208  0.9513318   2.8572241  10.2509603  1.9527898</span></span>
-<span> <span class="co">#&gt; Stdev for spde 0.512346 0.1926203  0.2183487   0.4842595  0.9647017   0.4317979</span></span></code></pre></div>
-<p>As expected, the estimated <em>spatial range</em> is higher than 1. This is because there is no strong spatial autocorrelation in the simulated data.</p>
-</div>
-<div class="section level3">
-<h3 id="step-2-model-prediction">Step 2: Model prediction<a class="anchor" aria-label="anchor" href="#step-2-model-prediction"></a>
-</h3>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Define the predictions grids and the projection system</span></span>
-<span><span class="va">grids</span>      <span class="op">&lt;-</span> <span class="fu">fmesher</span><span class="fu">::</span><span class="fu"><a href="https://inlabru-org.github.io/fmesher/reference/fm_pixels.html" class="external-link">fm_pixels</a></span><span class="op">(</span><span class="va">mesh</span>, mask <span class="op">=</span> <span class="va">ben_sf</span><span class="op">)</span></span>
-<span><span class="va">projection</span> <span class="op">&lt;-</span> <span class="st">"+proj=longlat +ellps=WGS84 +datum=WGS84"</span></span>
-<span></span>
-<span><span class="co"># Joint habitat suitability (can also exclude dataset-specific intercepts)</span></span>
-<span><span class="va">jpred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">jfit</span>, newdata <span class="op">=</span> <span class="va">grids</span>, </span>
-<span>                formula <span class="op">=</span> <span class="op">~</span> <span class="va">spde</span> <span class="op">+</span> <span class="va">Presence_intercept</span>,</span>
-<span>                n.samples <span class="op">=</span> <span class="fl">500</span>, seed <span class="op">=</span> <span class="fl">24</span><span class="op">)</span></span>
-<span><span class="va">jpred</span>   <span class="op">&lt;-</span> <span class="fu"><a href="reference/prepare_predictions.html">prepare_predictions</a></span><span class="op">(</span><span class="va">jpred</span><span class="op">)</span> </span>
-<span>   </span>
-<span><span class="va">jt_prob</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/suitability_index.html">suitability_index</a></span><span class="op">(</span><span class="va">jpred</span>, </span>
-<span>                            post_stat <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"q0.025"</span>, <span class="st">"mean"</span>, <span class="st">"q0.975"</span><span class="op">)</span>, </span>
-<span>                            output_format <span class="op">=</span> <span class="st">"prob"</span>,</span>
-<span>                            response_type <span class="op">=</span> <span class="st">"joint.po"</span>,</span>
-<span>                            projection <span class="op">=</span> <span class="va">projection</span>,</span>
-<span>                            scale_independent <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span>                            <span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">jt_prob</span><span class="op">)</span></span>
-<span>   </span>
-<span><span class="co"># Prediction of counts </span></span>
-<span><span class="va">jpred_count</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">jfit</span>, newdata <span class="op">=</span> <span class="va">grids</span>, </span>
-<span>                    formula <span class="op">=</span> <span class="op">~</span> <span class="va">spde</span> <span class="op">+</span> <span class="va">Count_intercept</span> ,</span>
-<span>                    n.samples <span class="op">=</span> <span class="fl">500</span>, seed <span class="op">=</span> <span class="fl">24</span><span class="op">)</span></span>
-<span><span class="va">jpred_count</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/prepare_predictions.html">prepare_predictions</a></span><span class="op">(</span><span class="va">jpred_count</span><span class="op">)</span></span>
-<span>   </span>
-<span><span class="va">jt_count</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/suitability_index.html">suitability_index</a></span><span class="op">(</span><span class="va">jpred_count</span>, </span>
-<span>                              post_stat <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"q0.025"</span>, <span class="st">"mean"</span>, <span class="st">"q0.975"</span><span class="op">)</span>, </span>
-<span>                              output_format <span class="op">=</span> <span class="st">"response"</span>,</span>
-<span>                              response_type <span class="op">=</span> <span class="st">"count"</span>,</span>
-<span>                              projection <span class="op">=</span> <span class="va">projection</span></span>
-<span>                              <span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">jt_count</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="step-3-model-performance-evaluation-using-the-test-data">Step 3: Model performance evaluation using the test data<a class="anchor" aria-label="anchor" href="#step-3-model-performance-evaluation-using-the-test-data"></a>
-</h3>
-<p>Various performance metrics can now be computed, including dataset-specific and weighted composite scores.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span> <span class="va">xy_observed</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_coordinates.html" class="external-link">st_coordinates</a></span><span class="op">(</span><span class="va">datasets_list</span><span class="op">$</span><span class="va">Presence</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"X"</span>,<span class="st">"Y"</span><span class="op">)</span><span class="op">]</span>, </span>
-<span>              <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_coordinates.html" class="external-link">st_coordinates</a></span><span class="op">(</span><span class="va">datasets_list</span><span class="op">$</span><span class="va">Count</span><span class="op">)</span><span class="op">[</span><span class="va">datasets_list</span><span class="op">$</span><span class="va">Count</span><span class="op">$</span><span class="va">count</span> <span class="op">&gt;</span> <span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"X"</span>,<span class="st">"Y"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
-<span>   </span>
-<span> <span class="va">metrics</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"auc"</span>, <span class="st">"tss"</span>, <span class="st">"accuracy"</span>, <span class="st">"rmse"</span>, <span class="st">"mae"</span><span class="op">)</span></span>
-<span> <span class="va">eval_metrics</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/compute_metrics.html">compute_metrics</a></span><span class="op">(</span><span class="va">test_data</span>, </span>
-<span>                                prob_raster <span class="op">=</span> <span class="va">jt_prob</span><span class="op">$</span><span class="va">mean</span>, </span>
-<span>                                expected_response <span class="op">=</span> <span class="va">jt_count</span><span class="op">$</span><span class="va">mean</span>,</span>
-<span>                                xy_excluded <span class="op">=</span> <span class="va">xy_observed</span>, </span>
-<span>                                metrics <span class="op">=</span> <span class="va">metrics</span>,</span>
-<span>                                overall_roc_metrics <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"auc"</span>, <span class="st">"tss"</span>, <span class="st">"accuracy"</span><span class="op">)</span>,</span>
-<span>                                response_counts <span class="op">=</span> <span class="st">"count"</span></span>
-<span>                                <span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">eval_metrics</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co">#&gt; ISDM Model Evaluation Results</span></span>
-<span><span class="co">#&gt; ----------------------------------------------</span></span>
-<span><span class="co">#&gt; Datasets Evaluated: Presence, Count </span></span>
-<span></span>
-<span><span class="co">#&gt; Overall Performance:</span></span>
-<span><span class="co">#&gt;  TOT ROC SCORE     : 0.8048</span></span>
-<span><span class="co">#&gt;  TOT ERROR SCORE   : 1.9353</span></span>
-<span><span class="co">#&gt; ----------------------------------------------</span></span></code></pre></div>
-<p>One can obtain detailed overview of the evaluation results via the <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> method.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">eval_metrics</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co">#&gt; ==============================================</span></span>
-<span><span class="co">#&gt;        ISDM EVALUATION SUMMARY REPORT</span></span>
-<span><span class="co">#&gt; ==============================================</span></span>
-<span><span class="co">#&gt; Generated on: 2026-01-19 04:41:02 </span></span>
-<span></span>
-<span><span class="co">#&gt; --- Model Evaluation Settings ---</span></span>
-<span><span class="co">#&gt; Random Seed         : 25</span></span>
-<span><span class="co">#&gt; Background Points   : 1000</span></span>
-<span><span class="co">#&gt; Spatial Context     : BackgroundPoints object attached</span></span>
-<span><span class="co">#&gt; Threshold Logic     : best</span></span>
-<span><span class="co">#&gt; Optimality Criterion: youden</span></span>
-<span><span class="co">#&gt; Prediction Type     : Absolute Count (No Offset)</span></span>
-<span></span>
-<span><span class="co">#&gt; --- Detailed Metric Table ---</span></span>
-<span><span class="co">#&gt;         Presence Count</span></span>
-<span><span class="co">#&gt; AUC         0.917 0.750</span></span>
-<span><span class="co">#&gt; TSS         0.791 0.750</span></span>
-<span><span class="co">#&gt; ACCURACY    0.794 0.778</span></span>
-<span><span class="co">#&gt; RMSE          N/A 2.119</span></span>
-<span><span class="co">#&gt; MAE           N/A 1.752</span></span>
-<span></span>
-<span><span class="co">#&gt; --- Composite Scores (Weighted) ---</span></span>
-<span><span class="co">#&gt;     AUC      TSS ACCURACY     RMSE      MAE </span></span>
-<span><span class="co">#&gt;    0.852    0.775    0.788    2.119    1.752 </span></span>
-<span></span>
-<span><span class="co">#&gt; --- Overall Performance ---</span></span>
-<span><span class="co">#&gt;  TOT ROC SCORE     : 0.8048</span></span>
-<span><span class="co">#&gt;  TOT ERROR SCORE   : 1.9353</span></span>
-<span><span class="co">#&gt; ==============================================</span></span></code></pre></div>
-<p>As you will have noticed, continuous-outcome metrics such as MAE (mean absolute error) and RMSE (root mean squared error) are not available for presence-only data, which makes sense. Furthermore, the weighted composite scores for continuous responses are identical to their individual counterparts, since there is only one count response.</p>
-<p>Next, you can iterate through all five spatial folds to obtain an average model performance, then calculate the variation in metrics between blocks. Finally, run a model on the full <code>datasets_list</code> to make the final prediction.</p>
-</div>
-<div class="section level3">
-<h3 id="step-4-prediction-mapping">Step 4: Prediction mapping<a class="anchor" aria-label="anchor" href="#step-4-prediction-mapping"></a>
-</h3>
-<p>You can now generate a formal prediction map ready for publication.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/generate_maps.html">generate_maps</a></span><span class="op">(</span><span class="va">jt_prob</span>, </span>
-<span>                   var_names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"q0.025"</span>, <span class="st">"mean"</span>, <span class="st">"q0.975"</span><span class="op">)</span>, </span>
-<span>                   base_map <span class="op">=</span> <span class="va">ben_sf</span>,</span>
-<span>                   legend_title <span class="op">=</span> <span class="st">"suitability"</span>,  </span>
-<span>                   panel_labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"(a) q2.5%"</span>, <span class="st">"(b) Mean"</span>, <span class="st">"(c) q97.5%"</span><span class="op">)</span>,</span>
-<span>                   xaxis_breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">4</span>, <span class="fl">1</span><span class="op">)</span>,</span>
-<span>                   yaxis_breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">6</span>, <span class="fl">13</span>, <span class="fl">2</span><span class="op">)</span></span>
-<span>                   <span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span></span></code></pre></div>
-<div class="float">
-<img src="reference/figures/readme_prediction_map.png" alt="This is the prediction map for the third spatial block data."><div class="figcaption">This is the prediction map for the third spatial block data.</div>
-</div>
-</div>
+<p>For a detailed introduction to the package, please see the <a href="articles/isdmtools.html">Get started</a> guide.</p>
 </div>
 </div>
 <div class="section level1">
@@ -366,7 +169,7 @@
 <h1 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h1>
 <p>To cite this package in your research work, run the following command in your R session to generate the plain text and <code>BiTex</code> entry of the citation:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/citation.html" class="external-link">citation</a></span><span class="op">(</span><span class="st">"isdmtools"</span><span class="op">)</span></span></code></pre></div>
 </div>
 
@@ -408,8 +211,8 @@
 <ul class="list-unstyled">
 <li><a href="https://github.com/sodeidelphonse/isdmtools/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/sodeidelphonse/isdmtools/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
 <li><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Lifecycle: experimental"></a></li>
-<li><a href="https://github.com/sodeidelphonse/isdmtools/actions?query=workflow%3Apkgcheck" class="external-link"><img src="https://img.shields.io" alt="pkgcheck"></a></li>
 <li><a href="https://app.codecov.io/gh/sodeidelphonse/isdmtools" class="external-link"><img src="https://codecov.io/gh/sodeidelphonse/isdmtools/graph/badge.svg" alt="Codecov test coverage"></a></li>
+<li><a href="https://github.com/sodeidelphonse/isdmtools/actions?query=workflow%3Apkgcheck" class="external-link"><img src="https://img.shields.io" alt="pkgcheck"></a></li>
 </ul>
 </div>
 

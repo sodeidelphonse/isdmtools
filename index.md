@@ -90,22 +90,21 @@ deviation or quantiles), providing an easy way to interpret models’
 results. Users can customize the final `ggplot2` object if needed.
 
 **S3 Methods**: The package includes
+[`summary()`](https://rdrr.io/r/base/summary.html),
 [`print()`](https://rdrr.io/r/base/print.html) and
 [`plot()`](https://rdrr.io/r/graphics/plot.default.html) methods for
-`DataFolds` and `ISDMmetrics` classes, which provide a concise summary
-and a clear visualization of the block cross-validation partitions and
-model evaluation. Other methods for `ISDMmetrics` and folds diagnostics
-objects are provided in the worked example or the vignette.
+different classes to provide a concise summary and a clear visualization
+of spatial data partitions, folds diagnostics and evaluation metrics.
+Other methods are discussed in the package vignettes.
 
-# Getting Started: A Complete Worked Example
+# How does it work?
 
 The core workflow of `isdmtools` involves creating a `DataFolds` object
 and then extracting specific folds for a modeling pipeline.
 
-## Data preparation
+### Data preparation
 
-First, let’s load the package and create some dummy data for a
-hypothetical study region.
+First, let’s load the package and create some dummy data.
 
 ``` r
 library(isdmtools)
@@ -133,24 +132,24 @@ count_data <- data.frame(
 
 # Create a list of datasets
 datasets_list <- list(Presence = presence_data, Count = count_data)
+```
 
-# Define a dummy study region (e.g. Benin's minimum boundary rectangle)
-ben_coords <- matrix(c(0, 6, 4, 6, 4, 13, 0, 13, 0, 6), ncol = 2, byrow = TRUE)
-ben_sf <- st_sfc(st_polygon(list(ben_coords)), crs = 4326)
-ben_sf <- st_sf(data.frame(name = "Region"), ben_sf)
+### Spatial partitioning
 
+We can now create spatial folds using the default blocking engine.
+
+``` r
 # Create the DataFolds object
-my_folds <- create_folds(datasets_list, ben_sf, k = 5, seed = 23)
+my_folds <- create_folds(datasets_list, k = 5, seed = 23)
 print(my_folds)
 
 # Visualize the folds
-plot_cv <- plot(my_folds)
-print(plot_cv)
+plot(my_folds)
 
 # Extract a specific fold (e.g., Fold 3) for modeling and evaluation
 splits_fold_3 <- extract_fold(my_folds, fold = 3)
 
-# You can access both 'train' and "test" sets and their corresponding datasets
+# You can access both 'train' and 'test' sets and their corresponding datasets
  train_data <- splits_fold_3$train
  test_data <- splits_fold_3$test
 ```
@@ -160,244 +159,9 @@ folds.](reference/figures/readme_blockCV_map.png)
 
 The figure above shows the block cross-validation folds.
 
-## Usage with Predictive Models
-
-This first output above from the `isdmtools` package is a set of clean
-`sf` objects, which makes it easy to integrate with various spatial
-modeling tools using block cross-validation techniques. The extracted
-train and test data can be directly fed into your preferred interated
-modeling tools such as `inlabru`, `PointedSDMs`, or any `GLMs/GAMs`
-tools that can accommodate multisource spatial datasets. This ensures
-that your model predictions are validated using a robust spatial
-cross-validation approach and comprehensive evaluation metrics.
-
-### Step 1: Fitting a Bayesian integrated model with the `inlabru` package
-
-The `inlabru` package is a wrapper for the `R-INLA` package which is
-designed for Bayesian Latent Gaussian Modelling using INLA (Integrated
-Laplace Nested Approximations) and Extensions. Let’s develop a Bayesian
-spatial model with the fake data above. We assume the following basic
-joint model with a shared latent signal $\xi(.)$ (i.e. a Gaussian random
-field):
-
-``` math
- \begin{matrix}
- Y_{\mathrm{count},i}|\xi(.) \sim \mathrm{Pois} \left(\mu_i \right), \quad i = 1,\ldots,n,\\
- \log(\mu_i) = \beta_{0,\mathrm{count}} + \xi(\mathbf{s}_i)\\[3mm]
- X_{\mathrm{presence}}|\xi(.) \sim \mathrm{IPP} \left(\lambda(\mathbf{s}) \right),\\
-\log (\lambda(\mathbf{s})) = \beta_{0,\mathrm{presence}} + \xi(\mathbf{s})\\
-\end{matrix}
-```
-
-where $IPP$ means a *Inhomogeneous Poisson Process* and $\mathbf{s}$ the
-vector of a location coordinates.
-
-``` r
-# You can now prepare the remaining data required and fit the model
- 
- if (requireNamespace("INLA", quietly = TRUE) &&
-     requireNamespace("fmesher", quietly = TRUE) &&
-     requireNamespace("inlabru", quietly = TRUE)) {
-
-   # Create a "mesh" for the latent field 
-   mesh <- fmesher::fm_mesh_2d(
-     boundary = ben_sf,
-     max.edge = c(0.2, 0.5),
-     offset = c(1e-3, 0.6),
-     cutoff = 0.10,
-     crs = "epsg:4326"
-   )
-   
-   # Visualize the mesh
-   ggplot() + inlabru::gg(mesh)
-   
-   # Set the PC-prior for the SPDE model. We estimate a longer range value as no spatial 
-   # autocorrelation was defined in the generated data:
-   pcmatern <- INLA::inla.spde2.pcmatern(mesh,
-                                       prior.range = c(1, 0.1), # P(spatial range < 1) = 0.1
-                                       prior.sigma = c(1, 0.1)  # P(sigma > 1) = 0.1
-                                       )
-   
-   # The shared spatial latent component is denoted by 'spde'
-   jcmp <- ~ -1 + Presence_intercept(1) + Count_intercept(1) +
-                  spde(geometry, model = pcmatern)
-   
-   # Count observation model
-   obs_model_count <- inlabru::bru_obs(
-     formula = count ~  + Count_intercept + spde,
-     family = "poisson",
-     data = train_data$Count
-   )
-   
-   # Presence-only observation model (LGCP)
-   obs_model_pres <- inlabru::bru_obs(
-     formula = geometry ~ Presence_intercept + spde,
-     family = "cp",
-     data = train_data$Presence,
-     domain = list(geometry = mesh),
-     samplers = list(geometry = ben_sf)
-   )
-   
-   # Model fit
-   jfit <- inlabru::bru(jcmp, obs_model_count, obs_model_pres,
-                        options = list(control.inla = list(int.strategy = "eb"),
-                                       bru_max_iter = 20)
-                       )
- } else {
-   message("'INLA', 'fmesher', and 'inlabru' are required to run this example.")
- }
- 
- # Model results
- jfit$summary.fixed
- #>                     mean        sd      0.025quant  0.5quant   0.975quant  mode      kld
- #> Count_intercept    -0.2497590 0.3086958 -0.8547916 -0.2497590  0.3552737  -0.2497590  0
- #> Presence_intercept  0.9269141 0.2836352  0.3709992  0.9269141  1.4828289   0.9269141  0
-   
- jfit$summary.hyperpar
- #>                mean        sd      0.025quant  0.5quant   0.975quant  mode
- #> Range for spde 3.535334 2.5240208  0.9513318   2.8572241  10.2509603  1.9527898
- #> Stdev for spde 0.512346 0.1926203  0.2183487   0.4842595  0.9647017   0.4317979
-```
-
-As expected, the estimated *spatial range* is higher than 1. This is
-because there is no strong spatial autocorrelation in the simulated
-data.
-
-### Step 2: Model prediction
-
-``` r
-# Define the predictions grids and the projection system
-grids      <- fmesher::fm_pixels(mesh, mask = ben_sf)
-projection <- "+proj=longlat +ellps=WGS84 +datum=WGS84"
-
-# Joint habitat suitability (can also exclude dataset-specific intercepts)
-jpred <- predict(jfit, newdata = grids, 
-                formula = ~ spde + Presence_intercept,
-                n.samples = 500, seed = 24)
-jpred   <- prepare_predictions(jpred) 
-   
-jt_prob <- suitability_index(jpred, 
-                            post_stat = c("q0.025", "mean", "q0.975"), 
-                            output_format = "prob",
-                            response_type = "joint.po",
-                            projection = projection,
-                            scale_independent = TRUE
-                            )
-plot(jt_prob)
-   
-# Prediction of counts 
-jpred_count <- predict(jfit, newdata = grids, 
-                    formula = ~ spde + Count_intercept ,
-                    n.samples = 500, seed = 24)
-jpred_count <- prepare_predictions(jpred_count)
-   
-jt_count <- suitability_index(jpred_count, 
-                              post_stat = c("q0.025", "mean", "q0.975"), 
-                              output_format = "response",
-                              response_type = "count",
-                              projection = projection
-                              )
-plot(jt_count)
-```
-
-### Step 3: Model performance evaluation using the test data
-
-Various performance metrics can now be computed, including
-dataset-specific and weighted composite scores.
-
-``` r
- xy_observed <- rbind(st_coordinates(datasets_list$Presence)[, c("X","Y")], 
-              st_coordinates(datasets_list$Count)[datasets_list$Count$count > 0, c("X","Y")])
-   
- metrics <- c("auc", "tss", "accuracy", "rmse", "mae")
- eval_metrics <- compute_metrics(test_data, 
-                                prob_raster = jt_prob$mean, 
-                                expected_response = jt_count$mean,
-                                xy_excluded = xy_observed, 
-                                metrics = metrics,
-                                overall_roc_metrics = c("auc", "tss", "accuracy"),
-                                response_counts = "count"
-                                )
-print(eval_metrics)
-
-#> ISDM Model Evaluation Results
-#> ----------------------------------------------
-#> Datasets Evaluated: Presence, Count 
-
-#> Overall Performance:
-#>  TOT ROC SCORE     : 0.8048
-#>  TOT ERROR SCORE   : 1.9353
-#> ----------------------------------------------
-```
-
-One can obtain detailed overview of the evaluation results via the
-[`summary()`](https://rdrr.io/r/base/summary.html) method.
-
-``` r
-summary(eval_metrics)
-
-#> ==============================================
-#>        ISDM EVALUATION SUMMARY REPORT
-#> ==============================================
-#> Generated on: 2026-01-19 04:41:02 
-
-#> --- Model Evaluation Settings ---
-#> Random Seed         : 25
-#> Background Points   : 1000
-#> Spatial Context     : BackgroundPoints object attached
-#> Threshold Logic     : best
-#> Optimality Criterion: youden
-#> Prediction Type     : Absolute Count (No Offset)
-
-#> --- Detailed Metric Table ---
-#>         Presence Count
-#> AUC         0.917 0.750
-#> TSS         0.791 0.750
-#> ACCURACY    0.794 0.778
-#> RMSE          N/A 2.119
-#> MAE           N/A 1.752
-
-#> --- Composite Scores (Weighted) ---
-#>     AUC      TSS ACCURACY     RMSE      MAE 
-#>    0.852    0.775    0.788    2.119    1.752 
-
-#> --- Overall Performance ---
-#>  TOT ROC SCORE     : 0.8048
-#>  TOT ERROR SCORE   : 1.9353
-#> ==============================================
-```
-
-As you will have noticed, continuous-outcome metrics such as MAE (mean
-absolute error) and RMSE (root mean squared error) are not available for
-presence-only data, which makes sense. Furthermore, the weighted
-composite scores for continuous responses are identical to their
-individual counterparts, since there is only one count response.
-
-Next, you can iterate through all five spatial folds to obtain an
-average model performance, then calculate the variation in metrics
-between blocks. Finally, run a model on the full `datasets_list` to make
-the final prediction.
-
-### Step 4: Prediction mapping
-
-You can now generate a formal prediction map ready for publication.
-
-``` r
-p <- generate_maps(jt_prob, 
-                   var_names = c("q0.025", "mean", "q0.975"), 
-                   base_map = ben_sf,
-                   legend_title = "suitability",  
-                   panel_labels = c("(a) q2.5%", "(b) Mean", "(c) q97.5%"),
-                   xaxis_breaks = seq(0, 4, 1),
-                   yaxis_breaks = seq(6, 13, 2)
-                   )
-print(p)
-```
-
-![This is the prediction map for the third spatial block
-data.](reference/figures/readme_prediction_map.png)
-
-This is the prediction map for the third spatial block data.
+For a detailed introduction to the package, please see the [Get
+started](https://sodeidelphonse.github.io/isdmtools/articles/isdmtools.md)
+guide.
 
 # Contributing
 

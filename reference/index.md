@@ -69,13 +69,13 @@ Habitat suitability and niche overlap analysis.
   predictions.
 - [`prepare_predictions()`](https://sodeidelphonse.github.io/isdmtools/reference/prepare_predictions.md)
   : Obtain a formatted output from spatial predictions.
-- [`calc_niche_overlap()`](https://sodeidelphonse.github.io/isdmtools/reference/calc_niche_overlap.md)
-  : Calculate Niche Overlap (Schoener's D)
 
 ## Utilities & Helpers
 
 Data cleaning and visualisation.
 
+- [`calc_niche_overlap()`](https://sodeidelphonse.github.io/isdmtools/reference/calc_niche_overlap.md)
+  : Calculate Niche Overlap (Schoener's D)
 - [`fill_na_near()`](https://sodeidelphonse.github.io/isdmtools/reference/fill_na_near.md)
   : Fill NA cells with the nearest cells values
 - [`generate_maps()`](https://sodeidelphonse.github.io/isdmtools/reference/generate_maps.md)
