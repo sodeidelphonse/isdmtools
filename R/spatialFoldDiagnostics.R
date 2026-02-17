@@ -484,7 +484,7 @@ check_env_balance.DataFolds <- function(object, covariates, plot_type = c("densi
   fold_colors <- .get_isdm_palette(n_folds)
   names(fold_colors) <- levels(raw_data$folds_ids)
 
-  all_colors <- c("Background" = "#228B22", fold_colors)
+  all_colors <- c("Background" = "#FF8C00", fold_colors)
 
   p <- ggplot2::ggplot(plot_df, ggplot2::aes(x = .data$Value, fill = .data$Fold)) +
     ggplot2::facet_wrap(~ Variable, scales = "free") +
