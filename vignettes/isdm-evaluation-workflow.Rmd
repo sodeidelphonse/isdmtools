@@ -25,7 +25,6 @@ library(sf)
 library(terra)
 library(fmesher)
 library(ggplot2)
-library(patchwork)
 library(inlabru)
 #library(INLA)  # required
 ```
