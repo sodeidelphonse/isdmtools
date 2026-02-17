@@ -17,10 +17,15 @@ on:
 jobs:
   pkgcheck:
     runs-on: ubuntu-latest
+    env:
+      RENV_CONFIG_ACTIVATE: false
+      R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
+
     permissions:
       contents: write
       issues: write
       pull-requests: write
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4

@@ -27,10 +27,22 @@ reference:
   contents:
   - suitability_index
   - prepare_predictions
-  - calc_niche_overlap
 - title: Utilities & Helpers
   desc: Data cleaning and visualisation.
   contents:
+  - calc_niche_overlap
   - fill_na_near
   - generate_maps
-
+navbar:
+  components:
+    articles:
+      text: Articles
+      menu:
+        - text: "Tutorials"
+        - text: "Get Started"
+          href: articles/isdmtools.html
+        - text: "ISDM Evaluation Workflow"
+          href: articles/isdm-evaluation-workflow.html
+        - text: "-------"
+        - text: "All Articles"
+          href: articles/index.html
