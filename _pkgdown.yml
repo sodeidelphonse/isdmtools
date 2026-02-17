@@ -38,11 +38,12 @@ navbar:
     articles:
       text: Articles
       menu:
-        - text: "Tutorials"
-        - text: "Get Started"
-          href: articles/isdmtools.html
-        - text: "ISDM Evaluation Workflow"
-          href: articles/isdm-evaluation-workflow.html
-        - text: "-------"
-        - text: "All Articles"
-          href: articles/index.html
+      - text: Tutorials
+      - text: Get Started
+        href: articles/isdmtools.html
+      - text: ISDM Evaluation Workflow
+        href: articles/isdm-evaluation-workflow.html
+      - text: '-------'
+      - text: All Articles
+        href: articles/index.html
+
