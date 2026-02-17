@@ -1,3 +1,18 @@
+# isdmtools 0.3.0
+
+## Continuous Integration & Quality Assurance
+- **GitHub Actions Integration**: Established a suite of automated workflows including R-CMD-check for cross-platform stability and Codecov for monitoring unit test coverage.
+- **Automated Documentation**: Implemented an automated pkgdown deployment pipeline to ensure the package website and vignettes are updated upon every push to the main branch.
+
+## Major Changes
+- **New S3 Class Architecture**: Introduced `GeoDiagnostic`, `EnvDiagnostic`, and `FoldsSummary` classes to structure the spatial folds' diagnostics results.
+- **Diagnostic Framework**: Refined `check_folds()` and `check_env_balance()` constructors to evaluate spatial independence and environmental balance of spatial folds.
+- **Documentation Refactor**: Implemented a grouped reference system to consolidate S3 methods, significantly improving the package Reference index.
+
+## Improvements
+- **Website Launch**: Official `pkgdown` site deployment with a custom navigation bar and categorised tutorials.
+- **Tutorials**: Added a "Get Started" guide and an advanced "ISDM Evaluation Workflow" vignette with conditional evaluation for external dependencies.
+
 # isdmtools 0.2.0
 
 ## New Features

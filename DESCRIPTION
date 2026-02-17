@@ -1,7 +1,7 @@
 Package: isdmtools
 Type: Package
 Title: Toolkit for Evaluating and Analysing Integrated Species Distribution Models in R
-Version: 0.2.0
+Version: 0.3.0
 Authors@R: 
     c(person(given = "Akoeugnigan Idelphonse", family = "SODE",
              email = "sdidelphonse@gmail.com",
