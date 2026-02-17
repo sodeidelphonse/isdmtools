@@ -34,12 +34,12 @@ As demonstrated in the [Get started](isdmtools.html) guide, the first output fro
 
 This vignette shows how how the isdmtools can be used with other predictive modelling tools such as `inlabru` for a complete workflow of integrated species distribution modelling (ISDM) analysis.
 
-## Step 1: Fitting a Bayesian integrated model with the `inlabru` 
+# Fitting an integrated model with `inlabru` 
 
 The `inlabru` package is a wrapper for the `R-INLA` package which is designed for Bayesian Latent Gaussian Modelling using INLA (Integrated Laplace Nested Approximations) and Extensions. 
 Let's develop a Bayesian spatial model with the simulated data presented in [Get started](isdmtools.html) guide. 
 
-- **Model definition**
+## Step 1: Model definition
 
 We assume the following basic joint model with a shared latent signal $\xi(.)$ (i.e. a Gaussian random field):
 
@@ -56,7 +56,8 @@ where $\mathrm{IPP}$ means a _Inhomogeneous Poisson Process_ and $\mathbf{s}$ th
 You can now prepare the remaining data required to fit an integrated model. First, we need to define the mesh to be used to approximate the latent field as well as for the integration points in the IPP likelihood.
 After this step, we set up the prior distributions for the latent parameters such as the range and the marginal standard deviation. Then we define the observation model for each data type to fuse them using a joint likelihood estimation with INLA.
 
-- **Model implementation**
+## Step 2: Model implementation
+
 ```{r mesh-code, eval = exists("ben_sf")} 
 # Create a "mesh" for the latent field 
 mesh <- fmesher::fm_mesh_2d(
@@ -120,7 +121,7 @@ We can collect model results after the fitting process.
 
 As expected, the estimated _spatial range_ is higher than 1. This is because there is no strong spatial autocorrelation in the simulated data.
  
-## Step 2: Model prediction 
+## Step 3: Model prediction 
 
 ```{r pixels, eval = exists("mesh")} 
 # Define the prediction grids and projection system
@@ -144,7 +145,9 @@ jpred_count <- predict(jfit,
 jpred_count <- prepare_predictions(jpred_count)
 ```
 
-## Step 3: Habitat suitability analysis
+# Suitability analysis and evaluation with `isdmtools`
+
+## Step 4: Habitat suitability analysis
 
 Once we have obtained the model predictions, we can then use the `isdmtools` to perform habitat suitability analysis. This will allow us to proceed with the evaluation of models and the visualisation of results. 
 
@@ -171,9 +174,9 @@ jt_count <- suitability_index(jpred_count,
 plot(jt_count)
 ```
  
-## Step 4: Model performance evaluation using the test data
+## Step 5: Model performance evaluation 
 
-Various performance metrics can now be computed, including dataset-specific and weighted composite scores.
+Various performance metrics can now be computed, including dataset-specific and weighted composite scores using the test data and model predictions.
 
 ```{r evaluation,  eval = FALSE}
  xy_observed <- rbind(st_coordinates(datasets_list$Presence)[, c("X","Y")], 
@@ -240,7 +243,7 @@ As you will have noticed, continuous-outcome metrics such as MAE (mean absolute 
 
 Next, you can iterate through all five spatial folds to obtain an average model performance, then calculate the variation in metrics between blocks. Finally, run a model on the full 'datasets_list' to make the final prediction.
  
-## Step 5: Prediction mapping 
+## Step 6: Prediction mapping 
 
 You can now generate a formal prediction map ready for publication.
 
@@ -258,4 +261,4 @@ map
 
 # Conclusion
 
-You have successfully fused multi-source biodiversity data and generated spatially independent partitions for robust model validation using `isdmtools`. The toolkit has enabled the resampling of data, thereby reducing spatial autocorrelation effects in the modelling process. This has facilitated the analysis and a comprehensive evaluation of ISDM using well-known metrics from the fields of statistics and machine learning.
+You have successfully fused multi-source biodiversity data and generated spatially independent partitions for robust model validation using `isdmtools`. The toolkit has enabled the **resampling of data**, thereby reducing spatial autocorrelation effects in the modelling process. It has also facilitated the analysis and a comprehensive evaluation of ISDM using well-known metrics from the fields of statistics and machine learning.

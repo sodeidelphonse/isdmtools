@@ -3,7 +3,6 @@
 [![R-CMD-check](https://github.com/sodeidelphonse/isdmtools/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/sodeidelphonse/isdmtools/actions/workflows/R-CMD-check.yaml) 
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental) 
 [![Codecov test coverage](https://codecov.io/gh/sodeidelphonse/isdmtools/graph/badge.svg)](https://app.codecov.io/gh/sodeidelphonse/isdmtools)
-[![pkgcheck](https://img.shields.io)](https://github.com/sodeidelphonse/isdmtools/actions?query=workflow%3Apkgcheck)
 <!-- badges: end -->
 
 `isdmtools` is an R package designed to streamline the process of preparing and visualizing spatial data for biodiversity distribution modeling and evaluating the resulting models. 

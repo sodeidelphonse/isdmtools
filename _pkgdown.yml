@@ -42,7 +42,7 @@ navbar:
       - text: Get Started
         href: articles/isdmtools.html
       - text: ISDM Evaluation Workflow
-        href: articles/isdm-evaluation-workflow.html
+        href: articles/isdm-workflow.html
       - text: '-------'
       - text: All Articles
         href: articles/index.html

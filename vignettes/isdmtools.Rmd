@@ -76,18 +76,12 @@ Partitioning spatial data into spatial folds is important since it helps reduce 
 
 ```{r }
 # Create the DataFolds object using the default method
-folds <- create_folds(datasets_list, ben_sf, k = 5)
-#>  train test
-#> 1   120   30
-#> 2   110   40
-#> 3   125   25
-#> 4   125   25
-#> 5   120   30
+folds <- create_folds(datasets_list, ben_sf, cv_method = "cluster")
 ```
 
-```{r fold-plot, fig.width = 8, fig.height = 4, out.height= "100%", fig.align = "center"}
+```{r fold-plot, fig.width = 6, fig.height = 6, out.height= "100%", fig.align = "center"}
 # Visualize the folds with custom styling
-plot(folds, nrow = 1) +
+plot(folds, nrow = 2, annotate = FALSE) +
   scale_x_continuous(breaks = seq(0, 4, 1)) +
   scale_y_continuous(breaks = seq(6, 13, 2)) +
   theme_minimal() +
@@ -105,25 +99,6 @@ ggplot2::autoplot(fold_ss)
 ```{r }
 # Folds summary
 summary(fold_ss)
-
-#> DataFolds Object Summary
-#> ------------------------
-#> Total observations: 150 
-#> Number of folds (k): 5 
-#> Datasets merged: Presence, Count 
-#>
-#> Global Observations per Fold and Dataset:
-#>    
-#>     Presence Count Sum
-#>  1         22     8  30
-#>  2         18    14  32
-#>  3         19     8  27
-#>  4         16    15  31
-#>  5         25     5  30
-#> Sum      100    50 150
-#>
-#> Spatial Context: Study area polygon is defined (available for plotting).
-
 ```
 
 ## Step 3: Folds diagnostics
@@ -138,16 +113,6 @@ print(geo_diag)
 # Plot results
 plot(geo_diag) 
 
-#> === isdmtools: Spatial Fold Diagnostic ===
-#>
-#> Internal Size (Max Distance to Fold Centroid):
-#>  Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-#>  140.6   141.7   148.5   169.0   185.9   228.1 
-#>
-#> Inter-block Gap (Min Distance to Nearest Fold):
-#>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-#>  32.71   32.71   42.08   41.62   45.42   55.16 
-#> =============================================
 ```
 
 ```{r warning=FALSE,message=FALSE}
@@ -159,14 +124,6 @@ env_diag <- check_env_balance(folds,
                               )
 print(env_diag)
 
-#> === isdmtools: Environmental Balance Diagnostic ===
-#> Significance (p > 0.05 = Balanced)
-#> Overlap (D > 0.6 = Representative)
-#>
-#> Variable       Type  p_val Schoener_D
-#>     cov1 Continuous 0.3053      0.902
-#>     cov2 Continuous 0.1631      0.893
-#> ===================================================
 ```
 
 ```{r diagnostics, fig.width = 6, fig.height = 4, out.width = "100%"}
@@ -179,20 +136,6 @@ plot(env_diag)
 # Combined diagnostics
 summarise_fold_diagnostics(geo_diag, env_diag)
 
-#> ==========================================
-#>   isdmtools: INTEGRATED FOLD SUMMARY     
-#> ==========================================
-#>
-#>        Domain                     Metric   Value    Status
-#>    Geographic Avg Internal Distance (km) 168.970 Separated
-#>    Geographic    Avg Inter-Fold Gap (km)  41.617 Separated
-#> Environmental         Median Overlap (D)   0.897  Balanced
-#> Environmental            Minimum p-value   0.163  Balanced
-#>
-#> ------------------------------------------
-#> CONCLUSION: Folds are spatially independent 
-#> and environmentally representative.
-#> ==========================================
 ```
 
 ## Step 4: Data Extraction for Modelling
@@ -206,6 +149,7 @@ splits_1 <- extract_fold(folds, fold = 1)
 
 # Accessing the training and testing sets for the "Presence" source
 head(splits_1$train$Presence)
+
 head(splits_1$test$Presence)
 ```
 
@@ -218,5 +162,5 @@ The `isdmtools` journey continues with model fitting and comprehensive evaluatio
 - *Model Fitting*: Use the training data extracted via `extract_fold()` to fit your models using modelling engines like inlabru, PointedSDMs, or standard GAMs tools which can support spatial data with multiple response formats.
 - *Integrated Evaluation*: One predictions are obtained, evaluate the models and analyse the outputs.
 
-The advanced guide on [ISDM Evaluation Workflow](isdm-evaluation-workflow.html) covers model building with external tools, calculation of dataset-specific and composite scores, suitability analysis and mapping with `isdmtools`
+The advanced guide on [ISDM Evaluation Workflow](isdm-workflow.html) covers model building with external tools, calculation of dataset-specific and composite scores, suitability analysis and mapping with `isdmtools`.
 
