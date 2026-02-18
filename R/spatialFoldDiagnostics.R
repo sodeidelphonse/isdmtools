@@ -52,11 +52,12 @@ check_spatial_geometry <- function(data_all, fold_col = "folds_ids", rho = NULL,
   }, FUN.VALUE = numeric(1))
 
   gap_df <- data.frame(
-    folds_ids = names(min_gaps),
+    temp_name = names(min_gaps),
     min_gap_km = as.numeric(min_gaps),
     stringsAsFactors = FALSE
   )
-  gap_df[[fold_col]] <- factor(gap_df[[fold_col]], levels = folds_ids)
+  colnames(gap_df)[1] <- fold_col
+  gap_df[[fold_col]]  <- factor(gap_df[[fold_col]], levels = folds_ids)
 
   # Merging summary stats
   summary_stats <- points_with_centroids %>%
@@ -208,6 +209,19 @@ check_folds <- function(object, ...) {
 #' @method check_folds DataFolds
 #' @export
 check_folds.DataFolds <- function(object, rho = NULL, plot = TRUE, ...) {
+
+  if (!inherits(object, "DataFolds") || is.null(object$data_all)) {
+    stop("Input must be a valid 'DataFolds' object.", call. = FALSE)
+  }
+
+  if (!inherits(object$data_all, "sf")) {
+    stop("The DataFolds object must contain an 'sf' object in the 'data_all' slot.", call. = FALSE)
+  }
+
+  if(!is.null(rho) && !is.numeric(rho)) {
+    stop("'rho' must be numeric if it is not null.", call. = FALSE)
+  }
+
   res <- check_spatial_geometry(
     data_all = object$data_all,
     fold_col = "folds_ids",
