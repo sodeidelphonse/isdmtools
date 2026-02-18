@@ -185,6 +185,24 @@ test_that("EnvDiagnostic correctly integrates background in summary and plot", {
 })
 
 
+test_that("GeoDiagnostic lifecycle works", {
 
+  pts <- data.frame(x = runif(10, 0, 2),
+                    y = runif(10, 0, 2),
+                    folds_ids = rep(1:2, each = 5)
+                    )
+  pts_sf <- st_as_sf(pts, coords = c("x", "y"), crs = "EPSG:32631")
 
+  folds <- list(data_all = pts_sf)
+  class(folds) <- "DataFolds"
+
+  diag_obj <- check_folds(folds)
+  expect_s3_class(diag_obj, "GeoDiagnostic")
+  expect_true(is.list(diag_obj))
+
+  expect_output(print(diag_obj))
+
+  p <- plot(diag_obj)
+  expect_s3_class(p, "ggplot")
+})
 

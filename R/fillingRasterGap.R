@@ -55,7 +55,7 @@ fill_na_near <- function(x, boundary = NULL, fun = mean, na.policy = "only", na.
                           start.window = 1, ...) {
 
   if(!inherits(x, c("SpatRaster", "RasterLayer"))) {
-    stop(sprintf("'%' must be a 'SpatRaster' or 'RasterLayer' object.", deparse(substitute(x))), call. = FALSE)
+    stop(sprintf("'%s' must be a 'SpatRaster' or 'RasterLayer' object.", deparse(substitute(x))), call. = FALSE)
   }
 
   if(inherits(x, "RasterLayer")) {

@@ -1,6 +1,9 @@
 library(testthat)
 library(terra)
 library(sf)
+library(isdmtools)
+
+options(warn = -1)
 
 test_that("sample_background returns correct S3 object and sample size", {
 
@@ -22,7 +25,7 @@ test_that("sample_background excludes the specific cell containing the presence"
   pres_sf <- sf::st_as_sf(data.frame(x = 0.2, y = 4.8), coords = c("x", "y"))
   target_cell <- terra::cellFromXY(mask, matrix(c(0.2, 4.8), ncol=2))
 
-  bg_obj <- suppressWarnings(sample_background(mask, points = pres_sf, n = 24))
+  bg_obj <- sample_background(mask, points = pres_sf, n = 24)
 
   # Check if it actually returned the object and not NULL
   expect_s3_class(bg_obj, "BackgroundPoints")
@@ -41,8 +44,17 @@ test_that("sample_background excludes the specific cell containing the presence"
 
 test_that("sample_background handles method arguments correctly", {
   mask <- terra::rast(nrows=10, ncols=10, vals=1)
-
   expect_no_error(
-    bg_reg <- suppressWarnings(sample_background(mask, n = 10, method = "regular"))
-  )
+               bg_reg <- sample_background(mask, n = 10, method = "regular")
+                )
+})
+
+test_that("BackgroundPoints methods work correctly", {
+
+  mask <- terra::rast(nrows=10, ncols=10, vals=1)
+  expect_no_error(bg_rand <- sample_background(mask, n = 10, method = "random"))
+
+  expect_output(print(bg_rand))
+  expect_no_error(plot(bg_rand))
+  expect_s3_class(bg_rand$bg, "data.frame")
 })
