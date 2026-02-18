@@ -33,7 +33,7 @@ This vignette should bridge the gap between "having spatial data" and "being rea
 
 ## Step 1: Simulate some spatial data
 
-Let's consider a simple scenario by generating two spatial datasets representing the presence and abundance of a given species over the defined study area. 
+Let's consider a simple scenario by generating two spatial datasets representing the presence and abundance of a given species within a designated study region. The purpose of this tutorial is to provide a simple introduction to the tool, as opposed to addressing a very complex scenario of spatially autocorreleted datasets.
 
 ```{r }
 # Simulate a list of presence-only and count data
@@ -62,7 +62,6 @@ ben_sf <- st_sf(data.frame(name = "Region"),
 set.seed(42)
 r   <- rast(ben_sf, nrow = 100, ncol = 100)
 r[] <- rnorm(ncell(r))
-
 rtmp   <- r
 rtmp[] <- runif(ncell(r), 5, 10)
 
@@ -103,12 +102,13 @@ summary(fold_ss)
 
 ## Step 3: Folds diagnostics
 
-Various diagnostic analyses can be performed on the folds created in the previous step. Specifically, when there is prior information on the spatial range from an exploratory analysis, it can be used as the `rho` argument to the `check_folds` function. This value can then be compared to the estimated internal size and inter-block gap to check for folds independence. For instance, the `blockCV::cv_spatial_autocor()` function can help to derive prior information on the spatial range. The same procedure can be applied to a Bayesian analysis to check if the posterior range estimated aligns with the spatial geometry of the specified folds or blocks. 
+Various diagnostic analyses can be performed on the folds that were created in the previous step. Specifically, if there is any prior information on the spatial range from an exploratory analysis, it can be used as a value for the `rho` argument of the `check_folds()`' method. This value can then be compared to the calculated inter-fold gap in order to ascertain whether folds are independent. For instance, the `blockCV::cv_spatial_autocor()` function can help derive prior information on the spatial range. The same procedure can be applied to a Bayesian analysis to check if the posterior range estimated aligns with the spatial geometry of the specified folds or blocks. 
 
 * **Folds diagnostics in geographical space**
 
 ```{r geo-diag, fig.width = 5, fig.height = 5, out.width = "90%"}
-# Check spatial independence of folds
+# Check spatial independence of folds using default rho (N/A)
+# Type ?check_folds for more details on the method
 geo_diag <- check_folds(folds, plot = TRUE)
 print(geo_diag)
 
@@ -138,11 +138,11 @@ plot(env_diag)
 
 ```
 
-As illustrated in the summary table, the Schoener D metric is greater than 0.6 for both covariates. This indicates that spatial folds significantly overlap the background area. This indicates that the blocks are environmentally representative.
+As illustrated in the summary table, the Schoener D metric is greater than 0.6 for both covariates. This indicates that spatial folds exhibit significant overlap with the background area. Consequently, it can be posited that the blocks are environmentally representative.
 
 * **Combined analysis**
 
-It is possible to combine both types of fold diagnostics in order to draw a unified conclusion. However, it should be noted that the applicability of both diagnostic tools is not universal across all the spatial blocking strategies covered in the package. Therefore, the most appropriate diagnostic tool may depend on the selected blocking scheme.
+It is possible to combine both types of fold diagnostics in order to draw a unified conclusion. However, it should be noted that the applicability of both diagnostic tools is not universal across all the spatial blocking strategies covered in the package. Therefore, the most appropriate diagnostic tool may be contingent on the selected blocking scheme.
 
 ```{r }
 # Combined diagnostics
@@ -171,8 +171,8 @@ Congratulations! You have successfully fused multi-source biodiversity data and 
 
 The `isdmtools` journey continues with model fitting and comprehensive evaluation. Depending on your needs, we recommend the following paths:
 
-- *Model Fitting*: Use the training data extracted via `extract_fold()` to fit your models using modelling engines like inlabru, PointedSDMs, or standard GAMs tools which can support spatial data with multiple response formats.
-- *Integrated Evaluation*: One predictions are obtained, evaluate the models and analyse the outputs.
+- *Model Fitting*: Use the training data extracted via `extract_fold()` to fit your models using modelling engines like inlabru, PointedSDMs, or standard GAMs tools which can support multisource spatial data.
+- *Integrated Evaluation*: Once predictions are obtained, evaluate the models and analyse the outputs.
 
 The advanced guide on [ISDM Evaluation Workflow](isdm-workflow.html) covers model building with external tools, calculation of dataset-specific and composite scores, suitability analysis and mapping with `isdmtools`.
 
