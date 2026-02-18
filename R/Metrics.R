@@ -5,26 +5,38 @@
 
 #' @title Compute Evaluation Metrics for Integrated Spatial Models from Multisource Datasets
 #'
-#' @description This function computes a wide range of evaluation metrics for a single-layer raster of model predictions against a list of one or more point-based datasets. It is designed to handle different data types (presence-only, presence-absence, and count data) and provides individual metrics as well as dataset-weighted composite scores.
+#' @description This function computes a wide range of evaluation metrics for a single-layer raster of model predictions against a list of one or more point-based datasets.
+#' It is designed to handle different data types (presence-only, presence-absence, and count data) and provides individual metrics as well as dataset-weighted composite scores.
 #'
-#' @param test_data A named `list` of `sf` objects. Each `sf` object represents a different test dataset and must contain point geometries. The function will loop through each named dataset in the list. In particular, `test_data` can be a 'fold' from the \link{create_folds} and \link{extract_fold} outputs, if independent validation datasets are not available.
-#' @param prob_raster A `SpatRaster` object with unique layer containing the model's predictions on a probability scale (0-1). It represents a suitability index, and its values are used to compute all ROC-based metrics (e.g., AUC, TSS, F1 score). This argument is optional if only continuous-outcome metrics are requested for count data.
-#' @param expected_response A `SpatRaster` object containing the model's predictions on a continuous scale (i.e. counts or rate if offset is used; see \link{suitability_index}). Its values are used to compute all continuous-outcome metrics (e.g., RMSE, MAE, MAPE). This argument is required if a continuous-outcome metric is requested.
-#' @param xy_excluded An optional `SpatVector` or `sf` object representing locations where pseudo-absence points should not be sampled, such as occupied areas or known background points. Only relevant for presence-only (PO) data. Default is `NULL`.
+#' @param test_data A named `list` of `sf` objects. Each `sf` object represents a different test dataset and must contain point geometries. The function will loop through each named dataset in the list.
+#' In particular, `test_data` can be a 'fold' from the \link{create_folds} and \link{extract_fold} outputs, if independent validation datasets are not available.
+#' @param prob_raster A `SpatRaster` object with unique layer containing the model's predictions on a probability scale (0-1).
+#' It represents a suitability index, and its values are used to compute all ROC-based metrics (e.g., AUC, TSS, F1 score). This argument is optional if only continuous-outcome metrics are requested for count data.
+#' @param expected_response A `SpatRaster` object containing the model's predictions on a continuous scale (i.e. counts or rate if offset is used; see \link{suitability_index}).
+#' Its values are used to compute all continuous-outcome metrics (e.g., RMSE, MAE, MAPE). This argument is required if a continuous-outcome metric is requested.
+#' @param xy_excluded An optional `SpatVector` or `sf` object representing locations where pseudo-absence points should not be sampled, such as occupied areas or known background points.
+#' Only relevant for presence-only (PO) data. Default is `NULL`.
 #' @param n_background integer. It specifies the number of pseudo-absence points to sample for presence-only data. Default is 1000 (see \link{sample_background}).
-#' @param response_counts character. The column name in the `sf` objects that contains observed counts. Default is 'counts' and must be standardized across all count data sets. Exceptionally, positive measurements (e.g. biomass) are supported by allowing exposure to its default value. In such cases, only continuous-outcome metrics can be requested.
+#' @param response_counts character. The column name in the `sf` objects that contains observed counts. Default is 'counts' and must be standardized across all count data sets.
+#' Exceptionally, positive measurements (e.g. biomass) are supported by allowing exposure to its default value. In such cases, only continuous-outcome metrics can be requested.
 #' @param response_pa character. The column name in the `sf` objects that contains presence-absence data (1 for presence, 0 for absence). Default is 'present' and must be standardized across all PA data sets.
 #' @param seed integer. It sets the seed for random number generation, used for pseudo-absence sampling to ensure reproducibility. Default is 25.
 #' @param threshold_method character. The method to be used for selecting the threshold for converting probabilities to binary outcomes. Options are 'best' (using `best_method`) or 'fixed'. Default is "best".
-#' @param best_method character. The method to be used for selecting the best threshold when `threshold_method` is 'best'. Options are 'youden' or 'closest.topleft'. Default is "youden" criterion which maximizes the sensitivity and specificity.
+#' @param best_method character. The method to be used for selecting the best threshold when `threshold_method` is 'best'. Options are 'youden' or 'closest.topleft'.
+#' Default is "youden" criterion which maximizes the sensitivity and specificity.
 #' @param fixed_threshold numeric. The value (0-1) to be used as the fixed threshold when `threshold_method` is 'fixed'. Default is `NA_real_`.
-#' @param best_threshold_policy character. Specifies the policy for selecting a threshold when multiple thresholds yield the same 'best' value. Options are "first", "last", "max.prec" (max precision), "max.recall" (max recall), "max.accu" (max accuracy), or "max.f1" (max F1 score). Default is "first".
-#' @param metrics character. A vector of the metric names to compute. If `NULL`, "auc" (area under the ROC curve), "tss" (true skill statistics), "accuracy", "F1" (F1 score), "precision", and "recall" are computed for ROC-based metrics while "rmse" (root mean squared error), "mae" (mean absolute error) and "r2" (pseudo R-squared) are computed for error-based metrics.
-#' @param overall_roc_metrics character. A vector of a subset of ROC-based metrics to be used for the overall composite score (`TOT_ROC_SCORE`). Allowed options are "auc", "tss", "accuracy", and "F1". If `NULL`, the sensible default is "auc", "tss" and "accuracy".
+#' @param best_threshold_policy character. Specifies the policy for selecting a threshold when multiple thresholds yield the same 'best' value.
+#' Options are "first", "last", "max.prec" (max precision), "max.recall" (max recall), "max.accu" (max accuracy), or "max.f1" (max F1 score). Default is "first".
+#' @param metrics character. A vector of the metric names to compute.
+#' If `NULL`, "auc" (area under the ROC curve), "tss" (true skill statistics), "f1" (F1 score), "accuracy", "precision", and "recall" are computed for ROC-based metrics
+#' while "rmse" (root mean squared error), "mae" (mean absolute error) and "r2" (pseudo R-squared) are computed for error-based metrics.
+#' @param overall_roc_metrics character. A vector of a subset of ROC-based metrics to be used for the overall composite score (`TOT_ROC_SCORE`).
+#' Allowed options are "auc", "tss", "accuracy", and "f1". If `NULL`, the sensible default is "auc", "tss" and "accuracy".
 #' This metric is useful when the objective is to obtain a rapid overview of the rank of multiple candidate models fitted to datasets via blocked cross-validation using multi-criteria assessment.
 #' @param overall_error_metrics character. A vector of a subset of continuous outcome metrics to be used for the overall composite score (`TOT_ERROR_SCORE`). Allowed options are "rmse", "mae", and "r2".
 #' If `NULL`, the default is "rmse" and "mae". In order to obtain an overall interpretable score, it is imperative to select metrics that have the same scale.
-#' @param is_pred_rate logical. If `TRUE`, it indicates that the `expected_response` contains predictions at the intensity (per-unit-of-exposure) scale (typical for Bayesian models with offset from `inlabru`). If `FALSE`, it assumes predictions are at the original scale (e.g., counts). Default is `FALSE`.
+#' @param is_pred_rate logical. If `TRUE`, it indicates that the `expected_response` contains predictions at the intensity (per-unit-of-exposure) scale (typical for Bayesian models with offset from `inlabru`).
+#' If `FALSE`, it assumes predictions are at the original scale (e.g., counts). Default is `FALSE`.
 #' @param exposure character. The column name in the `sf` objects that contains the exposure variable (offset). Only relevant for count (and sometimes presence-absence) data and must be standardized across all these types of datasets.
 #' If `is_pred_rate` is `TRUE`, observed counts are rescaled by this exposure variable. Default is `NULL`.
 #' @param ... Additional arguments to be passed on to internal functions, particularly \link[pROC]{coords} function.
@@ -165,7 +177,7 @@ compute_metrics <- function(test_data,
   # Master list of allowed metrics
   error_metrics <- c("rmse", "mae", "mape", "r2")
   roc_metrics <- c("auc", "tss", "accuracy", "precision", "recall", "specificity",
-                   "npv", "fpr", "fnr", "fdr", "F1", "threshold", "tpr", "tnr")
+                   "npv", "fpr", "fnr", "fdr", "f1", "threshold", "tpr", "tnr")
   master_allowed_metrics <- c(roc_metrics, error_metrics)
 
   # --- Critical validation for required inputs ----
@@ -174,16 +186,18 @@ compute_metrics <- function(test_data,
   best_threshold_policy <- match.arg(best_threshold_policy)
 
   has_roc_metrics <- any(roc_metrics %in% metrics)
+
   if (has_roc_metrics && is.null(prob_raster)) {
     stop("ROC-based metrics were requested but 'prob_raster' (suitability index) was not provided.", call. = FALSE)
   }
 
   has_error_metrics <- any(error_metrics %in% metrics)
+
   if (has_error_metrics && is.null(expected_response)) {
     stop("Continuous-outcome metrics were requested but 'expected_response' raster was not provided.", call. = FALSE)
   }
 
-  default_roc_metrics  <- c("auc", "tss", "accuracy", "F1", "recall", "precision")
+  default_roc_metrics  <- c("auc", "tss", "accuracy", "f1", "recall", "precision")
   default_error_metrics <- c("rmse", "mae", "r2")
 
   if (is.null(metrics)) {
@@ -264,7 +278,7 @@ compute_metrics <- function(test_data,
     if (!is.character(overall_roc_metrics)) {
       stop("'overall_roc_metrics' must be a character vector of metric names.", call. = FALSE)
     }
-    valid_options <- c("auc", "tss", "accuracy", "F1")
+    valid_options <- c("auc", "tss", "accuracy", "f1")
     if(!all(overall_roc_metrics %in% valid_options)) {
       stop(sprintf("Invalid metric(s) selected for 'overall_roc_metrics': %s. Allowed composite metrics are: %s.",
                    paste(setdiff(overall_roc_metrics, valid_options), collapse = ", "),
@@ -446,10 +460,10 @@ compute_metrics <- function(test_data,
             }
           }
 
-          if ("F1" %in% metrics) {
-            temp_metrics_values$F1 <- 2 * (temp_metrics_values$precision * temp_metrics_values$recall) /
+          if ("f1" %in% metrics) {
+            temp_metrics_values$f1 <- 2 * (temp_metrics_values$precision * temp_metrics_values$recall) /
               (temp_metrics_values$precision + temp_metrics_values$recall)
-            temp_metrics_values$F1[is.nan(temp_metrics_values$F1) | is.infinite(temp_metrics_values$F1)] <- -Inf
+            temp_metrics_values$f1[is.nan(temp_metrics_values$f1) | is.infinite(temp_metrics_values$f1)] <- -Inf
           }
 
           # Find row index for the chosen optimal threshold
@@ -465,8 +479,8 @@ compute_metrics <- function(test_data,
               selected_idx <- which.max(temp_metrics_values$recall)
             } else if (best_threshold_policy == "max.accu" && "accuracy" %in% names(temp_metrics_values)) {
               selected_idx <- which.max(temp_metrics_values$accuracy)
-            } else if (best_threshold_policy == "max.f1" && "F1" %in% names(temp_metrics_values)) {
-              selected_idx <- which.max(temp_metrics_values$F1)
+            } else if (best_threshold_policy == "max.f1" && "f1" %in% names(temp_metrics_values)) {
+              selected_idx <- which.max(temp_metrics_values$f1)
             } else {
               message(sprintf("Policy '%s' cannot be applied for '%s' due to missing required metrics. Falling back to 'first' threshold.", best_threshold_policy, ds_name))
               selected_idx <- 1
@@ -542,7 +556,7 @@ compute_metrics <- function(test_data,
   available_relevant_roc_scores <- available_relevant_roc_scores[!is.na(available_relevant_roc_scores)]
 
   if (length(available_relevant_roc_scores) > 0) {
-    TOT_ROC_SCORE <- sum(available_relevant_roc_scores) / length(available_relevant_roc_scores)
+    TOT_ROC_SCORE <- mean(available_relevant_roc_scores, na.rm = TRUE)
   } else {
     message("Cannot compute an overall ROC composite score as no relevant composite metrics were available or calculated.")
   }
@@ -555,7 +569,7 @@ compute_metrics <- function(test_data,
   available_relevant_cont_scores <- available_relevant_cont_scores[!is.na(available_relevant_cont_scores)]
 
   if (length(available_relevant_cont_scores) > 0) {
-    TOT_ERROR_SCORE <- sum(available_relevant_cont_scores) / length(available_relevant_cont_scores)
+    TOT_ERROR_SCORE <- mean(available_relevant_cont_scores, na.rm = TRUE)
   } else {
     message("Cannot compute an overall continuous-outcome composite score as no relevant composite metrics were available or calculated.")
   }
@@ -606,11 +620,11 @@ compute_metrics <- function(test_data,
 #'
 #' @return
 #' \itemize{
+#'   \item \code{as.data.frame}: Returns a tidy \code{data.frame} in long format.
 #'   \item \code{print}: Invisibly returns the original object.
 #'   \item \code{summary}: Invisibly returns \code{NULL}.
 #'   \item \code{plot}: Returns a \code{ggplot2} object.
 #'   \item \code{[}: Returns a subset of \code{ISDMmetrics} object.
-#'   \item \code{as.data.frame}: Returns a tidy \code{data.frame} in long format.
 #' }
 #'
 #' @name ISDMmetrics-methods
@@ -656,176 +670,6 @@ compute_metrics <- function(test_data,
 #' auc_only <- eval_results[grep("AUC", names(eval_results))]
 #' }
 #'
-print.ISDMmetrics <- function(x, ...) {
-  cat("\nISDM Model Evaluation Results\n")
-  cat("----------------------------------------------\n")
-
-  all_names <- names(x)
-  tot_idx  <- grepl("^TOT_", all_names)
-
-  if(any(tot_idx)) {
-    ind_names <- all_names[!grepl("_Comp$", all_names) & !tot_idx]
-    datasets <- unique(gsub(".*_", "", ind_names))
-
-    cat("Datasets Evaluated:", paste(datasets, collapse = ", "), "\n\n")
-    cat("Overall Performance:\n")
-    for(n in all_names[tot_idx]) {
-      cat(sprintf("  %-18s: %0.4f\n", gsub("_", " ", n), x[[n]]))
-    }
-  } else {   # Fallback to display everything in the subset
-    cat("Note: Subsetted metrics view\n\n")
-    for(n in all_names) {
-      cat(sprintf("  %-18s: %0.4f\n", gsub("_", " ", n), x[[n]]))
-    }
-  }
-
-  cat("----------------------------------------------\n")
-  invisible(x)
-}
-
-#' @rdname ISDMmetrics-methods
-#' @export
-summary.ISDMmetrics <- function(object, ...) {
-
-  s <- attr(object, "settings")
-
-  cat("\n==============================================\n")
-  cat("       ISDM EVALUATION SUMMARY REPORT\n")
-  cat("==============================================\n")
-  if(!is.null(s$timestamp)) cat("Generated on:", format(s$timestamp, "%Y-%m-%d %H:%M:%S"), "\n\n")
-
-  cat("--- Model Evaluation Settings ---\n")
-  cat(sprintf("%-20s: %s\n", "Random Seed", ifelse(is.null(s$seed), "N/A", s$seed)))
-  cat(sprintf("%-20s: %s\n", "Background Points", ifelse(is.null(s$n_background), "N/A", s$n_background)))
-  if (!is.null(attr(object, "bg_points"))) {
-    cat("Spatial Context     : BackgroundPoints object attached\n")
-  }
-  cat(sprintf("%-20s: %s\n", "Threshold Logic", s$threshold_method))
-  if(!is.null(s$threshold_method) && s$threshold_method == "best") {
-    cat(sprintf("%-20s: %s\n", "Optimality Criterion", s$best_method))
-  }
-
-  is_rate <- if(is.null(s$is_pred_rate)) {
-    "Not specified"
-  } else if (s$is_pred_rate) {
-    "Rate (Count per Offset unit)"
-  } else {
-    "Absolute Count (No Offset)"
-  }
-  cat(sprintf("%-20s: %s\n", "Prediction Type", is_rate))
-
-  cat("\n--- Detailed Metric Table ---\n")
-  all_names <- names(object)
-  ind_names <- all_names[!grepl("_Comp$", all_names) & !grepl("^TOT_", all_names)]
-
-  parts <- strsplit(ind_names, "_")
-  metrics_found <- unique(sapply(parts, `[`, 1))
-  datasets_found <- unique(sapply(parts, `[`, 2))
-
-  res_mat <- matrix(NA, nrow = length(metrics_found), ncol = length(datasets_found),
-                    dimnames = list(metrics_found, datasets_found))
-
-  for(n in ind_names) {
-    p <- strsplit(n, "_")[[1]]
-    res_mat[p[1], p[2]] <- object[[n]]
-  }
-
-  print(round(res_mat, 3), na.print = "N/A")
-
-  cat("\n--- Weighted Composite Scores (Weighted) ---\n")
-  comp_names <- all_names[grepl("_Comp$", all_names)]
-
-  if(length(comp_names) > 0) {
-    comp_vals <- unlist(object[comp_names])
-    names(comp_vals) <- gsub("_Comp", "", names(comp_vals))
-    print(round(comp_vals, 3))
-  } else {
-    cat("No composite scores calculated.\n")
-  }
-
-  tot_idx  <- grepl("^TOT_", all_names)
-  if(any(tot_idx)) {
-    cat("\n--- Overall Performance ---\n")
-    for(tn in all_names[tot_idx]) {
-      label <- gsub("_", " ", tn)
-      cat(sprintf("  %-18s: %0.4f\n", label, object[[tn]]))
-    }
-  }
-
-  cat("==============================================\n")
-  invisible(NULL)
-}
-
-
-#' @rdname ISDMmetrics-methods
-#' @export
-`[.ISDMmetrics` <- function(x, ...) {
-
-  settings_attr <- attr(x, "settings")
-  bg_attr       <- attr(x, "bg_points")
-
-  out <- NextMethod("[")
-
-  class(out) <- c("ISDMmetrics", "list")
-  attr(out, "settings")  <- settings_attr
-  attr(out, "bg_points") <- bg_attr
-
-  return(out)
-}
-
-
-#' @rdname ISDMmetrics-methods
-#' @export
-plot.ISDMmetrics <- function(x, include_composite = TRUE, ...) {
-
-  all_names <- names(x)
-  ind_names <- all_names[!grepl("_Comp$", all_names) & !grepl("^TOT_", all_names)]
-  comp_names <- all_names[grepl("_Comp$", all_names)]
-
-  target_names <- if (include_composite) c(ind_names, comp_names) else ind_names
-  if (length(target_names) == 0) stop("No metrics found to plot.")
-
-  plot_data <- data.frame(
-    Value = unlist(x[target_names]),
-    Full_Name = target_names,
-    stringsAsFactors = FALSE
-  )
-
-  parts <- strsplit(plot_data$Full_Name, "_")
-  plot_data$Metric <- sapply(parts, `[`, 1)
-  plot_data$Source <- sapply(parts, `[`, 2)
-  plot_data$Source <- gsub("Comp", "Composite", plot_data$Source)
-
-  # Dynamic color assignment
-  unique_sources <- unique(plot_data$Source)
-  n_sources <- length(unique_sources)
-
-  cols <- grDevices::hcl.colors(n_sources, palette = "Viridis")
-  names(cols) <- unique_sources
-
-  if ("Composite" %in% names(cols)) {
-    cols["Composite"] <- "#228B22"
-  }
-
-  p <- ggplot2::ggplot(plot_data, ggplot2::aes(x = .data$Source, y = .data$Value, fill = .data$Source)) +
-    ggplot2::geom_col(show.legend = FALSE, alpha = 0.85) +
-    ggplot2::facet_wrap(~ .data$Metric, scales = "free_y") +
-    ggplot2::scale_fill_manual(values = cols) +
-    ggplot2::theme_minimal() +
-    ggplot2::labs(
-      title = "ISDM Model Evaluation: Dataset Comparison",
-      subtitle = paste("Seed:", attr(x, "settings")$seed),
-      x = NULL, y = "Metric Value"
-    ) +
-    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
-
-  print(p)
-  invisible(p)
-}
-
-
-#' @rdname ISDMmetrics-methods
-#' @export
 as.data.frame.ISDMmetrics <- function(x, ...) {
 
   all_names <- names(x)
@@ -852,6 +696,183 @@ as.data.frame.ISDMmetrics <- function(x, ...) {
   df$Source[grepl("^TOT", df$Full_Name)] <- "Global"
 
   return(df[, c("Full_Name", "Metric", "Source", "Value")])
+}
+
+#' @rdname ISDMmetrics-methods
+#' @export
+print.ISDMmetrics <- function(x, ...) {
+  cat("\nISDM Model Evaluation Results\n")
+  cat("----------------------------------------------\n")
+
+  df <- as.data.frame(x)
+
+  tot_rows <- df[df$Source == "Global", ]
+  ind_rows <- df[!(df$Source %in% c("Global", "Weighted Composite")), ]
+
+  if(nrow(tot_rows) > 0) {
+    datasets <- unique(ind_rows$Source)
+
+    cat("Datasets Evaluated:", paste(datasets, collapse = ", "), "\n\n")
+    cat("Overall Performance:\n")
+
+    for(i in 1:nrow(tot_rows)) {
+      label <- gsub("_", " ", tot_rows$Full_Name[i])
+      cat(sprintf("  %-18s: %0.4f\n", label, tot_rows$Value[i]))
+    }
+  } else {    # Fallback for subset view
+    cat("Note: Subsetted metrics view\n\n")
+    for(i in 1:nrow(df)) {
+      label <- gsub("_", " ", df$Full_Name[i])
+      cat(sprintf("  %-18s: %0.4f\n", label, df$Value[i]))
+    }
+  }
+
+  cat("----------------------------------------------\n")
+  invisible(x)
+}
+
+
+#' @rdname ISDMmetrics-methods
+#' @export
+summary.ISDMmetrics <- function(object, ...) {
+
+  s  <- attr(object, "settings")
+  bg_attr <- attr(object, "bg_points")
+
+  cat("\n==============================================\n")
+  cat("       ISDM EVALUATION SUMMARY REPORT\n")
+  cat("==============================================\n")
+  if(!is.null(s$timestamp)) cat("Generated on:", format(s$timestamp, "%Y-%m-%d %H:%M:%S"), "\n\n")
+
+  cat("--- Model Evaluation Settings ---\n")
+  cat(sprintf("%-20s: %s\n", "Random Seed", ifelse(is.null(s$seed), "N/A", s$seed)))
+
+  bg_display <- if(is.null(bg_attr)) "N/A" else s$n_background
+
+  cat(sprintf("%-20s: %s\n", "Background Points", bg_display))
+  if (!is.null(bg_attr)) {
+    cat("Spatial Context     : BackgroundPoints object attached\n")
+  }
+
+  cat(sprintf("%-20s: %s\n", "Threshold Logic", s$threshold_method))
+  if(!is.null(s$threshold_method) && s$threshold_method == "best") {
+    cat(sprintf("%-20s: %s\n", "Optimality Criterion", s$best_method))
+  }
+
+  is_rate <- if(is.null(s$is_pred_rate)) {
+    "Not specified"
+  } else if (s$is_pred_rate) {
+    "Rate (Count per Offset unit)"
+  } else {
+    "Absolute Count (No Offset)"
+  }
+  cat(sprintf("%-20s: %s\n", "Prediction Type", is_rate))
+
+  cat("\n--- Detailed Metric Table ---\n")
+  df <- as.data.frame(object)
+
+  # Filter for individual dataset metrics
+  ind_df <- df[!(df$Source %in% c("Global", "Weighted Composite")), ]
+
+  if(nrow(ind_df) > 0) {
+    metrics_found  <- unique(ind_df$Metric)
+    datasets_found <- unique(ind_df$Source)
+
+    res_mat <- matrix(NA, nrow = length(metrics_found),
+                      ncol = length(datasets_found),
+                      dimnames = list(metrics_found, datasets_found)
+                      )
+    for(i in 1:nrow(ind_df)) {
+      res_mat[ind_df$Metric[i], ind_df$Source[i]] <- ind_df$Value[i]
+    }
+    print(round(res_mat, 3), na.print = "N/A")
+  }
+
+  cat("\n--- Weighted Composite Scores (Weighted) ---\n")
+  comp_df <- df[df$Source == "Weighted Composite", ]
+
+  if(nrow(comp_df) > 0) {
+    comp_vals <- comp_df$Value
+    names(comp_vals) <- comp_df$Metric
+    print(round(comp_vals, 3))
+  } else {
+    cat("No composite scores calculated.\n")
+  }
+
+  glob_df <- df[df$Source == "Global", ]
+
+  if(nrow(glob_df) > 0) {
+    cat("\n--- Overall Performance ---\n")
+    for(i in 1:nrow(glob_df)) {
+      label <- gsub("_", " ", glob_df$Full_Name[i])
+      cat(sprintf("  %-18s: %0.3f\n", label, glob_df$Value[i]))
+    }
+  }
+
+  cat("==============================================\n")
+  invisible(NULL)
+}
+
+
+#' @rdname ISDMmetrics-methods
+#' @export
+plot.ISDMmetrics <- function(x, include_composite = TRUE, ...) {
+
+  plot_data <- as.data.frame(x)
+
+  # Data-specific metrics and/or composite
+  if (include_composite) {
+    plot_data <- plot_data[plot_data$Source != "Global", ]
+  } else {
+    plot_data <- plot_data[!(plot_data$Source %in% c("Global", "Weighted Composite")), ]
+  }
+
+  plot_data$Source[plot_data$Source == "Weighted Composite"] <- "Composite"
+  if (nrow(plot_data) == 0) stop("No metrics found to plot.")
+
+  # Dynamic color assignment
+  unique_sources <- unique(plot_data$Source)
+  n_sources <- length(unique_sources)
+
+  cols <- grDevices::hcl.colors(n_sources, palette = "Viridis")
+  names(cols) <- unique_sources
+
+  if ("Composite" %in% names(cols)) {
+    cols["Composite"] <- "#228B22"
+  }
+
+  # Plot logic
+  p <- ggplot2::ggplot(plot_data, ggplot2::aes(x = .data$Source, y = .data$Value, fill = .data$Source)) +
+    ggplot2::geom_col(show.legend = FALSE, alpha = 0.85) +
+    ggplot2::facet_wrap(~ .data$Metric, scales = "free_y") +
+    ggplot2::scale_fill_manual(values = cols) +
+    ggplot2::theme_minimal() +
+    ggplot2::labs(
+      title = "ISDM Model Evaluation: Dataset Comparison",
+      subtitle = paste("Seed:", attr(x, "settings")$seed),
+      x = NULL, y = "Metric Value"
+    ) +
+    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
+
+  print(p)
+  invisible(p)
+}
+
+
+#' @rdname ISDMmetrics-methods
+#' @export
+`[.ISDMmetrics` <- function(x, ...) {
+
+  settings_attr <- attr(x, "settings")
+  bg_attr       <- attr(x, "bg_points")
+
+  out <- NextMethod("[")
+
+  class(out) <- c("ISDMmetrics", "list")
+  attr(out, "settings")  <- settings_attr
+  attr(out, "bg_points") <- bg_attr
+
+  return(out)
 }
 
 #' @rdname ISDMmetrics-methods

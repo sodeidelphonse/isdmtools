@@ -2,23 +2,23 @@
 % Please edit documentation in R/Metrics.R
 \name{ISDMmetrics-methods}
 \alias{ISDMmetrics-methods}
+\alias{as.data.frame.ISDMmetrics}
 \alias{print.ISDMmetrics}
 \alias{summary.ISDMmetrics}
-\alias{[.ISDMmetrics}
 \alias{plot.ISDMmetrics}
-\alias{as.data.frame.ISDMmetrics}
+\alias{[.ISDMmetrics}
 \alias{get_background}
 \title{Methods for ISDMmetrics Objects}
 \usage{
+\method{as.data.frame}{ISDMmetrics}(x, ...)
+
 \method{print}{ISDMmetrics}(x, ...)
 
 \method{summary}{ISDMmetrics}(object, ...)
 
-\method{[}{ISDMmetrics}(x, ...)
-
 \method{plot}{ISDMmetrics}(x, include_composite = TRUE, ...)
 
-\method{as.data.frame}{ISDMmetrics}(x, ...)
+\method{[}{ISDMmetrics}(x, ...)
 
 get_background(x)
 }
@@ -33,11 +33,11 @@ get_background(x)
 }
 \value{
 \itemize{
+\item \code{as.data.frame}: Returns a tidy \code{data.frame} in long format.
 \item \code{print}: Invisibly returns the original object.
 \item \code{summary}: Invisibly returns \code{NULL}.
 \item \code{plot}: Returns a \code{ggplot2} object.
 \item \code{[}: Returns a subset of \code{ISDMmetrics} object.
-\item \code{as.data.frame}: Returns a tidy \code{data.frame} in long format.
 }
 
 The \code{BackgroundPoints} object if present, otherwise \code{NULL}.

@@ -27,37 +27,48 @@ compute_metrics(
 )
 }
 \arguments{
-\item{test_data}{A named \code{list} of \code{sf} objects. Each \code{sf} object represents a different test dataset and must contain point geometries. The function will loop through each named dataset in the list. In particular, \code{test_data} can be a 'fold' from the \link{create_folds} and \link{extract_fold} outputs, if independent validation datasets are not available.}
+\item{test_data}{A named \code{list} of \code{sf} objects. Each \code{sf} object represents a different test dataset and must contain point geometries. The function will loop through each named dataset in the list.
+In particular, \code{test_data} can be a 'fold' from the \link{create_folds} and \link{extract_fold} outputs, if independent validation datasets are not available.}
 
-\item{prob_raster}{A \code{SpatRaster} object with unique layer containing the model's predictions on a probability scale (0-1). It represents a suitability index, and its values are used to compute all ROC-based metrics (e.g., AUC, TSS, F1 score). This argument is optional if only continuous-outcome metrics are requested for count data.}
+\item{prob_raster}{A \code{SpatRaster} object with unique layer containing the model's predictions on a probability scale (0-1).
+It represents a suitability index, and its values are used to compute all ROC-based metrics (e.g., AUC, TSS, F1 score). This argument is optional if only continuous-outcome metrics are requested for count data.}
 
-\item{xy_excluded}{An optional \code{SpatVector} or \code{sf} object representing locations where pseudo-absence points should not be sampled, such as occupied areas or known background points. Only relevant for presence-only (PO) data. Default is \code{NULL}.}
+\item{xy_excluded}{An optional \code{SpatVector} or \code{sf} object representing locations where pseudo-absence points should not be sampled, such as occupied areas or known background points.
+Only relevant for presence-only (PO) data. Default is \code{NULL}.}
 
-\item{expected_response}{A \code{SpatRaster} object containing the model's predictions on a continuous scale (i.e. counts or rate if offset is used; see \link{suitability_index}). Its values are used to compute all continuous-outcome metrics (e.g., RMSE, MAE, MAPE). This argument is required if a continuous-outcome metric is requested.}
+\item{expected_response}{A \code{SpatRaster} object containing the model's predictions on a continuous scale (i.e. counts or rate if offset is used; see \link{suitability_index}).
+Its values are used to compute all continuous-outcome metrics (e.g., RMSE, MAE, MAPE). This argument is required if a continuous-outcome metric is requested.}
 
 \item{n_background}{integer. It specifies the number of pseudo-absence points to sample for presence-only data. Default is 1000 (see \link{sample_background}).}
 
-\item{response_counts}{character. The column name in the \code{sf} objects that contains observed counts. Default is 'counts' and must be standardized across all count data sets. Exceptionally, positive measurements (e.g. biomass) are supported by allowing exposure to its default value. In such cases, only continuous-outcome metrics can be requested.}
+\item{response_counts}{character. The column name in the \code{sf} objects that contains observed counts. Default is 'counts' and must be standardized across all count data sets.
+Exceptionally, positive measurements (e.g. biomass) are supported by allowing exposure to its default value. In such cases, only continuous-outcome metrics can be requested.}
 
 \item{response_pa}{character. The column name in the \code{sf} objects that contains presence-absence data (1 for presence, 0 for absence). Default is 'present' and must be standardized across all PA data sets.}
 
 \item{threshold_method}{character. The method to be used for selecting the threshold for converting probabilities to binary outcomes. Options are 'best' (using \code{best_method}) or 'fixed'. Default is "best".}
 
-\item{best_method}{character. The method to be used for selecting the best threshold when \code{threshold_method} is 'best'. Options are 'youden' or 'closest.topleft'. Default is "youden" criterion which maximizes the sensitivity and specificity.}
+\item{best_method}{character. The method to be used for selecting the best threshold when \code{threshold_method} is 'best'. Options are 'youden' or 'closest.topleft'.
+Default is "youden" criterion which maximizes the sensitivity and specificity.}
 
 \item{fixed_threshold}{numeric. The value (0-1) to be used as the fixed threshold when \code{threshold_method} is 'fixed'. Default is \code{NA_real_}.}
 
-\item{best_threshold_policy}{character. Specifies the policy for selecting a threshold when multiple thresholds yield the same 'best' value. Options are "first", "last", "max.prec" (max precision), "max.recall" (max recall), "max.accu" (max accuracy), or "max.f1" (max F1 score). Default is "first".}
+\item{best_threshold_policy}{character. Specifies the policy for selecting a threshold when multiple thresholds yield the same 'best' value.
+Options are "first", "last", "max.prec" (max precision), "max.recall" (max recall), "max.accu" (max accuracy), or "max.f1" (max F1 score). Default is "first".}
 
-\item{metrics}{character. A vector of the metric names to compute. If \code{NULL}, "auc" (area under the ROC curve), "tss" (true skill statistics), "accuracy", "F1" (F1 score), "precision", and "recall" are computed for ROC-based metrics while "rmse" (root mean squared error), "mae" (mean absolute error) and "r2" (pseudo R-squared) are computed for error-based metrics.}
+\item{metrics}{character. A vector of the metric names to compute.
+If \code{NULL}, "auc" (area under the ROC curve), "tss" (true skill statistics), "f1" (F1 score), "accuracy", "precision", and "recall" are computed for ROC-based metrics
+while "rmse" (root mean squared error), "mae" (mean absolute error) and "r2" (pseudo R-squared) are computed for error-based metrics.}
 
-\item{overall_roc_metrics}{character. A vector of a subset of ROC-based metrics to be used for the overall composite score (\code{TOT_ROC_SCORE}). Allowed options are "auc", "tss", "accuracy", and "F1". If \code{NULL}, the sensible default is "auc", "tss" and "accuracy".
+\item{overall_roc_metrics}{character. A vector of a subset of ROC-based metrics to be used for the overall composite score (\code{TOT_ROC_SCORE}).
+Allowed options are "auc", "tss", "accuracy", and "f1". If \code{NULL}, the sensible default is "auc", "tss" and "accuracy".
 This metric is useful when the objective is to obtain a rapid overview of the rank of multiple candidate models fitted to datasets via blocked cross-validation using multi-criteria assessment.}
 
 \item{overall_error_metrics}{character. A vector of a subset of continuous outcome metrics to be used for the overall composite score (\code{TOT_ERROR_SCORE}). Allowed options are "rmse", "mae", and "r2".
 If \code{NULL}, the default is "rmse" and "mae". In order to obtain an overall interpretable score, it is imperative to select metrics that have the same scale.}
 
-\item{is_pred_rate}{logical. If \code{TRUE}, it indicates that the \code{expected_response} contains predictions at the intensity (per-unit-of-exposure) scale (typical for Bayesian models with offset from \code{inlabru}). If \code{FALSE}, it assumes predictions are at the original scale (e.g., counts). Default is \code{FALSE}.}
+\item{is_pred_rate}{logical. If \code{TRUE}, it indicates that the \code{expected_response} contains predictions at the intensity (per-unit-of-exposure) scale (typical for Bayesian models with offset from \code{inlabru}).
+If \code{FALSE}, it assumes predictions are at the original scale (e.g., counts). Default is \code{FALSE}.}
 
 \item{exposure}{character. The column name in the \code{sf} objects that contains the exposure variable (offset). Only relevant for count (and sometimes presence-absence) data and must be standardized across all these types of datasets.
 If \code{is_pred_rate} is \code{TRUE}, observed counts are rescaled by this exposure variable. Default is \code{NULL}.}
@@ -79,7 +90,8 @@ The \code{ISDMmetrics} object is a list containing performance values for indivi
 Use \code{as.data.frame()} to flatten these for cross-validation summaries.
 }
 \description{
-This function computes a wide range of evaluation metrics for a single-layer raster of model predictions against a list of one or more point-based datasets. It is designed to handle different data types (presence-only, presence-absence, and count data) and provides individual metrics as well as dataset-weighted composite scores.
+This function computes a wide range of evaluation metrics for a single-layer raster of model predictions against a list of one or more point-based datasets.
+It is designed to handle different data types (presence-only, presence-absence, and count data) and provides individual metrics as well as dataset-weighted composite scores.
 }
 \details{
 The function handles three main data types and any combination thereof:
