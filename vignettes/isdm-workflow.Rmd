@@ -43,20 +43,20 @@ Let's develop a Bayesian spatial model with the simulated data presented in [Get
 
 We assume the following basic joint model with a shared latent signal $\xi(.)$ (i.e. a Gaussian random field):
 
-```math
- \begin{matrix} 
- Y_{\mathrm{count},i}|\xi(.) \sim \mathrm{Pois} \left(\mu_i \right), \quad i = 1,\ldots,n,\\
- \log(\mu_i) = \beta_{0,\mathrm{count}} + \xi(\mathbf{s}_i)\\[3mm]
- X_{\mathrm{presence}}|\xi(.) \sim \mathrm{IPP} \left(\lambda(\mathbf{s}) \right),\\
-\log (\lambda(\mathbf{s})) = \beta_{0,\mathrm{presence}} + \xi(\mathbf{s})\\
-\end{matrix}
-```
-where $\mathrm{IPP}$ means a _Inhomogeneous Poisson Process_ and $\mathbf{s}$ the vector of a location coordinates. 
-
-You can now prepare the remaining data required to fit an integrated model. First, we need to define the mesh to be used to approximate the latent field as well as for the integration points in the IPP likelihood.
-After this step, we set up the prior distributions for the latent parameters such as the range and the marginal standard deviation. Then we define the observation model for each data type to fuse them using a joint likelihood estimation with INLA.
+$$
+ \begin{aligned} 
+ Y_{\mathrm{count},i}|\xi(.) &\sim \mathrm{Pois} \left(\mu_i \right), \quad i = 1,\ldots,n,\\
+ \log(\mu_i) &= \beta_{0,\mathrm{count}} + \xi(\mathbf{s}_i)\\[2mm]
+ X_{\mathrm{presence}}|\xi(.) &\sim \mathrm{IPP} \left(\lambda(\mathbf{s}) \right),\\
+\log (\lambda(\mathbf{s})) &= \beta_{0,\mathrm{presence}} + \xi(\mathbf{s})\\
+\end{aligned}
+$$
+where $\mathrm{IPP}$ means a _Inhomogeneous Poisson Process_ and $\mathbf{s}$ the vector of a location coordinates. The IPP model presented here is known in spatial statistics as a log-Gaussian Cox process model ([Møller et al. 1998](https://doi.org/10.1111/1467-9469.00115)).
 
 ## Step 2: Model implementation
+
+You can now prepare the remaining data required to fit an integrated model. First, we need to define the mesh to be used for approximating the latent field as well as for the integration points in the IPP likelihood.
+After this step, we set up the prior distributions for the latent parameters such as the range and the marginal standard deviation, keeping default prior for the intercepts. Then we define the observation model for each data type and fuse them using a joint likelihood estimation with INLA.
 
 ```{r mesh-code, eval = exists("ben_sf")} 
 # Create a "mesh" for the latent field 
@@ -123,7 +123,7 @@ As expected, the estimated _spatial range_ is higher than 1. This is because the
  
 ## Step 3: Model prediction 
 
-```{r pixels, eval = exists("mesh")} 
+```{r grids, eval = exists("mesh")} 
 # Define the prediction grids and projection system
 grids      <- fmesher::fm_pixels(mesh, mask = ben_sf)
 projection <- "+proj=longlat +ellps=WGS84 +datum=WGS84"
@@ -145,7 +145,7 @@ jpred_count <- predict(jfit,
 jpred_count <- prepare_predictions(jpred_count)
 ```
 
-# Suitability analysis and evaluation with `isdmtools`
+# Suitability analysis and model evaluation with `isdmtools`
 
 ## Step 4: Habitat suitability analysis
 

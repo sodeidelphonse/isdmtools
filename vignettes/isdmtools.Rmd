@@ -103,9 +103,11 @@ summary(fold_ss)
 
 ## Step 3: Folds diagnostics
 
-Various diagnostic analyses can be performed on the folds created in the previous step. Specifically, when there is prior information on the spatial range from an exploratory analysis, this value can be used as the `rho` argument to the `check_folds` function. This can then be used to compare to the estimated internal size and inter-block gap. The same procedure is applied to post-modelling analysis to check if the posterior range estimated aligns with the spatial geometry of the specified folds or blocks.
+Various diagnostic analyses can be performed on the folds created in the previous step. Specifically, when there is prior information on the spatial range from an exploratory analysis, it can be used as the `rho` argument to the `check_folds` function. This value can then be compared to the estimated internal size and inter-block gap to check for folds independence. For instance, the `blockCV::cv_spatial_autocor()` function can help to derive prior information on the spatial range. The same procedure can be applied to a Bayesian analysis to check if the posterior range estimated aligns with the spatial geometry of the specified folds or blocks. 
 
-```{r, fig.width = 5, fig.height = 5, out.width = "90%"}
+* **Folds diagnostics in geographical space**
+
+```{r geo-diag, fig.width = 5, fig.height = 5, out.width = "90%"}
 # Check spatial independence of folds
 geo_diag <- check_folds(folds, plot = TRUE)
 print(geo_diag)
@@ -114,6 +116,10 @@ print(geo_diag)
 plot(geo_diag) 
 
 ```
+
+As the summary information illustrates, the minimum distance between points within a specific block (or fold) and its nearest block (i.e., the inter-block gap) is approximately 42 km. This indicates that there is no contiguous spatial folds from the selected blocking strategy, thereby supporting the hypothesis of no *block leakage*.
+
+* **Folds diagnostics in the environmental space**
 
 ```{r warning=FALSE,message=FALSE}
 # Check environmental balance of folds
@@ -126,11 +132,17 @@ print(env_diag)
 
 ```
 
-```{r diagnostics, fig.width = 6, fig.height = 4, out.width = "100%"}
+```{r env-diag, fig.width = 6, fig.height = 4, out.width = "100%"}
 # Plot outputs
 plot(env_diag)
 
 ```
+
+As illustrated in the summary table, the Schoener D metric is greater than 0.6 for both covariates. This indicates that spatial folds significantly overlap the background area. This indicates that the blocks are environmentally representative.
+
+* **Combined analysis**
+
+It is possible to combine both types of fold diagnostics in order to draw a unified conclusion. However, it should be noted that the applicability of both diagnostic tools is not universal across all the spatial blocking strategies covered in the package. Therefore, the most appropriate diagnostic tool may depend on the selected blocking scheme.
 
 ```{r }
 # Combined diagnostics
