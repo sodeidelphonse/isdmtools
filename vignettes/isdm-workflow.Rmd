@@ -76,9 +76,9 @@ Now, we can partition the datasets using the clustering blocking scheme for bloc
 # Create spatial folds
 folds <- create_folds(datasets_list, ben_sf, cv_method = "cluster")
 
-# Extract the train/test for the first Fold
-train_data <- extract_fold(folds, fold = 1)$train
-test_data  <- extract_fold(folds, fold = 1)$test
+# Extract the train/test for the third Fold
+train_data <- extract_fold(folds, fold = 3)$train
+test_data  <- extract_fold(folds, fold = 3)$test
 ```
 
 # Fitting an integrated model with `inlabru` 
