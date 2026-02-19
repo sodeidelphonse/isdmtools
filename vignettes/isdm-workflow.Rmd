@@ -45,13 +45,13 @@ We assume the following basic joint model with a shared latent signal $\xi(.)$ (
 
 $$
  \begin{aligned} 
- Y_{\mathrm{count},i}|\xi(.) &\sim \mathrm{Pois} \left(\mu_i \right), \quad i = 1,\ldots,n,\\
- \log(\mu_i) &= \beta_{0,\mathrm{count}} + \xi(\mathbf{s}_i)\\[2mm]
- X_{\mathrm{presence}}|\xi(.) &\sim \mathrm{IPP} \left(\lambda(\mathbf{s}) \right),\\
-\log (\lambda(\mathbf{s})) &= \beta_{0,\mathrm{presence}} + \xi(\mathbf{s})\\
+ Y_{\mathrm{count},i}|\xi(.)&\sim\! \mathrm{Pois} \left(\mu_i \right), \quad i = 1,\ldots,n,\\
+ \log(\mu_i)&=\! \beta_{0,\mathrm{count}} + \xi(\mathbf{s}_i)\\[2mm]
+ X_{\mathrm{presence}}|\xi(.)&\sim\! \mathrm{IPP} \left(\lambda(\mathbf{s}) \right),\\
+\log (\lambda(\mathbf{s}))&=\! \beta_{0,\mathrm{presence}} + \xi(\mathbf{s})\\
 \end{aligned}
 $$
-where $\mathrm{IPP}$ means a _Inhomogeneous Poisson Process_ and $\mathbf{s}$ the vector of a location coordinates. The IPP model presented here is known in spatial statistics as a log-Gaussian Cox process model - LGCP (see, @moller_log_1998) . Although the large component which includes the data-specific intercept can also incorporate environmental covariates, we assume that the basic model above is valid for the data.
+where $\mathrm{IPP}$ means a _Inhomogeneous Poisson Process_ and $\mathbf{s}$ the vector of a location coordinates. The IPP model presented here is known in spatial statistics as a log-Gaussian Cox process model - LGCP (see, @moller_log_1998) . Although the large-scale component which includes the data-specific intercept can also incorporate environmental covariates, we assume that the basic joint model above is valid for the data. Alternative specifications of data fusion model have been discussed in @sode_integrating_2025. 
 
 ## Step 2: Model implementation
 
@@ -66,7 +66,7 @@ ben_sf <- st_sf(data.frame(name = "Region"),
 ```
 
 
-```{r mesh-code, fig.width = 3, fig.height = 4, out.width = "90%", eval = exists("ben_sf")} 
+```{r mesh-code, fig.width = 3, fig.height = 4, out.width = "80%", eval = exists("ben_sf")} 
 # Create a "mesh" for the latent field 
 mesh <- fmesher::fm_mesh_2d(
      boundary = ben_sf,
@@ -150,7 +150,8 @@ jpred <- predict(jfit,
 jpred_count <- predict(jfit, 
                        newdata = grids, 
                        formula = ~ spde + Count_intercept ,
-                       n.samples = 500, seed = 24)
+                       n.samples = 500, 
+                       seed = 24)
 ```
 
 # Suitability analysis and model evaluation with `isdmtools`
@@ -267,6 +268,10 @@ map <- generate_maps(jt_prob,
                    yaxis_breaks = seq(6, 13, 2)
                    )
 map
+```
+
+```{r, echo=FALSE, out.width="100%", fig.cap="Prediction map of the ISDM model"}
+knitr::include_graphics("../man/figures/prediction_map.png")
 ```
 
 # Conclusion
