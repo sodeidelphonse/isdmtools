@@ -31,8 +31,6 @@ This vignette should bridge the gap between "having spatial data" and "being rea
 
 # Data Preparation
 
-## Step 1: Simulate some spatial data
-
 Let's consider a simple scenario by generating two spatial datasets representing the presence and abundance of a given species within a designated study region. The purpose of this tutorial is to provide a simple introduction to the tool, as opposed to addressing a very complex scenario of spatially autocorreleted datasets.
 
 ```{r }
@@ -58,7 +56,7 @@ ben_sf <- st_sf(data.frame(name = "Region"),
                           st_sfc(st_polygon(list(ben_coords)), 
                           crs = 4326))
                           
-# Gnerate some continuous covariates
+# Generate some continuous covariates
 set.seed(42)
 r   <- rast(ben_sf, nrow = 100, ncol = 100)
 r[] <- rnorm(ncell(r))
@@ -69,7 +67,7 @@ r <- c(r, rtmp + r)
 names(r) <- c("cov1", "cov2")
 ```
 
-## Step 2: Spatial Partitioning
+# Spatial Partitioning for Block Cross-validation
 
 Partitioning spatial data into spatial folds is important since it helps reduce spatial autocorrelation in the observations and estimate a more realistic model performance.
 
@@ -100,7 +98,7 @@ ggplot2::autoplot(fold_ss)
 summary(fold_ss)
 ```
 
-## Step 3: Folds diagnostics
+# Folds Diagnostics
 
 Various diagnostic analyses can be performed on the folds that were created in the previous step. Specifically, if there is any prior information on the spatial range from an exploratory analysis, it can be used as a value for the `rho` argument of the `check_folds()`' method. This value can then be compared to the calculated inter-fold gap in order to ascertain whether folds are independent. For instance, the `blockCV::cv_spatial_autocor()` function can help derive prior information on the spatial range. The same procedure can be applied to a Bayesian analysis to check if the posterior range estimated aligns with the spatial geometry of the specified folds or blocks. 
 
@@ -123,7 +121,7 @@ As the summary information illustrates, the minimum distance between points with
 
 ```{r warning=FALSE,message=FALSE}
 # Check environmental balance of folds
-set.seed(42)  # for background sample reproducibility
+set.seed(42)  # se this for background sample reproducibility
 env_diag <- check_env_balance(folds,
                               covariates = r,
                               n_background = 5000
@@ -138,7 +136,7 @@ plot(env_diag)
 
 ```
 
-As illustrated in the summary table, the Schoener D metric is greater than 0.6 for both covariates. This indicates that spatial folds exhibit significant overlap with the background area. Consequently, it can be posited that the blocks are environmentally representative.
+As illustrated in the summary table, the *Schoener D* metric is greater than 0.6 for both covariates. This indicates that spatial folds exhibit significant overlap with the background area. Consequently, it can be posited that the blocks are environmentally representative.
 
 * **Combined analysis**
 
@@ -150,7 +148,7 @@ summarise_fold_diagnostics(geo_diag, env_diag)
 
 ```
 
-## Step 4: Data Extraction for Modelling
+# Data Extraction for Modelling
 
 Once spatial folds are created, one can extract the data and see how it looks like right 
 before it goes into a modelling tool like inlabru. You can access both 'train' and 'test' sets and their corresponding datasets as follows:

@@ -2,6 +2,7 @@
 title: "ISDM Evaluation Workflow"
 date: "Generated on `r Sys.Date()`"
 author: "Akoeugnigan Idelphonse SODE"
+bibliography: ../inst/REFERENCES.bib
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{ISDM Evaluation Workflow}
@@ -30,14 +31,13 @@ library(inlabru)
 ```
 
 # Introduction
-As demonstrated in the [Get started](isdmtools.html) guide, the first output from the `isdmtools` package is a set of clean `sf` objects, which makes it easy to integrate with various spatial modeling tools using block cross-validation techniques. The extracted training and testing data can be directly fed into your preferred integrated modeling tools such as `inlabru`, `PointedSDMs`, or any `GLMs/GAMs` tools that can accommodate multisource spatial data. This ensures that your model predictions are validated using a robust spatial cross-validation approach and comprehensive evaluation metrics. 
+As demonstrated in the [Home page](../index.html) and [Get started](isdmtools.html) guides, the first output from the `isdmtools` package is a set of clean `sf` objects, which makes it easy to integrate with various spatial modeling tools using block cross-validation techniques. The extracted training and testing data can be directly fed into your preferred integrated modeling tools such as `inlabru`, `PointedSDMs`, or any `GLMs/GAMs` tools that can accommodate multisource spatial data. This ensures that your model predictions are validated using a robust spatial cross-validation approach and comprehensive evaluation metrics. 
 
-This vignette shows how how the isdmtools can be used with other predictive modelling tools such as `inlabru` for a complete workflow of integrated species distribution modelling (ISDM) analysis.
+This vignette shows how how the `isdmtools` can be used with other predictive modelling tools such as `inlabru` for a complete workflow of integrated species distribution modelling (ISDM) analysis.
 
 # Fitting an integrated model with `inlabru` 
 
-The `inlabru` package is a wrapper for the `R-INLA` package which is designed for Bayesian Latent Gaussian Modelling using INLA (Integrated Laplace Nested Approximations) and Extensions. 
-Let's develop a Bayesian spatial model with the simulated data presented in [Get started](isdmtools.html) guide. 
+The `inlabru` package [@bachl_inlabru_2019] is a wrapper for the `R-INLA` [@rue_approximate_2009]  which is designed for Bayesian Latent Gaussian Modelling using Integrated Laplace Nested Approximations (INLA) and Extensions. Let us develop a Bayesian spatial model with the simulated data resampled for cross-validation as demonstrated in the guide on the [Home page](../index.html). 
 
 ## Step 1: Model definition
 
@@ -51,14 +51,22 @@ $$
 \log (\lambda(\mathbf{s})) &= \beta_{0,\mathrm{presence}} + \xi(\mathbf{s})\\
 \end{aligned}
 $$
-where $\mathrm{IPP}$ means a _Inhomogeneous Poisson Process_ and $\mathbf{s}$ the vector of a location coordinates. The IPP model presented here is known in spatial statistics as a log-Gaussian Cox process model ([Møller et al. 1998](https://doi.org/10.1111/1467-9469.00115)).
+where $\mathrm{IPP}$ means a _Inhomogeneous Poisson Process_ and $\mathbf{s}$ the vector of a location coordinates. The IPP model presented here is known in spatial statistics as a log-Gaussian Cox process model - LGCP (see, @moller_log_1998) . Although the large component which includes the data-specific intercept can also incorporate environmental covariates, we assume that the basic model above is valid for the data.
 
 ## Step 2: Model implementation
 
-You can now prepare the remaining data required to fit an integrated model. First, we need to define the mesh to be used for approximating the latent field as well as for the integration points in the IPP likelihood.
-After this step, we set up the prior distributions for the latent parameters such as the range and the marginal standard deviation, keeping default prior for the intercepts. Then we define the observation model for each data type and fuse them using a joint likelihood estimation with INLA.
+You can now prepare the remaining data required to fit an integrated model. First, we need to define the study region and set up the mesh to be used for approximating the latent field as well as for the integration points in the LGCP likelihood.
 
-```{r mesh-code, eval = exists("ben_sf")} 
+```{r }
+# Define the study region (e.g. Benin's boundary rectangle)
+ben_coords <- matrix(c(0, 6, 4, 6, 4, 13, 0, 13, 0, 6), ncol = 2, byrow = TRUE)
+ben_sf <- st_sf(data.frame(name = "Region"), 
+                          st_sfc(st_polygon(list(ben_coords)), 
+                          crs = 4326))
+```
+
+
+```{r mesh-code, fig.width = 3, fig.height = 4, out.width = "90%", eval = exists("ben_sf")} 
 # Create a "mesh" for the latent field 
 mesh <- fmesher::fm_mesh_2d(
      boundary = ben_sf,
@@ -70,12 +78,14 @@ mesh <- fmesher::fm_mesh_2d(
 ggplot() + inlabru::gg(mesh)
 ```
 
+After this step, we set up the prior distributions for the latent parameters such as the range and the marginal standard deviation, keeping default prior for the intercepts. we define the prior distribution for the model hyparameters using the penalized model complexity priors (see @simpson_penalising_2017 for more details). Then we define the observation model for each data type and fuse them using a joint likelihood estimation with INLA.
+
 ```{r modeling, eval = requireNamespace("INLA", quietly = TRUE) && exists("train_data")}
 # Set the PC-prior for the SPDE model. We estimate a longer range value as no spatial 
 # autocorrelation was defined in the data generation process:
 pcmatern <- INLA::inla.spde2.pcmatern(mesh,
-                                      prior.range = c(1, 0.1), # P(spatial range < 1) = 0.1
-                                      prior.sigma = c(1, 0.1)  # P(sigma > 1) = 0.1
+                                      prior.range = c(1, 0.1), # Prob(spatial range < 1) = 0.1
+                                      prior.sigma = c(1, 0.1)  # Prob(sigma > 1) = 0.1
                                       )
    
 # The shared spatial latent component is denoted by 'spde'
@@ -136,13 +146,11 @@ jpred <- predict(jfit,
                  formula = ~ spde + Presence_intercept,
                  n.samples = 500, 
                  seed = 24)
-jpred <- prepare_predictions(jpred) 
 
 jpred_count <- predict(jfit, 
                        newdata = grids, 
                        formula = ~ spde + Count_intercept ,
                        n.samples = 500, seed = 24)
-jpred_count <- prepare_predictions(jpred_count)
 ```
 
 # Suitability analysis and model evaluation with `isdmtools`
@@ -153,6 +161,7 @@ Once we have obtained the model predictions, we can then use the `isdmtools` to 
 
 ```{r jt-prob, eval = exists("jpred")}
 # Probability of presence
+jpred   <- prepare_predictions(jpred) 
 jt_prob <- suitability_index(jpred, 
                             post_stat = c("q0.025", "mean", "q0.975"), 
                             output_format = "prob",
@@ -165,6 +174,7 @@ plot(jt_prob)
 
 ```{r jt-count, eval = exists("jpred_count")}
 # Expected counts
+jpred_count <- prepare_predictions(jpred_count)
 jt_count <- suitability_index(jpred_count, 
                               post_stat = c("q0.025", "mean", "q0.975"), 
                               output_format = "response",
@@ -176,7 +186,7 @@ plot(jt_count)
  
 ## Step 5: Model performance evaluation 
 
-Various performance metrics can now be computed, including dataset-specific and weighted composite scores using the test data and model predictions.
+Various performance metrics can now be computed, including dataset-specific and weighted composite scores using the test data and model predictions. As you will notice, certain arguments to the suitability_index() function are left at their default values. Specifically, this concerns the number of background points, the threshold method (which is "best"), and the best method (which is "youden"). The latter is the *Youden* criterion, which corresponds to the threshold that maximises both sensitivity and specificity.
 
 ```{r evaluation,  eval = FALSE}
  xy_observed <- rbind(st_coordinates(datasets_list$Presence)[, c("X","Y")], 
@@ -241,11 +251,11 @@ summary(eval_metrics)
 
 As you will have noticed, continuous-outcome metrics such as MAE (mean absolute error) and RMSE (root mean squared error) are not available for presence-only data, which makes sense. Furthermore, the weighted composite scores for continuous responses are identical to their individual counterparts, since there is only one count response. Moreover, you can check out the [`get_background()`](../reference/get_background.html) documentation for more details on background sample generated during the model evaluation.
 
-Next, you can iterate through all five spatial folds to obtain an average model performance, then calculate the variation in metrics between blocks. Finally, run a model on the full 'datasets_list' to make the final prediction.
+Next, you can iterate through all five spatial folds to obtain an average model performance, then calculate the variation in metrics between blocks. Finally, you should run a model on the full data (i.e. 'datasets_list') in order to make the final prediction.
  
 ## Step 6: Prediction mapping 
 
-You can now generate a formal prediction map ready for publication.
+You can now generate a formal prediction map ready for publication. Assume that the probability of the species presence is stored in the object 'jt_prob' after the final model fitting.
 
 ```{r maps, eval = exists("jt_prob")}
 map <- generate_maps(jt_prob, 
@@ -261,4 +271,6 @@ map
 
 # Conclusion
 
-You have successfully fused multi-source biodiversity data and generated spatially independent partitions for robust model validation using `isdmtools`. The toolkit has enabled the **resampling of data**, thereby reducing spatial autocorrelation effects in the modelling process. It has also facilitated the analysis and a comprehensive evaluation of ISDM using well-known metrics from the fields of statistics and machine learning.
+You have successfully fused multi-source biodiversity data and generated spatially independent partitions for robust model validation using `isdmtools`. The toolkit has enabled the *resampling of data*, thereby reducing *spatial autocorrelation* effects in the modelling process. It has also facilitated the analysis and a comprehensive evaluation of ISDM using well-known metrics from the fields of statistics and machine learning.
+
+# References
