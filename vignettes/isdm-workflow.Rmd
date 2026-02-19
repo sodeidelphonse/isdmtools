@@ -41,17 +41,17 @@ The `inlabru` package [@bachl_inlabru_2019] is a wrapper for the `R-INLA` [@rue_
 
 ## Step 1: Model definition
 
-We assume the following basic joint model with a shared latent signal $\xi(.)$ (i.e. a Gaussian random field):
+We assume the following basic joint model with a shared latent signal $\xi(.)$ represented by a Gaussian random field with a *Matern* correlation function:
 
 $$
  \begin{aligned} 
- Y_{\mathrm{count},i}|\xi(.) &\sim \mathrm{Pois} \left(\mu_i \right), \quad i = 1,\ldots,n,\\
- \log(\mu_i) &= \beta_{0,\mathrm{count}} + \xi(\mathbf{s}_i)\\[2mm]
- X_{\mathrm{presence}}|\xi(.) &\sim \mathrm{IPP} \left(\lambda(\mathbf{s}) \right),\\
-\log (\lambda(\mathbf{s})) &= \beta_{0,\mathrm{presence}} + \xi(\mathbf{s})\\
+ Y_{\mathrm{count},i}|\xi(.)&\sim\!\mathrm{Pois} \left(\mu_i \right), \quad i = 1,\ldots,n,\\
+ \log(\mu_i)&=\!\beta_{0,\mathrm{count}} + \xi(\mathbf{s}_i)\\[2mm]
+ X_{\mathrm{presence}}|\xi(.)&\sim\!\mathrm{IPP} \left(\lambda(\mathbf{s}) \right),\\
+\log (\lambda(\mathbf{s}))&=\!\beta_{0,\mathrm{presence}} + \xi(\mathbf{s})\\
 \end{aligned}
 $$
-where $\mathrm{IPP}$ means a _Inhomogeneous Poisson Process_ and $\mathbf{s}$ the vector of a location coordinates. The IPP model presented here is known in spatial statistics as a log-Gaussian Cox process model - LGCP (see, @moller_log_1998) . Although the large component which includes the data-specific intercept can also incorporate environmental covariates, we assume that the basic model above is valid for the data.
+where $\mathrm{IPP}$ means a _Inhomogeneous Poisson Process_ and $\mathbf{s}$ the vector of a location coordinates. The IPP model presented here is known in spatial statistics as a log-Gaussian Cox process model - LGCP (see, @moller_log_1998) . Although the large-scale component which includes the data-specific intercept can also incorporate environmental covariates, we assume that the basic joint model above is valid for the data. Alternative specifications of data fusion model have been discussed in @sode_integrating_2025. 
 
 ## Step 2: Model implementation
 
@@ -66,7 +66,7 @@ ben_sf <- st_sf(data.frame(name = "Region"),
 ```
 
 
-```{r mesh-code, fig.width = 3, fig.height = 4, out.width = "90%", eval = exists("ben_sf")} 
+```{r mesh-code, fig.width = 3, fig.height = 4, out.width = "80%", eval = exists("ben_sf")} 
 # Create a "mesh" for the latent field 
 mesh <- fmesher::fm_mesh_2d(
      boundary = ben_sf,
@@ -78,7 +78,7 @@ mesh <- fmesher::fm_mesh_2d(
 ggplot() + inlabru::gg(mesh)
 ```
 
-After this step, we set up the prior distributions for the latent parameters such as the range and the marginal standard deviation, keeping default prior for the intercepts. we define the prior distribution for the model hyparameters using the penalized model complexity priors (see @simpson_penalising_2017 for more details). Then we define the observation model for each data type and fuse them using a joint likelihood estimation with INLA.
+After this step, we set up the prior distributions for the latent parameters such as the range and the marginal standard deviation, keeping default prior for the intercepts. we define the prior distribution for the model hyperparameters using the penalized model component complexity priors (see @simpson_penalising_2017 for more details). Then we define the observation model for each data type and fuse them using a joint likelihood estimation with INLA and SPDE techniques [@simpson_going_2016].
 
 ```{r modeling, eval = requireNamespace("INLA", quietly = TRUE) && exists("train_data")}
 # Set the PC-prior for the SPDE model. We estimate a longer range value as no spatial 
@@ -150,7 +150,8 @@ jpred <- predict(jfit,
 jpred_count <- predict(jfit, 
                        newdata = grids, 
                        formula = ~ spde + Count_intercept ,
-                       n.samples = 500, seed = 24)
+                       n.samples = 500, 
+                       seed = 24)
 ```
 
 # Suitability analysis and model evaluation with `isdmtools`
@@ -267,6 +268,10 @@ map <- generate_maps(jt_prob,
                    yaxis_breaks = seq(6, 13, 2)
                    )
 map
+```
+
+```{r, echo=FALSE, out.width="100%", fig.cap="Prediction map of the ISDM model"}
+knitr::include_graphics("../man/figures/prediction_map.png")
 ```
 
 # Conclusion
