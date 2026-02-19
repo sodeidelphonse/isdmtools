@@ -1,6 +1,6 @@
 # isdmtools 0.3.0
 
-## Continuous Integration/Deployment & Quality Assurance
+## Continuous Integration & Deployment 
 - GitHub Actions Integration: Established a suite of automated workflows including R-CMD-check for cross-platform stability and Codecov for monitoring unit test coverage.
 - Automated Documentation: Implemented an automated pkgdown deployment pipeline to ensure the package website and vignettes are updated upon every push to the main branch.
 
@@ -18,7 +18,7 @@
 # isdmtools 0.2.0
 
 ## New Features
-* Added folds diagnostics tools: `check_folds` and `check_env_balance` are key methods operating on `DataFolds` objects to check the independence and representativeness of generated folds.
+* Added folds diagnostics tools: `check_folds` and `check_env_balance` are key methods operating on `DataFolds` objects to check the independence and representativeness of folds.
 * Buffer-Aware Extraction: Updated `extract_fold()` to automatically handle exclusion zones. 
 Points falling within spatial buffers are now correctly identified as NA and excluded from both training and testing sets to prevent spatial autocorrelation bias.
 
