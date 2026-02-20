@@ -32,4 +32,8 @@ overlap_high <- calc_niche_overlap(v1, v2)
 v3 <- rnorm(1000, mean = 20, sd = 1)
 overlap_low <- calc_niche_overlap(v1, v3)
 }
+
+}
+\references{
+Schoener TW. The Anolis Lizards of Bimini: Resource Partitioning in a Complex Fauna. \emph{Ecology}(1968) 49:704–726. \doi{10.2307/1935534}.
 }

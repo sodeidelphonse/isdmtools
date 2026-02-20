@@ -33,6 +33,7 @@ reference:
   - calc_niche_overlap
   - fill_na_near
   - generate_maps
+  - solve_practical_range
 navbar:
   components:
     articles:
