@@ -81,12 +81,19 @@ check_spatial_geometry <- function(data_all, fold_col = "folds_ids", rho = NULL,
         independence = dplyr::case_when(
           .data$min_gap_km == 0 ~ "Contiguous",
           .data$gap_rho_ratio < 1 ~ "Weakly Independent",
-          .data$gap_rho_ratio >= 1 & .data$gap_rho_ratio < 2 ~ "Independent",
-          TRUE ~ "Strongly Independent"
+          .data$gap_rho_ratio >= 1 ~ "Independent",
+          TRUE ~ "Unknown"
         )
+      )
+  } else {
+    summary_stats <- summary_stats %>%
+      dplyr::mutate(
+        gap_rho_ratio = NA_real_,
+        independence = dplyr::if_else(.data$min_gap_km > 0, "Separated", "Contiguous")
       )
   }
 
+  # Plot results
   diag_plot <- NULL
   if (plot) {
     buffer_geoms <- sf::st_buffer(
@@ -127,25 +134,32 @@ check_spatial_geometry <- function(data_all, fold_col = "folds_ids", rho = NULL,
 #' are sufficient relative to the prior or model's estimated spatial range (\eqn{\rho}).
 #'
 #' @param object A \code{DataFolds} object created by \code{create_folds()}.
-#' @param rho Numeric. Optional. The spatial range (km) estimated from the exploratory
-#' analysis (e.g., \link[blockCV]{cv_spatial_autocor}) and used as the block size or
+#' @param rho Numeric. Optional. The practical range (km) estimated from the exploratory
+#' analysis or the posterior practical range from a Bayesian analysis.
 #' the one estimated from the integrated model (e.g., the Matérn range parameter).
 #' @param plot Logical. If \code{TRUE}, returns a diagnostic plot.
 #' @param ... Additional arguments.
 #'
 #' @details
 #' The function assesses independence based on the minimum gap between folds
-#' compared to the spatial range (\eqn{\rho}):
+#' compared to the practical range (\eqn{\rho}):
 #' \itemize{
 #'   \item \strong{Contiguous}: Gap = 0. High risk of spatial leakage; observations in
 #'   test folds are spatially correlated with training data.
 #'   \item \strong{Weakly Independent}: 0 < Gap < \eqn{\rho}. A physical gap exists,
 #'   but correlation remains above 0.1.
-#'   \item \strong{Independent}: \eqn{\rho \le} Gap < \eqn{2\rho}. Spatial correlation
-#'   is below 0.1 at the boundary; considered robust for most CV applications.
-#'   \item \strong{Strongly Independent}: Gap \eqn{\ge 2\rho}. Spatial correlation
-#'   is effectively zero, providing the most rigorous test of model extrapolation.
+#'   \item \strong{Independent}: Gap \eqn{\ge \rho}. Spatial correlation is below 0.1
+#'   at the boundary; satisfying standard requirements for spatial independence
+#'   for most blocked cross-validation applications (Roberts et al. 2017).
 #' }
+#'
+#' The spatial range can be estimated using the function \link[blockCV]{cv_spatial_autocor}) of
+#' the `blockCV` package (Valavi et al. 2018) or any other tool. The authors recommended this value (in metres)
+#' as the optimal block size for their spatial blocking scheme. For instance, if a covariance model is fitted
+#' to the experimental variogram, the 10% practical range can be derived using an interpolation method.
+#' Note that several packages are available to estimate the range from the observed spatial data and
+#' different parameterisations are used. We provide the helper function `solve_practical_range` to allow to
+#' derive a unified practical range for Matérn covariance fitted to the data in INLA, geoR or spatstat packages.
 #'
 #' @return An object of class \code{GeoDiagnostic}.
 #' @export
@@ -155,7 +169,8 @@ check_spatial_geometry <- function(data_all, fold_col = "folds_ids", rho = NULL,
 #'
 #' @references
 #' \itemize{
-#'   \item Roberts DR, Bahn V, Ciuti S, Boyce MS, Elith J, Guillera-Arroita G, Hauenstein S, Lahoz-Monfort JJ, Schröder B, Thuiller W, et al. Cross-validation strategies for data with temporal, spatial, hierarchical, or phylogenetic structure. _Ecography_ (2017) 40:913–929. \doi{10.1111/ecog.02881}
+#'   \item Roberts DR, Bahn V, Ciuti S, Boyce MS, Elith J, Guillera-Arroita G, Hauenstein S, Lahoz-Monfort JJ, Schröder B, Thuiller W, et al. Cross-validation strategies for data with temporal, spatial, hierarchical, or phylogenetic structure. _Ecography_ (2017) 40:913–929. \doi{10.1111/ecog.02881}.
+#'   \item Valavi R, Elith J, Lahoz-Monfort JJ, Guillera-Arroita G. blockCV: an R package for generating spatially or environmentally separated folds for k-fold cross-validation of species distribution models. _bioRxiv_ (2018). \doi{10.1101/357798}.
 #' }
 #'
 #' @examples
@@ -309,23 +324,54 @@ plot.GeoDiagnostic <- function(x, ...) {
 #' @param ... Additional arguments passed to \code{sample_background}.
 #'
 #' @details
-#' The function also calculates the environmental niche overlap using Schoener's D
-#' metric (Schoener, 1968). This metric ranges from 0 (no overlap) to 1 (identical
-#' niches).
+#' The function calculates the _Schoener's D_ metric (Schoener, 1968) for continuous
+#' variables to quantify the actual overlap in environmental space.
 #' \itemize{
-#'   \item \strong{Schoener's D}: Quantifies how well each fold represents the
-#'   available environmental space (the background). A median value is reported
-#'   across all folds for each covariate.
-#'   \item \strong{Interpretation}: Values > 0.6 generally indicate that the folds
-#'   are representative of the study area's environmental conditions. Low values
-#'   suggest that cross-validation results may be biased because the model is being
-#'   tested on environmental conditions it rarely encountered during training.
+#' \item \strong{Schoener's D metric}: This metric ranges
+#' from 0 (no overlap) to 1 (identical niches) and quantifies how well each fold
+#' represents available environmental space (the background). A median value is reported
+#' across all folds for each covariate.
+#'
+#' \item \strong{Interpretation}: Values > 0.6 generally indicate that the folds
+#' are representative of the study area's environmental conditions. Low values
+#' suggest that cross-validation results may be biased because the model is being
+#' tested on environmental conditions it rarely encountered during training.
 #' }
+#'
+#' The function also evaluates environmental balance using two distinct statistical
+#' tests based on the variable type:
+#' \itemize{
+##'   \item \strong{Continuous Variables:} A \bold{Kruskal-Wallis Rank Sum Test} is
+#'   performed to determine if the median values of the covariate differ significantly
+#'   across folds. A \eqn{p > 0.05} suggests that the folds are representative of
+#'   the same environmental niche.
+#'
+#'   \item \strong{Categorical Variables:} A \bold{Pearson's Chi-squared Test} is
+#'   conducted. To account for rare classes (e.g., specific land-cover types) and
+#'   sparse contingency tables, \eqn{p}-values are computed via \bold{Monte Carlo
+#'   simulation} (with 2,000 replicates) rather than relying on asymptotic
+#'   distributions. The Null Hypothesis ($H_0$): There is no significant difference in
+#'   the frequency distribution of categories (e.g., land cover types) across the different data folds.
+#    If $p > 0.05$ (Homogeneous): It means the environment is effectively the same in every fold.
+#'   If $p < 0.05$ (Heterogeneous): It means the folds are fundamentally different environments.
+#' }
+#'
+#' Both tests are used to measure the internal consistency of the distribution
+#' of the environmental variables across the spatial folds. The rationale is to ensure
+#' that validation metrics reflect the model's ability to generalize across the
+#' species' niche, rather than its proximity to training data.
 #'
 #' @return An object of class \code{EnvDiagnostic}.
 #' @export
 #' @family diagnostic tools
 #' @seealso \code{\link{DataFolds-methods}} for interacting with `DataFolds` objects.
+#'
+#' @references
+#' \itemize{
+#' \item Hope, ACA. A simplified Monte Carlo significance test procedure. _Journal of the Royal Statistical Society Series B_(1968) 30:582–598. \doi{10.1111/j.2517-6161.1968.tb00759.x}.
+#' \item Patefield, WM. Algorithm AS 159: An efficient method of generating r x c tables with given row and column totals. _Applied Statistics_(1981) 30:91–97. \doi{doi:10.2307/2346669}.
+#' \item Schoener TW. The Anolis Lizards of Bimini: Resource Partitioning in a Complex Fauna. _Ecology_(1968) 49:704–726. \doi{10.2307/1935534}
+#' }
 #'
 #' @examples
 #' \dontrun{
@@ -460,7 +506,9 @@ check_env_balance.DataFolds <- function(object, covariates, plot_type = c("densi
                        function(x) calc_niche_overlap(x, back_data[[v]]), FUN.VALUE = numeric(1))
       overlap_val <- round(stats::median(d_vals, na.rm = TRUE), 3)
     } else {
-      test <- stats::chisq.test(table(raw_data[[v]], raw_data$folds_ids))
+      test <- suppressWarnings(
+                stats::chisq.test(table(raw_data[[v]], raw_data$folds_ids),
+                                simulate.p.value = TRUE, B = 2000))
       type <- "Categorical"
       overlap_val <- NA_real_
     }

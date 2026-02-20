@@ -14,8 +14,8 @@ check_folds(object, ...)
 
 \item{...}{Additional arguments.}
 
-\item{rho}{Numeric. Optional. The spatial range (km) estimated from the exploratory
-analysis (e.g., \link[blockCV]{cv_spatial_autocor}) and used as the block size or
+\item{rho}{Numeric. Optional. The practical range (km) estimated from the exploratory
+analysis or the posterior practical range from a Bayesian analysis.
 the one estimated from the integrated model (e.g., the Matérn range parameter).}
 
 \item{plot}{Logical. If \code{TRUE}, returns a diagnostic plot.}
@@ -30,17 +30,24 @@ are sufficient relative to the prior or model's estimated spatial range (\eqn{\r
 }
 \details{
 The function assesses independence based on the minimum gap between folds
-compared to the spatial range (\eqn{\rho}):
+compared to the practical range (\eqn{\rho}):
 \itemize{
 \item \strong{Contiguous}: Gap = 0. High risk of spatial leakage; observations in
 test folds are spatially correlated with training data.
 \item \strong{Weakly Independent}: 0 < Gap < \eqn{\rho}. A physical gap exists,
 but correlation remains above 0.1.
-\item \strong{Independent}: \eqn{\rho \le} Gap < \eqn{2\rho}. Spatial correlation
-is below 0.1 at the boundary; considered robust for most CV applications.
-\item \strong{Strongly Independent}: Gap \eqn{\ge 2\rho}. Spatial correlation
-is effectively zero, providing the most rigorous test of model extrapolation.
+\item \strong{Independent}: Gap \eqn{\ge \rho}. Spatial correlation is below 0.1
+at the boundary; satisfying standard requirements for spatial independence
+for most blocked cross-validation applications (Roberts et al. 2017).
 }
+
+The spatial range can be estimated using the function \link[blockCV]{cv_spatial_autocor}) of
+the \code{blockCV} package (Valavi et al. 2018) or any other tool. The authors recommended this value (in metres)
+as the optimal block size for their spatial blocking scheme. For instance, if a covariance model is fitted
+to the experimental variogram, the 10\% practical range can be derived using an interpolation method.
+Note that several packages are available to estimate the range from the observed spatial data and
+different parameterisations are used. We provide the helper function \code{solve_practical_range} to allow to
+derive a unified practical range for Matérn covariance fitted to the data in INLA, geoR or spatstat packages.
 }
 \examples{
 \dontrun{
@@ -88,7 +95,8 @@ plot(spat_diag)
 }
 \references{
 \itemize{
-\item Roberts DR, Bahn V, Ciuti S, Boyce MS, Elith J, Guillera-Arroita G, Hauenstein S, Lahoz-Monfort JJ, Schröder B, Thuiller W, et al. Cross-validation strategies for data with temporal, spatial, hierarchical, or phylogenetic structure. \emph{Ecography} (2017) 40:913–929. \doi{10.1111/ecog.02881}
+\item Roberts DR, Bahn V, Ciuti S, Boyce MS, Elith J, Guillera-Arroita G, Hauenstein S, Lahoz-Monfort JJ, Schröder B, Thuiller W, et al. Cross-validation strategies for data with temporal, spatial, hierarchical, or phylogenetic structure. \emph{Ecography} (2017) 40:913–929. \doi{10.1111/ecog.02881}.
+\item Valavi R, Elith J, Lahoz-Monfort JJ, Guillera-Arroita G. blockCV: an R package for generating spatially or environmentally separated folds for k-fold cross-validation of species distribution models. \emph{bioRxiv} (2018). \doi{10.1101/357798}.
 }
 }
 \seealso{
