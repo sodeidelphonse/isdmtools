@@ -2,6 +2,7 @@
 title: "Get started"
 date: "Generated on `r Sys.Date()`"
 author: "Akoeugnigan Idelphonse SODE"
+bibliography: ../inst/REFERENCES.bib
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Get started}
@@ -100,7 +101,7 @@ summary(fold_ss)
 
 # Folds Diagnostics
 
-Various diagnostic analyses can be performed on the folds that were created in the previous step. Specifically, if there is any prior information on the spatial range from an exploratory analysis, it can be used as a value for the `rho` argument of the `check_folds()`' method. This value can then be compared to the calculated inter-fold gap in order to ascertain whether folds are independent. For instance, the `blockCV::cv_spatial_autocor()` function can help derive prior information on the spatial range. The same procedure can be applied to a Bayesian analysis to check if the posterior range estimated aligns with the spatial geometry of the specified folds or blocks. 
+Various diagnostic analyses can be performed on the folds that were created in the previous step. Specifically, if there is any prior information on the spatial range from an exploratory analysis, it can be used as a value for the `rho` argument of the `check_folds()`' method. This value can then be compared to the calculated inter-fold gap in order to ascertain whether folds are independent. For instance, the `blockCV::cv_spatial_autocor()` function can help derive prior information on the spatial range [@valavi_blockcv_2018]. If the correlation function is part of Matérn family, the helper function `solve_practical_range()` from the `isdmtools` package [@sode_integrating_2025] can help derive the corresponding _practical range_ needed for _spatial daignostics_. The same procedure applies to a Bayesian analysis to check if the posterior range estimated aligns with the spatial geometry of the specified folds or blocks. 
 
 * **Folds diagnostics in geographical space**
 
@@ -121,7 +122,7 @@ As the summary information illustrates, the minimum distance between points with
 
 ```{r warning=FALSE,message=FALSE}
 # Check environmental balance of folds
-set.seed(42)  # se this for background sample reproducibility
+set.seed(42)  # set this for background sample reproducibility
 env_diag <- check_env_balance(folds,
                               covariates = r,
                               n_background = 5000
@@ -136,15 +137,46 @@ plot(env_diag)
 
 ```
 
-As illustrated in the summary table, the *Schoener D* metric is greater than 0.6 for both covariates. This indicates that spatial folds exhibit significant overlap with the background area. Consequently, it can be posited that the blocks are environmentally representative.
+As illustrated in the summary table, the *Schoener D* metric is greater than 0.6 for both covariates. This indicates that spatial folds exhibit significant overlap with the background area. Additionally, the p-value resulting from comparing the median values of the variables across the folds is greater than 0.05. This suggests that the environmental variables do not differ significantly between the blocks. Consequently, it can be hypothesised that the spatial blocks are environmentally representative and may be robust for model prediction.
 
 * **Combined analysis**
 
-It is possible to combine both types of fold diagnostics in order to draw a unified conclusion. However, it should be noted that the applicability of both diagnostic tools is not universal across all the spatial blocking strategies covered in the package. Therefore, the most appropriate diagnostic tool may be contingent on the selected blocking scheme.
+It is possible to combine both types of fold diagnostics in order to draw a unified conclusion. However, it should be noted that the applicability of both diagnostic tools is not universal across all the spatial blocking strategies covered in the package. Therefore, the most appropriate block diagnostic tool may be contingent on the selected blocking scheme.
 
 ```{r }
 # Combined diagnostics
 summarise_fold_diagnostics(geo_diag, env_diag)
+
+```
+
+* **Mixture of continuous and categorical variables**
+
+In practical application, we may have a mixture of continuous and categorical covariates (e.g. land cover). In this scenario, the *Schoener D* metric cannot be calculated for the categorical variable. The p-value for this variable is derived from the Chi-square test based on the Monte Carlo approximation instead of the Kruskal Wallis test used for the continuous variables.
+
+```{r warning=FALSE,message=FALSE}
+# Continuous (temperature) and categorical (land cover) variables
+set.seed(42)
+
+r_temp <- rast(ben_sf, nrow = 100, ncol = 100, val = runif(10000, 15, 25))
+r_land <- rast(ben_sf, nrow = 100, ncol = 100, val = sample(1:4, 10000, TRUE))
+levels(r_land) <- data.frame(ID = 1:4, cover = c("Forest", "Grass", "Urban", "Water"))
+env_stack <- c(r_temp, r_land)
+names(env_stack) <- c("temperature", "land_use")
+
+# Run the test with 5000 background cells 
+env_mixed <- check_env_balance(
+  folds,
+  covariates = env_stack,
+  n_background = 5000,
+  plot_type = "boxplot"
+)
+
+print(env_mixed)
+```
+
+```{r env-cat, fig.width = 6, fig.height = 4, out.width = "100%"}
+# Plot outputs
+plot(env_mixed)
 
 ```
 
@@ -174,3 +206,4 @@ The `isdmtools` journey continues with model fitting and comprehensive evaluatio
 
 The advanced guide on [ISDM Evaluation Workflow](isdm-workflow.html) covers model building with external tools, calculation of dataset-specific and composite scores, suitability analysis and mapping with `isdmtools`.
 
+# References

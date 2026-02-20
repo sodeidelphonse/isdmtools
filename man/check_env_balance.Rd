@@ -37,18 +37,41 @@ across folds. It extracts values from a \code{SpatRaster} at point locations.
 For large rasters, it uses a background sample to represent the study area.
 }
 \details{
-The function also calculates the environmental niche overlap using Schoener's D
-metric (Schoener, 1968). This metric ranges from 0 (no overlap) to 1 (identical
-niches).
+The function calculates the \emph{Schoener's D} metric (Schoener, 1968) for continuous
+variables to quantify the actual overlap in environmental space.
 \itemize{
-\item \strong{Schoener's D}: Quantifies how well each fold represents the
-available environmental space (the background). A median value is reported
+\item \strong{Schoener's D metric}: This metric ranges
+from 0 (no overlap) to 1 (identical niches) and quantifies how well each fold
+represents available environmental space (the background). A median value is reported
 across all folds for each covariate.
+
 \item \strong{Interpretation}: Values > 0.6 generally indicate that the folds
 are representative of the study area's environmental conditions. Low values
 suggest that cross-validation results may be biased because the model is being
 tested on environmental conditions it rarely encountered during training.
 }
+
+The function also evaluates environmental balance using two distinct statistical
+tests based on the variable type:
+\itemize{
+\item \strong{Continuous Variables:} A \bold{Kruskal-Wallis Rank Sum Test} is
+performed to determine if the median values of the covariate differ significantly
+across folds. A \eqn{p > 0.05} suggests that the folds are representative of
+the same environmental niche.
+
+\item \strong{Categorical Variables:} A \bold{Pearson's Chi-squared Test} is
+conducted. To account for rare classes (e.g., specific land-cover types) and
+sparse contingency tables, \eqn{p}-values are computed via \bold{Monte Carlo
+simulation} (with 2,000 replicates) rather than relying on asymptotic
+distributions. The Null Hypothesis ($H_0$): There is no significant difference in
+the frequency distribution of categories (e.g., land cover types) across the different data folds.
+If $p < 0.05$ (Heterogeneous): It means the folds are fundamentally different environments.
+}
+
+Both tests are used to measure the internal consistency of the distribution
+of the environmental variables across the spatial folds. The rationale is to ensure
+that validation metrics reflect the model's ability to generalize across the
+species' niche, rather than its proximity to training data.
 }
 \examples{
 \dontrun{
@@ -129,6 +152,13 @@ env_diag <- check_env_balance(
 # 'land_use' will show a p-value (Chi-sq) and Schoener_D as NA
 print(env_diag)
 plot(env_diag)
+}
+}
+\references{
+\itemize{
+\item Hope, ACA. A simplified Monte Carlo significance test procedure. \emph{Journal of the Royal Statistical Society Series B}(1968) 30:582–598. \doi{10.1111/j.2517-6161.1968.tb00759.x}.
+\item Patefield, WM. Algorithm AS 159: An efficient method of generating r x c tables with given row and column totals. \emph{Applied Statistics}(1981) 30:91–97. \doi{doi:10.2307/2346669}.
+\item Schoener TW. The Anolis Lizards of Bimini: Resource Partitioning in a Complex Fauna. \emph{Ecology}(1968) 49:704–726. \doi{10.2307/1935534}
 }
 }
 \seealso{
