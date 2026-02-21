@@ -11,14 +11,14 @@ check_env_balance(object, ...)
   object,
   covariates,
   plot_type = c("density", "boxplot"),
-  n_background = 10000,
+  n_background = 10000L,
   ...
 )
 }
 \arguments{
 \item{object}{A \code{DataFolds} object.}
 
-\item{...}{Additional arguments passed to \code{sample_background}.}
+\item{...}{Additional arguments passed on to \code{\link{sample_background}}.}
 
 \item{covariates}{A \code{SpatRaster} (terra) containing environmental layers.
 It must have the same coordinate reference system (CRS) as the sf objects used for blocking.}
@@ -65,7 +65,7 @@ sparse contingency tables, \eqn{p}-values are computed via \emph{Monte Carlo sim
 (with 2,000 replicates) rather than relying on asymptotic distributions.
 The Null Hypothesis (\eqn{H_0}): There is no significant difference in the frequency
 distribution of categories (e.g., land cover types) across the different data folds.
-If \eqn{p > 0.05} (Homogeneous): We fails to reject \eqn{H_0}, indicating that
+If \eqn{p > 0.05} (Homogeneous), we fails to reject \eqn{H_0}, indicating that
 the environment is effectively similar in every fold.
 }
 

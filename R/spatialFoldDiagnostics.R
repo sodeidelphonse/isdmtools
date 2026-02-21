@@ -153,12 +153,12 @@ check_spatial_geometry <- function(data_all, fold_col = "folds_ids", rho = NULL,
 #'   for most blocked cross-validation applications (Roberts et al. 2017).
 #' }
 #'
-#' The spatial range can be estimated using the function \link[blockCV]{cv_spatial_autocor}) of
-#' the `blockCV` package (Valavi et al. 2018) or any other tool. The authors recommended this value (in metres)
+#' The spatial range can be estimated using the function \code{\link[blockCV]{cv_spatial_autocor}} of
+#' the \pkg{blockCV} package (Valavi et al. 2018) or any other tool. The authors recommended this value (in metres)
 #' as the optimal block size for their spatial blocking scheme. For instance, if a covariance model is fitted
 #' to the experimental variogram, the 10% practical range can be derived using an interpolation method.
 #' Note that several packages are available to estimate the range from the observed spatial data and
-#' different parameterisations are used. We provide the helper function `solve_practical_range` to allow to
+#' different parameterisations are used. We provide the helper function \code{\link{solve_practical_range}} to allow to
 #' derive a unified practical range for Matérn covariance fitted to the data in INLA, geoR or spatstat packages.
 #'
 #' @return An object of class \code{GeoDiagnostic}.
@@ -321,7 +321,7 @@ plot.GeoDiagnostic <- function(x, ...) {
 #' @param plot_type Character. Either "density" (default) or "boxplot".
 #' @param n_background Numeric. Number of background points to sample for environmental
 #' space representation. Default 10,000.
-#' @param ... Additional arguments passed to \code{sample_background}.
+#' @param ... Additional arguments passed on to \code{\link{sample_background}}.
 #'
 #' @details
 #' The function calculates the _Schoener's D_ metric (Schoener, 1968) for continuous
@@ -352,7 +352,7 @@ plot.GeoDiagnostic <- function(x, ...) {
 #'   (with 2,000 replicates) rather than relying on asymptotic distributions.
 #'   The Null Hypothesis (\eqn{H_0}): There is no significant difference in the frequency
 #'   distribution of categories (e.g., land cover types) across the different data folds.
-#'   If \eqn{p > 0.05} (Homogeneous): We fails to reject \eqn{H_0}, indicating that
+#'   If \eqn{p > 0.05} (Homogeneous), we fails to reject \eqn{H_0}, indicating that
 #'   the environment is effectively similar in every fold.
 #' }
 #'
@@ -460,8 +460,9 @@ check_env_balance <- function(object, ...) {
 #' @rdname check_env_balance
 #' @method check_env_balance DataFolds
 #' @export
-check_env_balance.DataFolds <- function(object, covariates, plot_type = c("density", "boxplot"),
-                                        n_background = 10000, ...) {
+check_env_balance.DataFolds <- function(object, covariates,
+                                        plot_type = c("density", "boxplot"),
+                                        n_background = 10000L, ...) {
 
   plot_type <-match.arg(plot_type)
 
@@ -486,12 +487,13 @@ check_env_balance.DataFolds <- function(object, covariates, plot_type = c("densi
   back_vals <- terra::extract(covariates, back_pts$bg[, c("x", "y")])
 
   back_data <- data.frame(
-    folds_ids = factor("Background"),
+    folds_ids = factor("BG"),
     back_vals,
     stringsAsFactors = FALSE
   )
 
   full_env_data <- dplyr::bind_rows(raw_data, back_data)
+  full_env_data$folds_ids <- stats::relevel(factor(full_env_data$folds_ids), ref = "BG")
 
   # Statistical testing and overlap calculation
   stats_list <- lapply(cov_names, function(v) {
@@ -503,7 +505,8 @@ check_env_balance.DataFolds <- function(object, covariates, plot_type = c("densi
 
       # External balance: niche overlap between folds and background
       d_vals <- vapply(split(raw_data[[v]], raw_data$folds_ids),
-                       function(x) calc_niche_overlap(x, back_data[[v]]), FUN.VALUE = numeric(1))
+                       function(x) calc_niche_overlap(x, back_data[[v]]),
+                       FUN.VALUE = numeric(1))
       overlap_val <- round(stats::median(d_vals, na.rm = TRUE), 3)
     } else {
       test <- suppressWarnings(
@@ -546,7 +549,7 @@ check_env_balance.DataFolds <- function(object, covariates, plot_type = c("densi
   fold_colors <- .get_isdm_palette(n_folds)
   names(fold_colors) <- levels(raw_data$folds_ids)
 
-  all_colors <- c("Background" = "#FF8C00", fold_colors)
+  all_colors <- c("BG" = "#FF8C00", fold_colors)
 
   p <- ggplot2::ggplot(plot_df, ggplot2::aes(x = .data$Value, fill = .data$Fold)) +
     ggplot2::facet_wrap(~ Variable, scales = "free") +
@@ -554,7 +557,8 @@ check_env_balance.DataFolds <- function(object, covariates, plot_type = c("densi
     ggplot2::theme_bw() +
     ggplot2::labs(
       fill = "Group",
-      title = "Environmental Diagnostics"
+      title = "Environmental Diagnostics",
+      caption = "BG: Background study area"
     )
 
   if (plot_type == "density") {
@@ -578,7 +582,7 @@ check_env_balance.DataFolds <- function(object, covariates, plot_type = c("densi
 #' @return
 #' \itemize{
 #'   \item \code{print}: Invisibly returns the original object.
-#'   \item \code{plot}: Returns a \code{ggplot2} object for covariates' density plots.
+#'   \item \code{plot}: Returns a \code{ggplot2} object.
 #' }
 #'
 #' @name EnvDiagnostic-methods

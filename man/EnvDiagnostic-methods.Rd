@@ -18,7 +18,7 @@
 \value{
 \itemize{
 \item \code{print}: Invisibly returns the original object.
-\item \code{plot}: Returns a \code{ggplot2} object for covariates' density plots.
+\item \code{plot}: Returns a \code{ggplot2} object.
 }
 }
 \description{
