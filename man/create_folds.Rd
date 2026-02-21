@@ -115,4 +115,3 @@ Other spatial blocking methods:
 \code{\link{DataFolds-methods}}
 }
 \concept{spatial blocking methods}
-\keyword{internal}

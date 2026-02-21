@@ -1,5 +1,5 @@
 ---
-title: "Get started"
+title: "Get started with isdmtools"
 date: "Generated on `r Sys.Date()`"
 author: "Akoeugnigan Idelphonse SODE"
 bibliography: ../inst/REFERENCES.bib

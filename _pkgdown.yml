@@ -1,6 +1,7 @@
 url: https://sodeidelphonse.github.io/isdmtools/
 template:
   bootstrap: 5
+  bootswatch: flatly
 reference:
 - title: Folds Creation & Management
   desc: Core functions for spatial partitioning.
@@ -35,16 +36,20 @@ reference:
   - generate_maps
   - solve_practical_range
 navbar:
+  type: primary
   components:
+    home: ~
+    intro:
+      text: "Get started"
+      href: articles/isdmtools.html
     articles:
       text: Articles
       menu:
-      - text: Tutorials
-      - text: Get Started
-        href: articles/isdmtools.html
-      - text: ISDM Evaluation Workflow
-        href: articles/isdm-workflow.html
-      - text: '-------'
-      - text: All Articles
-        href: articles/index.html
-
+        - text: Tutorials
+        - text: Get started with isdmtools
+          href: articles/isdmtools.html
+        - text: ISDM Evaluation Workflow
+          href: articles/isdm-workflow.html
+        - text: '-------'
+        - text: All Articles
+          href: articles/index.html
