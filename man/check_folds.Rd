@@ -85,7 +85,7 @@ folds <- create_folds(
 )
 
 # Check Spatial Independence
-# Assuming autocorrelation range (rho) is 150 km
+# Assuming the autocorrelation practical range (rho) is 150 km
 spat_diag <- check_folds(folds, rho = 150, plot = TRUE)
 
 # View results
