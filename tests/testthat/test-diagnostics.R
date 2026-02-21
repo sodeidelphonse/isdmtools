@@ -81,9 +81,9 @@ test_that("EnvDiagnostic extracts values and runs stats", {
   expect_equal(nrow(env_res$summary), 1)
   expect_type(env_res$summary$p_val, "double")
 
-  # Ensure background was included in the plot data
+  # Ensure background (BG) was included in the plot data
   plot_data <- ggplot2::ggplot_build(env_res$plot)$plot$data
-  expect_true("Background" %in% plot_data$Fold)
+  expect_true("BG" %in% plot_data$Fold)
 })
 
 
@@ -176,8 +176,8 @@ test_that("EnvDiagnostic correctly integrates background in summary and plot", {
   env_diag  <- check_env_balance(mock_folds, covariates = r, n_background = 100)
   plot_data <- env_diag$plot$data
 
-  # Ensure "Background" is present in the data used for the plot
-  expect_true("Background" %in% unique(plot_data$Fold))
+  # Ensure background (BG) is present in the data used for the plot
+  expect_true("BG" %in% unique(plot_data$Fold))
 
   # Since the points are in a corner, Schoener's D should be relatively low (< 1)
   expect_true("Schoener_D" %in% colnames(env_diag$summary))
