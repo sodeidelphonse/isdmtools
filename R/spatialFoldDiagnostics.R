@@ -341,15 +341,15 @@ plot.GeoDiagnostic <- function(x, ...) {
 #' The function also evaluates environmental balance using two distinct statistical
 #' tests based on the variable type:
 #' \itemize{
-#'   \item \strong{Continuous Variables:} A {\texit[Kruskal-Wallis Rank Sum Test} is
+#'   \item \strong{Continuous Variables:} A *Kruskal-Wallis Rank Sum Test* is
 #'   performed to determine if the median values of the covariate differ significantly
 #'   across folds. A \eqn{p > 0.05} suggests that the folds are representative of
 #'   the same environmental niche.
 #'
-#'   \item \strong{Categorical Variables:} A \textit{Pearson's Chi-squared Test} is
+#'   \item \strong{Categorical Variables:} A *Pearson's Chi-squared Test* is
 #'   conducted. To account for rare classes (e.g., specific land-cover types) and
-#'   sparse contingency tables, \eqn{p}-values are computed via \bold{Monte Carlo
-#'   simulation} (with 2,000 replicates) rather than relying on asymptotic distributions.
+#'   sparse contingency tables, \eqn{p}-values are computed via *Monte Carlo simulation*
+#'   (with 2,000 replicates) rather than relying on asymptotic distributions.
 #'   The Null Hypothesis (\eqn{H_0}): There is no significant difference in the frequency
 #'   distribution of categories (e.g., land cover types) across the different data folds.
 #'   If \eqn{p > 0.05} (Homogeneous): We fails to reject \eqn{H_0}, indicating that

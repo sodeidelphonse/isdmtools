@@ -109,9 +109,7 @@ Roberts DR, Bahn V, Ciuti S, Boyce MS, Elith J, Guillera-Arroita G, Hauenstein S
 Valavi R, Elith J, Lahoz-Monfort JJ, Guillera-Arroita G. blockCV: an R package for generating spatially or environmentally separated folds for k-fold cross-validation of species distribution models. \emph{bioRxiv} (2018). \doi{10.1101/357798}
 }
 \seealso{
-\code{\link[=check_folds]{check_folds()}} and \code{\link[=check_env_balance]{check_env_balance()}} for diagnostic analyses on folds;
-\code{\link{GeoDiagnostic-methods}} and \code{\link{EnvDiagnostic-methods}}
-for the related methods.
+\code{\link[=check_folds]{check_folds()}} and \code{\link[=check_env_balance]{check_env_balance()}} for diagnostic analyses on folds.
 
 Other spatial blocking methods: 
 \code{\link{DataFolds-methods}}

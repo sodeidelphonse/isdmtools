@@ -47,9 +47,7 @@
 #'  fold information, the region polygon, and the original datasets.
 #' @export
 #' @family spatial blocking methods
-#' @seealso [check_folds()] and [check_env_balance()] for diagnostic analyses on folds;
-#' \code{\link{GeoDiagnostic-methods}} and \code{\link{EnvDiagnostic-methods}}
-#' for the related methods.
+#' @seealso [check_folds()] and [check_env_balance()] for diagnostic analyses on folds.
 #'
 #' @examples
 #' \dontrun{
@@ -220,9 +218,7 @@ bind_datasets <- function(datasets) {
 #' @name DataFolds-methods
 #' @rdname DataFolds-methods
 #' @family spatial blocking methods
-#' @seealso [check_folds()] and [check_env_balance()] for diagnostic analyses on folds;
-#' \code{\link{GeoDiagnostic-methods}} and \code{\link{EnvDiagnostic-methods}}
-#' for the related methods.
+#' @seealso [check_folds()] and [check_env_balance()] for diagnostic analyses on folds.
 #' @export
 #'
 #' @examples
