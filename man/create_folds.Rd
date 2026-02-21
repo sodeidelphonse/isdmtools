@@ -28,10 +28,10 @@ The list elements must have the same geographical projection and coordinates ref
 \item{seed}{integer. It sets seed for reproducibility.}
 
 \item{cv_method}{character. It specifies the spatial cross-validation method to use.
-Options are \code{"cluster"} (default) or \code{"spatial"}, see \link[blockCV]{cv_cluster} or \link[blockCV]{cv_spatial} functions.
-For \code{"block"}, \code{"buffer"}, \code{"location"}, or \code{"nndm"}, see the corresponding functions in the \code{spatialsample} package.}
+Options are \code{"cluster"} (default) or \code{"spatial"}, see \code{\link[blockCV]{cv_cluster}} or \code{\link[blockCV]{cv_spatial}} functions.
+For \code{"block"}, \code{"buffer"}, \code{"location"}, or \code{"nndm"}, see the corresponding functions in the \pkg{spatialsample} package.}
 
-\item{...}{Additional arguments to be passed to the underlying blocking function in \code{blockCV} or \code{spatialsample}.}
+\item{...}{Additional arguments to be passed to the underlying blocking function in \pkg{blockCV} or \pkg{spatialsample}.}
 }
 \value{
 An S3 object of class \code{DataFolds} containing the combined data,
@@ -50,8 +50,8 @@ stored in the returned \code{DataFolds} object.
 
 The \code{"cluster"} method from the \code{blockCV} package, supports both spatial and environmental clustering.
 Methods \code{"block"}, \code{"buffer"}, \code{"nndm"}, and \code{"location"}are useful for distance-based exclusion (buffering)
-or leaving out specific groups/locations (e.g., using \code{group = "column_name"} with the \link[spatialsample]{spatial_leave_location_out_cv} method).
-Use \code{"spatial"} for \code{blockCV} grid-blocking, or \code{"block"} for \code{spatialsample} grid-blocking.
+or leaving out specific groups/locations (e.g., using \code{group = "column_name"} with the \code{\link[spatialsample]{spatial_leave_location_out_cv}} method).
+Use \code{"spatial"} for \pkg{blockCV} grid-blocking, or \code{"block"} for \pkg{spatialsample} grid-blocking.
 
 The behavior of \code{create_folds} depends on the \code{cv_method} chosen.
 Several methods require specific arguments passed via the ellipsis (\code{...}):
@@ -59,7 +59,7 @@ Several methods require specific arguments passed via the ellipsis (\code{...}):
 \item \bold{\code{block} & \code{buffer}}: Accept \code{radius} and \code{buffer}
 arguments to define the size of the test/assessment areas and the width of
 the exclusion zones, respectively. Particularly, for grid-blocking with \code{"block"} scheme,
-additional arguments to \link[sf]{st_make_grid} can be provided.
+additional arguments to \code{\link[sf]{st_make_grid}} can be provided.
 \item \bold{\code{nndm}}: Requires \code{prediction_sites}, an \code{sf}
 object representing the area where the model will be projected.
 \item \bold{\code{location}}: Requires a \code{group} argument (character).

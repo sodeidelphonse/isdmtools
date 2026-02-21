@@ -12,9 +12,9 @@
 #' @param k integer. It specifies the number of folds (k-fold cross-validation).
 #' @param seed integer. It sets seed for reproducibility.
 #' @param cv_method character. It specifies the spatial cross-validation method to use.
-#' Options are `"cluster"` (default) or `"spatial"`, see \link[blockCV]{cv_cluster} or \link[blockCV]{cv_spatial} functions.
-#' For `"block"`, `"buffer"`, `"location"`, or `"nndm"`, see the corresponding functions in the \code{spatialsample} package.
-#' @param ... Additional arguments to be passed to the underlying blocking function in \code{blockCV} or \code{spatialsample}.
+#' Options are `"cluster"` (default) or `"spatial"`, see \code{\link[blockCV]{cv_cluster}} or \code{\link[blockCV]{cv_spatial}} functions.
+#' For `"block"`, `"buffer"`, `"location"`, or `"nndm"`, see the corresponding functions in the \pkg{spatialsample} package.
+#' @param ... Additional arguments to be passed on to the underlying blocking function in \pkg{blockCV} or \pkg{spatialsample}.
 #'
 #' @details
 #' This function first binds all datasets into a single `sf` object. It then applies the chosen blocking method to create spatial folds.
@@ -23,8 +23,8 @@
 #'
 #' The `"cluster"` method from the \code{blockCV} package, supports both spatial and environmental clustering.
 #' Methods `"block"`, `"buffer"`, `"nndm"`, and `"location"`are useful for distance-based exclusion (buffering)
-#' or leaving out specific groups/locations (e.g., using `group = "column_name"` with the \link[spatialsample]{spatial_leave_location_out_cv} method).
-#' Use `"spatial"` for \code{blockCV} grid-blocking, or `"block"` for \code{spatialsample} grid-blocking.
+#' or leaving out specific groups/locations (e.g., using `group = "column_name"` with the \code{\link[spatialsample]{spatial_leave_location_out_cv}} method).
+#' Use `"spatial"` for \pkg{blockCV} grid-blocking, or `"block"` for \pkg{spatialsample} grid-blocking.
 #'
 #' The behavior of \code{create_folds} depends on the \code{cv_method} chosen.
 #' Several methods require specific arguments passed via the ellipsis (\code{...}):
@@ -32,7 +32,7 @@
 #'   \item \bold{\code{block} & \code{buffer}}: Accept \code{radius} and \code{buffer}
 #'   arguments to define the size of the test/assessment areas and the width of
 #'   the exclusion zones, respectively. Particularly, for grid-blocking with `"block"` scheme,
-#'   additional arguments to \link[sf]{st_make_grid} can be provided.
+#'   additional arguments to \code{\link[sf]{st_make_grid}} can be provided.
 #'   \item \bold{\code{nndm}}: Requires \code{prediction_sites}, an \code{sf}
 #'   object representing the area where the model will be projected.
 #'   \item \bold{\code{location}}: Requires a \code{group} argument (character).

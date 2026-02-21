@@ -41,12 +41,12 @@ at the boundary; satisfying standard requirements for spatial independence
 for most blocked cross-validation applications (Roberts et al. 2017).
 }
 
-The spatial range can be estimated using the function \link[blockCV]{cv_spatial_autocor}) of
-the \code{blockCV} package (Valavi et al. 2018) or any other tool. The authors recommended this value (in metres)
+The spatial range can be estimated using the function \code{\link[blockCV]{cv_spatial_autocor}} of
+the \pkg{blockCV} package (Valavi et al. 2018) or any other tool. The authors recommended this value (in metres)
 as the optimal block size for their spatial blocking scheme. For instance, if a covariance model is fitted
 to the experimental variogram, the 10\% practical range can be derived using an interpolation method.
 Note that several packages are available to estimate the range from the observed spatial data and
-different parameterisations are used. We provide the helper function \code{solve_practical_range} to allow to
+different parameterisations are used. We provide the helper function \code{\link{solve_practical_range}} to allow to
 derive a unified practical range for Matérn covariance fitted to the data in INLA, geoR or spatstat packages.
 }
 \examples{
