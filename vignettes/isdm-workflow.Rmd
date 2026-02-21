@@ -91,10 +91,10 @@ We assume the following basic joint model with a shared latent signal $\xi(.)$ r
 
 $$
  \begin{aligned} 
- Y_{\mathrm{count},i}|\xi(.)&\sim\!\mathrm{Pois} \left(\mu_i \right), \quad i = 1,\ldots,n,\\
- \log(\mu_i)&=\!\beta_{0,\mathrm{count}} + \xi(\mathbf{s}_i)\\[2mm]
- X_{\mathrm{presence}}|\xi(.)&\sim\!\mathrm{IPP} \left(\lambda(\mathbf{s}) \right),\\
-\log (\lambda(\mathbf{s}))&=\!\beta_{0,\mathrm{presence}} + \xi(\mathbf{s})\\
+ &Y_{\text{count},i}|\xi(.)&\sim\text{Pois} \left(\mu_i \right),\,i = 1,\ldots,n,\\
+ &\log(\mu_i)&=\beta_{0,\text{count}} + \xi(\mathbf{s}_i)\\[2mm]
+ &X_{\text{presence}}|\xi(.)&\sim\text{IPP} \left(\lambda(\mathbf{s}) \right),\\
+ &\log (\lambda(\mathbf{s}))&=\beta_{0,\text{presence}} + \xi(\mathbf{s})\\
 \end{aligned}
 $$
 where $\mathrm{IPP}$ means a _Inhomogeneous Poisson Process_ and $\mathbf{s}$ the vector of a location coordinates. The IPP model presented here is known in spatial statistics as a log-Gaussian Cox process model - LGCP (see, @moller_log_1998) . Although the large-scale component which includes the data-specific intercept can also incorporate environmental covariates, we assume that the basic joint model above is valid for the data. Alternative specifications of data fusion model have been discussed in @sode_integrating_2025. 
@@ -155,7 +155,7 @@ jfit <- inlabru::bru(jcmp, obs_model_count, obs_model_pres,
                     )
 ```
 
-We can collect model results after the fitting process.
+We can collect model results after the process of model fitting. As expected, the estimated _spatial range_ is higher than 1. This is because there is no strong spatial autocorrelation in the simulated data.
 
 ```{r results, eval = FALSE}
  jfit$summary.fixed
@@ -169,8 +169,6 @@ We can collect model results after the fitting process.
  #> Stdev for spde 0.512346 0.1926203  0.2183487   0.4842595  0.9647017   0.4317979
 ``` 
 
-As expected, the estimated _spatial range_ is higher than 1. This is because there is no strong spatial autocorrelation in the simulated data.
- 
 ## Step 3: Model prediction 
 
 ```{r grids, eval = exists("mesh")} 
@@ -296,7 +294,7 @@ Next, you can iterate through all five spatial folds to obtain an average model 
  
 ## Step 6: Prediction mapping 
 
-You can now generate a formal prediction map ready for publication. Assume that the probability of the species presence is stored in the object 'jt_prob' after the final model fitting.
+You can now generate a formal prediction map ready for publication. Assume that the probability of the species presence is stored in the object 'jt_prob' after the final model fitting, key summary statistics in this object can be visualised using the `generate_maps()` helper which return a ggplot object that can be customised by the user.
 
 ```{r maps, eval = exists("jt_prob")}
 map <- generate_maps(jt_prob, 
@@ -316,6 +314,6 @@ knitr::include_graphics("../man/figures/prediction_map.png")
 
 # Conclusion
 
-You have successfully fused multi-source biodiversity data and generated spatially independent partitions for robust model validation using `isdmtools`. The toolkit has enabled the *resampling of data*, thereby reducing *spatial autocorrelation* effects in the modelling process. It has also facilitated the analysis and a comprehensive evaluation of ISDM using well-known metrics from the fields of statistics and machine learning. The outputs of the final model are visualised with `generate_maps()` to obtain an annotated map ready to be interpreted for deriving valuable insights from the integrated analysis.
+Using `isdmtools`, you have successfully fused multi-source biodiversity data and generated spatially independent partitions for robust model validation. The toolkit has enabled the *resampling of data* and the diagnostics of folds, thereby reducing the effects of *spatial autocorrelation* in the modelling process. It has also facilitated the analysis and comprehensive evaluation of ISDM using well-known metrics from the fields of statistics and machine learning. The outputs of the final model are visualised to obtain an annotated map ready to be interpreted for deriving valuable insights from the integrated analysis. The flexibility of `isdmtools` in providing a unified framework for evaluating ISDM based on any combination of the major three types of SDM data as well as its versatility to be integrated with other competing tools make it an appealing toolkit for ecologists and spatial statisticians. 
 
 # References

@@ -209,7 +209,7 @@ check_spatial_geometry <- function(data_all, fold_col = "folds_ids", rho = NULL,
 #' )
 #'
 #' # Check Spatial Independence
-#' # Assuming autocorrelation range (rho) is 150 km
+#' # Assuming the autocorrelation practical range (rho) is 150 km
 #' spat_diag <- check_folds(folds, rho = 150, plot = TRUE)
 #'
 #' # View results
@@ -341,19 +341,19 @@ plot.GeoDiagnostic <- function(x, ...) {
 #' The function also evaluates environmental balance using two distinct statistical
 #' tests based on the variable type:
 #' \itemize{
-##'   \item \strong{Continuous Variables:} A \bold{Kruskal-Wallis Rank Sum Test} is
+#'   \item \strong{Continuous Variables:} A *Kruskal-Wallis Rank Sum Test* is
 #'   performed to determine if the median values of the covariate differ significantly
 #'   across folds. A \eqn{p > 0.05} suggests that the folds are representative of
 #'   the same environmental niche.
 #'
-#'   \item \strong{Categorical Variables:} A \bold{Pearson's Chi-squared Test} is
+#'   \item \strong{Categorical Variables:} A *Pearson's Chi-squared Test* is
 #'   conducted. To account for rare classes (e.g., specific land-cover types) and
-#'   sparse contingency tables, \eqn{p}-values are computed via \bold{Monte Carlo
-#'   simulation} (with 2,000 replicates) rather than relying on asymptotic
-#'   distributions. The Null Hypothesis ($H_0$): There is no significant difference in
-#'   the frequency distribution of categories (e.g., land cover types) across the different data folds.
-#    If $p > 0.05$ (Homogeneous): It means the environment is effectively the same in every fold.
-#'   If $p < 0.05$ (Heterogeneous): It means the folds are fundamentally different environments.
+#'   sparse contingency tables, \eqn{p}-values are computed via *Monte Carlo simulation*
+#'   (with 2,000 replicates) rather than relying on asymptotic distributions.
+#'   The Null Hypothesis (\eqn{H_0}): There is no significant difference in the frequency
+#'   distribution of categories (e.g., land cover types) across the different data folds.
+#'   If \eqn{p > 0.05} (Homogeneous): We fails to reject \eqn{H_0}, indicating that
+#'   the environment is effectively similar in every fold.
 #' }
 #'
 #' Both tests are used to measure the internal consistency of the distribution
@@ -370,7 +370,7 @@ plot.GeoDiagnostic <- function(x, ...) {
 #' \itemize{
 #' \item Hope, ACA. A simplified Monte Carlo significance test procedure. _Journal of the Royal Statistical Society Series B_(1968) 30:582–598. \doi{10.1111/j.2517-6161.1968.tb00759.x}.
 #' \item Patefield, WM. Algorithm AS 159: An efficient method of generating r x c tables with given row and column totals. _Applied Statistics_(1981) 30:91–97. \doi{doi:10.2307/2346669}.
-#' \item Schoener TW. The Anolis Lizards of Bimini: Resource Partitioning in a Complex Fauna. _Ecology_(1968) 49:704–726. \doi{10.2307/1935534}
+#' \item Schoener TW. The Anolis Lizards of Bimini: Resource Partitioning in a Complex Fauna. _Ecology_(1968) 49:704–726. \doi{10.2307/1935534}.
 #' }
 #'
 #' @examples

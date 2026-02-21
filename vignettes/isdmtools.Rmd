@@ -28,7 +28,7 @@ library(ggplot2)
 
 # Introduction
 
-This vignette should bridge the gap between "having spatial data" and "being ready for modelling." The fundamental philosophy of `isdmtools` is to provide a standardised bridge between diverse biodiversity spatial data sources and a robust spatial cross-validation (CV) strategy for evaluating integrated species distribution models (ISDMs). This tutorial will assist you through preparing data and generating spatial folds — the essential first steps before fitting an Integrated Species Distribution Model (ISDM).
+The integrated species distribution modelling (ISDM) is any statistical approach that combine biodiversity data from different sampling schemes with the purpose of correcting for biases or providing an overall estimation of the species distribution based on multisource evidence. This vignette should bridge the gap between "having spatial data" and "being ready for modelling." The fundamental philosophy of `isdmtools` is to provide a standardised bridge between diverse biodiversity spatial data sources and a robust spatial cross-validation (CV) strategy for evaluating integrated species distribution models (ISDMs). This tutorial will assist you through preparing data and generating spatial folds — the essential first steps before fitting an Integrated Species Distribution Model (ISDM).
 
 # Data Preparation
 
@@ -70,7 +70,7 @@ names(r) <- c("cov1", "cov2")
 
 # Spatial Partitioning for Block Cross-validation
 
-Partitioning spatial data into spatial folds is important since it helps reduce spatial autocorrelation in the observations and estimate a more realistic model performance.
+The partitioning of spatial data into spatial folds is a crucial step in the process, as it assists in the reduction of spatial autocorrelation in the observations. This, in turn, enables the estimation of a more realistic model performance. In the following code chunks, we illustrate two distinct blocking schemes for the purpose of dividing the observed spatial data.
 
 ```{r }
 # Create the DataFolds object using the default method
@@ -101,12 +101,14 @@ summary(fold_ss)
 
 # Folds Diagnostics
 
-Various diagnostic analyses can be performed on the folds that were created in the previous step. Specifically, if there is any prior information on the spatial range from an exploratory analysis, it can be used as a value for the `rho` argument of the `check_folds()`' method. This value can then be compared to the calculated inter-fold gap in order to ascertain whether folds are independent. For instance, the `blockCV::cv_spatial_autocor()` function can help derive prior information on the spatial range [@valavi_blockcv_2018]. If the correlation function is part of Matérn family, the helper function `solve_practical_range()` from the `isdmtools` package [@sode_integrating_2025] can help derive the corresponding _practical range_ needed for _spatial daignostics_. The same procedure applies to a Bayesian analysis to check if the posterior range estimated aligns with the spatial geometry of the specified folds or blocks. 
+The `isdmtools` packages introduces various *diagnostic tools* to perform supplementary analyses on the quality of the spatial folds (or blocks) that were created in the previous step. We distinguish between diagnostics in geographical and environmental spaces as well as combined analyses. The *geographical fold diagnostics* are performed using the `check_folds()` method while the *environmental fold diagnostic* is achieved via the `check_env_balance()` method. Depending on the spatial blocking strategy used for data partitioning, both diagnostic analyses can be combined into a unified framework. The The following sections introduces each diagnostic tools to assess the validity of spatial folds generated for blocked cross-validation.
+
+For *geographical fold diagnostics*, if there is any prior information on the spatial range from an exploratory analysis, it can be used as a value for the `rho` argument of the `check_folds()`' method. This value can then be compared to the calculated inter-fold gap in order to ascertain whether folds are independent. For instance, the `blockCV::cv_spatial_autocor()` function can help derive prior information on the spatial range [@valavi_blockcv_2018]. Additionally, if the correlation function is part of *Matérn* family, the helper function `solve_practical_range()` from the `isdmtools` package can help derive the corresponding *practical range* needed for the spatial diagnostics (see @sode_integrating_2025 for more details). The same procedure applies to a Bayesian analysis to check if the posterior range estimated aligns with the spatial geometry of the specified folds. 
 
 * **Folds diagnostics in geographical space**
 
 ```{r geo-diag, fig.width = 5, fig.height = 5, out.width = "90%"}
-# Check spatial independence of folds using default rho (N/A)
+# Check spatial independence of folds using the default rho (N/A)
 # Type ?check_folds for more details on the method
 geo_diag <- check_folds(folds, plot = TRUE)
 print(geo_diag)
@@ -116,9 +118,11 @@ plot(geo_diag)
 
 ```
 
-As the summary information illustrates, the minimum distance between points within a specific block (or fold) and its nearest block (i.e., the inter-block gap) is approximately 42 km. This indicates that there is no contiguous spatial folds from the selected blocking strategy, thereby supporting the hypothesis of no *block leakage*.
+As the results illustrates, the minimum distance between points within a specific block (or fold) and points within its nearest block (i.e., the inter-block gap) is approximately 42 km in average. This indicates that there is no contiguous spatial folds from the selected blocking strategy, thereby supporting the hypothesis of no *block leakage*.
 
 * **Folds diagnostics in the environmental space**
+
+Another crucial aspect of blocked cross-validation strategy is to ensure that validation metrics reflect the model's ability to generalise across the species' niche, rather than its proximity to training data. The analysis of spatial folds in the environmental space can allow this hypothesis to be assessed as nearly met before proceeding with the modelling process.
 
 ```{r warning=FALSE,message=FALSE}
 # Check environmental balance of folds
@@ -137,7 +141,7 @@ plot(env_diag)
 
 ```
 
-As illustrated in the summary table, the *Schoener D* metric is greater than 0.6 for both covariates. This indicates that spatial folds exhibit significant overlap with the background area. Additionally, the p-value resulting from comparing the median values of the variables across the folds is greater than 0.05. This suggests that the environmental variables do not differ significantly between the blocks. Consequently, it can be hypothesised that the spatial blocks are environmentally representative and may be robust for model prediction.
+As illustrated by the outputs, the *Schoener D* metric is greater than 0.6 for both covariates. This indicates that spatial folds exhibit significant overlap with the background area. Additionally, the p-value resulting from comparing the median values of the variables across the folds is greater than 0.05. This suggests that the environmental variables do not differ significantly between the blocks. Consequently, it can be hypothesised that the spatial blocks are environmentally representative and may be robust for model prediction and generalisation.
 
 * **Combined analysis**
 
@@ -197,13 +201,13 @@ head(splits_1$test$Presence)
 
 # Conclusion
 
-Congratulations! You have successfully fused multi-source biodiversity data and generated spatially independent partitions for robust model validation. By using `create_folds()` and related folds' diagnostic tools, you've ensured that your model evaluation will account for spatial autocorrelation, providing a more realistic estimate of predictive performance. 
+Congratulations! You have successfully fused multi-source biodiversity data and generated spatially independent partitions for robust model validation. By using `create_folds()` and appropriate folds' diagnostic tools, you've ensured that your model evaluation will account for spatial autocorrelation, providing a more realistic estimate of predictive performance. 
 
 The `isdmtools` journey continues with model fitting and comprehensive evaluation. Depending on your needs, we recommend the following paths:
 
-- *Model Fitting*: Use the training data extracted via `extract_fold()` to fit your models using modelling engines like inlabru, PointedSDMs, or standard GAMs tools which can support multisource spatial data.
+- *Model Fitting*: Use the training data extracted via `extract_fold()` to fit your models using modelling engines like inlabru, PointedSDMs, or standard generalised additive mixed models (GAMMs) tools which can support multisource spatial data.
 - *Integrated Evaluation*: Once predictions are obtained, evaluate the models and analyse the outputs.
 
-The advanced guide on [ISDM Evaluation Workflow](isdm-workflow.html) covers model building with external tools, calculation of dataset-specific and composite scores, suitability analysis and mapping with `isdmtools`.
+The advanced guide on [ISDM Evaluation Workflow](isdm-workflow.html) covers model building with external tools, and the use of the use of `isdmtools` to perform model evaluation, suitability analysis and mapping.
 
 # References
