@@ -31,7 +31,7 @@ The list elements must have the same geographical projection and coordinates ref
 Options are \code{"cluster"} (default) or \code{"spatial"}, see \code{\link[blockCV]{cv_cluster}} or \code{\link[blockCV]{cv_spatial}} functions.
 For \code{"block"}, \code{"buffer"}, \code{"location"}, or \code{"nndm"}, see the corresponding functions in the \pkg{spatialsample} package.}
 
-\item{...}{Additional arguments to be passed to the underlying blocking function in \pkg{blockCV} or \pkg{spatialsample}.}
+\item{...}{Additional arguments to be passed on to the underlying blocking function in \pkg{blockCV} or \pkg{spatialsample}.}
 }
 \value{
 An S3 object of class \code{DataFolds} containing the combined data,

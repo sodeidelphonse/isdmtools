@@ -18,7 +18,7 @@ check_env_balance(object, ...)
 \arguments{
 \item{object}{A \code{DataFolds} object.}
 
-\item{...}{Additional arguments passed to \code{\link{sample_background}}.}
+\item{...}{Additional arguments passed on to \code{\link{sample_background}}.}
 
 \item{covariates}{A \code{SpatRaster} (terra) containing environmental layers.
 It must have the same coordinate reference system (CRS) as the sf objects used for blocking.}
