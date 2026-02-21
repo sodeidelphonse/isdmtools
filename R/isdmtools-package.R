@@ -7,18 +7,17 @@
 #' It analyses the habitat suitability from joint model predictions and maps the results. The package also provides a holistic view of model performance
 #' by computing a comprehensive evaluation metrics, including ROC-based and continuous-outcome weighted composite scores.
 #'
-#' @details
-#' For a complete guide on the workflow, see the package vignettes:
-#' \itemize{
-#'   \item \code{vignette("isdmtools", package = "isdmtools")}: Get started with the basics.
-#'   \item \code{vignette("isdm-workflow", package = "isdmtools")}: Detailed evaluation workflow.
-#' }
-#'
 #' @seealso
 #' Useful links:
 #' \itemize{
 #'   \item Report bugs at \url{https://github.com/sodeidelphonse/isdmtools/issues}
 #'   \item Official documentation: \url{https://sodeidelphonse.github.io/isdmtools/}
+#' }
+#'
+#' For a complete guide on the workflow, see the package vignettes:
+#' \itemize{
+#'   \item \code{vignette("isdmtools", package = "isdmtools")}: Get started with the basics.
+#'   \item \code{vignette("isdm-workflow", package = "isdmtools")}: Detailed evaluation workflow.
 #' }
 #'
 #' @name isdmtools-package

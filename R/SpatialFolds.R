@@ -145,6 +145,7 @@ create_folds <- function(datasets, region_polygon = NULL, k = 5, seed = 23, cv_m
 #'   The list elements must have the same geographical projection and coordinates reference system (CRS).
 #' @return An `sf` object containing all datasets along with their corresponding name.
 #' @rdname create_folds
+#' @export
 #' @keywords internal
 #'
 bind_datasets <- function(datasets) {
