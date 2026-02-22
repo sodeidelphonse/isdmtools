@@ -102,11 +102,11 @@ print(my_folds)
 
 }
 \references{
-Mahoney MJ, Johnson LK, Silge J, Frick H, Kuhn M, Beier CM. Assessing the performance of spatial cross-validation approaches for models of spatially structured data. \emph{arXiv} (2023) \doi{10.48550/arXiv.2303.07334}
-
-Roberts DR, Bahn V, Ciuti S, Boyce MS, Elith J, Guillera-Arroita G, Hauenstein S, Lahoz-Monfort JJ, Schröder B, Thuiller W, et al. Cross-validation strategies for data with temporal, spatial, hierarchical, or phylogenetic structure. \emph{Ecography} (2017) 40:913–929. \doi{10.1111/ecog.02881}
-
-Valavi R, Elith J, Lahoz-Monfort JJ, Guillera-Arroita G. blockCV: an R package for generating spatially or environmentally separated folds for k-fold cross-validation of species distribution models. \emph{bioRxiv} (2018). \doi{10.1101/357798}
+\itemize{
+\item Mahoney MJ, Johnson LK, Silge J, Frick H, Kuhn M, Beier CM. Assessing the performance of spatial cross-validation approaches for models of spatially structured data. \emph{arXiv} (2023). \doi{10.48550/arXiv.2303.07334}.
+\item Roberts DR, Bahn V, Ciuti S, Boyce MS, Elith J, Guillera-Arroita G, Hauenstein S, Lahoz-Monfort JJ, Schröder B, Thuiller W, et al. Cross-validation strategies for data with temporal, spatial, hierarchical, or phylogenetic structure. \emph{Ecography} (2017) 40:913–929. \doi{10.1111/ecog.02881}.
+\item Valavi R, Elith J, Lahoz-Monfort JJ, Guillera-Arroita G. blockCV: an R package for generating spatially or environmentally separated folds for k-fold cross-validation of species distribution models. \emph{bioRxiv} (2018). \doi{10.1101/357798}.
+}
 }
 \seealso{
 \code{\link[=check_folds]{check_folds()}} and \code{\link[=check_env_balance]{check_env_balance()}} for diagnostic analyses on folds.
