@@ -14,8 +14,10 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  eval = TRUE
+  eval = TRUE,
+  cache = TRUE
 )
+options(rmarkdown.html_vignette.check_title = FALSE)
 ```
 
 ```{r warning=FALSE,message=FALSE}
@@ -70,7 +72,7 @@ names(r) <- c("cov1", "cov2")
 
 # Spatial Data Partitioning
 
-The partitioning of spatial data into spatial folds is a crucial step in the process of model evaluation via blocked cross-validation, as it assists in the reduction of spatial autocorrelation in the observations. This, in turn, enables the estimation of a more realistic model performance. In the following code chunks, we illustrate two distinct blocking schemes for the purpose of dividing the observed spatial data.
+The partitioning of spatial data into spatial folds is a crucial step in the process of model evaluation via blocked cross-validation, as it assists in the reduction of spatial autocorrelation in the observations. This, in turn, enables the estimation of a more realistic model performance. In the following code chunks, we illustrate two distinct blocking schemes for the purpose of resampling the observed spatial data.
 
 ```{r }
 # Create the DataFolds object using the default method
@@ -101,15 +103,16 @@ summary(fold_ss)
 
 # Folds Diagnostics
 
-The `isdmtools` package introduces various *diagnostic tools* to perform supplementary analyses on the quality of the spatial folds (or blocks) that were created in the previous step. We distinguish between diagnostics in geographical and environmental spaces as well as combined analyses. The *geographical fold diagnostics* are performed using the `check_folds()` method while the *environmental fold diagnostic* is achieved via the `check_env_balance()` method. Depending on the spatial blocking strategy used for data partitioning, both diagnostic analyses can be combined into a unified framework. The The following sections introduces each diagnostic tools to assess the validity of spatial folds generated for blocked cross-validation.
+The `isdmtools` package introduces various *diagnostic tools* to perform supplementary analyses on the quality of the spatial folds (or blocks) that were created in the previous step. We distinguish between diagnostics in geographical and environmental spaces as well as combined analyses. The *geographical fold diagnostics* are performed using the `check_folds()` method while the *environmental fold diagnostic* is achieved via the `check_env_balance()` method. Depending on the spatial blocking strategy used for data partitioning, both diagnostic analyses can be combined into a unified framework. The following sections introduces how diagnostic tools can be used to assess the validity of spatial folds generated from mutisource data for blocked cross-validation.
 
-For *geographical fold diagnostics*, if there is any prior information on the spatial range from an exploratory analysis, it can be used as a value for the `rho` argument of the `check_folds()`' method. This value can then be compared to the calculated inter-fold gap in order to ascertain whether folds are independent. For instance, the `blockCV::cv_spatial_autocor()` function can help derive prior information on the spatial range [@valavi_blockcv_2018]. Additionally, if the correlation function is part of *Matérn* family, the helper function `solve_practical_range()` from the `isdmtools` package can help derive the corresponding *practical range* needed for the spatial diagnostics (see @sode_integrating_2025 for more details). The same procedure applies to a Bayesian analysis to check if the posterior range estimated aligns with the spatial geometry of the specified folds. 
+In the context of *geographical fold diagnostics*, should any prior information on the spatial range be available from an exploratory analysis, this can be used for the `rho` argument of the `check_folds()`' method. This value can then be compared to the calculated inter-fold gap in order to ascertain whether folds are independent. For instance, the `blockCV::cv_spatial_autocor()` function can help derive prior information on the spatial range [@valavi_blockcv_2018]. Additionally, if the correlation function is part of *Matérn* family, the helper function `solve_practical_range()` from our `isdmtools` package can be utilised to derive the corresponding *practical range* required for spatial diagnostics (see @sode_integrating_2025 forfurther details). The same procedure can be applied to a Bayesian analysis to check if the posterior range estimated aligns with the spatial geometry of the specified folds. 
 
 * **Folds diagnostics in geographical space**
 
+This *diagnostic strategy* compute the maximum Euclidean distance between points with respect to the fold centroid on the one hand (i.e. the internal size) and the minimum distance between points within a specific fold with its nearest fold (i.e. the inter-block gap) on the other hand. 
+
 ```{r geo-diag, fig.width = 5, fig.height = 5, out.width = "90%"}
 # Check spatial independence of folds using the default rho (N/A)
-# Type ?check_folds for more details on the method
 geo_diag <- check_folds(folds, plot = TRUE)
 print(geo_diag)
 
@@ -118,11 +121,11 @@ plot(geo_diag)
 
 ```
 
-As the results illustrates, the minimum distance between points within a specific block (or fold) and points within its nearest block (i.e., the inter-block gap) is approximately 42 km in average. This indicates that there is no contiguous spatial folds from the selected blocking strategy, thereby supporting the hypothesis of no *block leakage*.
+As the results illustrates, the inter-block gap is approximately 42 km in average. This indicates that there is no contiguous spatial folds from the selected blocking strategy, thereby supporting the hypothesis of no *block leakage*.
 
 * **Folds diagnostics in the environmental space**
 
-Another crucial aspect of blocked cross-validation strategy is to ensure that validation metrics reflect the model's ability to generalise across the species' niche, rather than its proximity to training data. The analysis of spatial folds in the environmental space can allow this hypothesis to be assessed as nearly met before proceeding with the modelling process.
+Another crucial aspect of blocked cross-validation strategy is to ensure that validation metrics reflect the integrated model's ability to generalise across the species' niche, rather than its proximity to training data. The analysis of spatial folds in the environmental space can allow this hypothesis to be assessed as nearly met before proceeding with the modelling process.
 
 ```{r warning=FALSE,message=FALSE}
 # Check environmental balance of folds
@@ -141,11 +144,11 @@ plot(env_diag)
 
 ```
 
-As illustrated by the outputs, the *Schoener D* metric is greater than 0.6 for both covariates. This indicates that spatial folds exhibit significant overlap with the background area. Additionally, the p-value resulting from comparing the median values of the variables across the folds is greater than 0.05. This suggests that the environmental variables do not differ significantly between the blocks. Consequently, it can be hypothesised that the spatial blocks are environmentally representative and may be robust for model prediction and generalisation.
+As illustrated by the outputs, the *Schoener D* metric is greater than 0.6 for both covariates. This indicates that spatial folds exhibit significant overlap with the background area. Additionally, the p-value resulting from comparing the median values of the variables across the folds is greater than 0.05. This suggests that the environmental variables do not differ significantly between the blocks. Consequently, it can be hypothesised that the spatial blocks are environmentally representative and may be robust for the integrated model prediction and generalisation.
 
 * **Combined analysis**
 
-It is possible to combine both types of fold diagnostics in order to draw a unified conclusion. However, it should be noted that the applicability of both diagnostic tools is not universal across all the spatial blocking strategies covered in the package. Therefore, the most appropriate block diagnostic tool may be contingent on the selected blocking scheme.
+It is possible to combine both types of fold diagnostics in order to draw a unified conclusion. However, it should be noted that the applicability of both diagnostic tools is not universal across all the spatial blocking strategies covered in the package. Therefore, the most appropriate block diagnostic tool may be contingent on the selected blocking scheme and the geometry of resulting folds.
 
 ```{r }
 # Combined diagnostics
@@ -155,7 +158,7 @@ summarise_fold_diagnostics(geo_diag, env_diag)
 
 * **Mixture of continuous and categorical variables**
 
-In practical application, we may have a mixture of continuous and categorical covariates (e.g. land cover). In this scenario, the *Schoener D* metric cannot be calculated for the categorical variable. The p-value for this variable is derived from the Chi-square test based on the Monte Carlo approximation instead of the Kruskal Wallis test used for the continuous variables.
+In practical application, we may have a mixture of continuous and categorical covariates (e.g. land cover). In this scenario, the *Schoener D* metric cannot be calculated for the categorical variables. The p-value for this type of variable is then derived from the Chi-square test based on the Monte Carlo approximation instead of the Kruskal Wallis test used for the continuous variables.
 
 ```{r warning=FALSE,message=FALSE}
 # Continuous (temperature) and categorical (land cover) variables
@@ -167,7 +170,7 @@ levels(r_land) <- data.frame(ID = 1:4, cover = c("Forest", "Grass", "Urban", "Wa
 env_stack <- c(r_temp, r_land)
 names(env_stack) <- c("temperature", "land_use")
 
-# Run the test with 5000 background cells 
+# Run the test with 5000 background cells and use boxplot
 env_mixed <- check_env_balance(
   folds,
   covariates = env_stack,
@@ -187,7 +190,7 @@ plot(env_mixed)
 # Data Extraction for Modelling
 
 Once spatial folds are created, one can extract the data and see how it looks like right 
-before it goes into a modelling tool like inlabru. You can access both 'train' and 'test' sets and their corresponding datasets as follows:
+before it goes into an integrated modelling tool. You can access both 'train' and 'test' sets and their corresponding datasets as follows:
 
 ```{r }
 # Extract fold 1
@@ -205,9 +208,9 @@ Congratulations! You have successfully fused multi-source biodiversity data and 
 
 The `isdmtools` journey continues with model fitting and comprehensive evaluation. Depending on your needs, we recommend the following paths:
 
-- *Model Fitting*: Use the training data extracted via `extract_fold()` to fit your models using modelling engines like inlabru, PointedSDMs, or standard generalised additive mixed models (GAMMs) tools which can support multisource spatial data.
-- *Integrated Evaluation*: Once predictions are obtained, evaluate the models and analyse the outputs.
+- *Model Fitting*: Use the training data extracted via `extract_fold()` to fit your models using modelling engines like inlabru, PointedSDMs, or standard generalised (additive) mixed models (GAMMs) tools which can support multisource spatial data.
+- *Integrated Evaluation*: Once predictions are obtained, evaluate the models with the testing set and analyse the outputs.
 
-The advanced guide on [ISDM Evaluation Workflow](isdm-workflow.html) covers model building with external tools, and the use of the use of `isdmtools` to perform model evaluation, suitability analysis and mapping.
+The advanced guide on [ISDM Evaluation Workflow](isdm-workflow.html) covers model building with external tools, and the use of `isdmtools` to perform model evaluation, suitability analysis and mapping.
 
 # References
