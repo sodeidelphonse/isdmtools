@@ -5,7 +5,7 @@ author: "Akoeugnigan Idelphonse SODE"
 bibliography: ../inst/REFERENCES.bib
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Get started}
+  %\VignetteIndexEntry{Get started with isdmtools}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

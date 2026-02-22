@@ -90,10 +90,10 @@ We assume the following basic joint model with a shared latent signal $\xi(.)$ r
 
 $$
 \begin{aligned} 
- &Y_{\text{count},i}|\xi(.)&\sim\text{Pois} \left(\mu_i \right),\,i = 1,\ldots,n,&&\\
- &\log(\mu_i)&=\beta_{0,\text{count}} + \xi(\mathbf{s}_i)&&\\
- &X_{\text{presence}}|\xi(.)&\sim\text{IPP} \left(\lambda(\mathbf{s}) \right),&&\\
- &\log (\lambda(\mathbf{s}))&=\beta_{0,\text{presence}} + \xi(\mathbf{s}).&&\\
+ &Y_{\text{count},i}|\xi(.) &&\sim \text{Pois} \left(\mu_i \right), & i = 1,\ldots,n\\
+ &\log(\mu_i) &&= \beta_{0,\text{count}} + \xi(\mathbf{s}_i) \\[2mm]
+ &X_{\text{presence}}|\xi(.) &&\sim \text{IPP} (\lambda(\mathbf{s})),\\
+ &\log (\lambda(\mathbf{s})) &&= \beta_{0,\text{presence}} + \xi(\mathbf{s}),\\
 \end{aligned}
 $$
 where $\mathrm{IPP}$ means a _Inhomogeneous Poisson Process_ and $\mathbf{s}$ the vector of a location coordinates. The IPP model presented here is known in spatial statistics as a log-Gaussian Cox process model - LGCP (see, @moller_log_1998). Although the large-scale component which includes the data-specific intercept can also incorporate environmental covariates, we assume that the basic joint model above is valid for the data. Alternative specifications of data fusion model have been discussed in @sode_integrating_2025. 
@@ -102,7 +102,7 @@ where $\mathrm{IPP}$ means a _Inhomogeneous Poisson Process_ and $\mathbf{s}$ th
 
 One can now prepare the remaining data required to fit an integrated model. First, we set up the mesh to be used for approximating the latent field as well as for the integration points in the LGCP likelihood.
 
-```{r mesh-code, fig.width = 4, fig.height = 4, out.width = "90%", eval = exists("ben_sf")} 
+```{r mesh-code, fig.width = 5, fig.height = 4, out.width = "90%"} 
 # Create a "mesh" for the latent field 
 mesh <- fmesher::fm_mesh_2d(
      boundary = ben_sf,
@@ -119,7 +119,7 @@ ggplot() + inlabru::gg(mesh) +
 
 After this step, we can define the prior distributions for the hyperparameters of the latent component such as the range and the marginal standard deviation, keeping default prior (i.e. Gaussian distribution with precision 0.001) for the intercepts. we use the penalized model component complexity priors (see @simpson_penalising_2017 for more details). Then we define the observation model for each data type and fuse them using a joint likelihood estimation with INLA and SPDE techniques [@simpson_going_2016].
 
-```{r modeling, eval = requireNamespace("INLA", quietly = TRUE) && exists("train_data")}
+```{r modeling, eval = requireNamespace("INLA", quietly = TRUE)}
 # Set the PC-prior for the SPDE model. We estimate a longer range value as no spatial 
 # autocorrelation was defined in the data generation process:
 pcmatern <- INLA::inla.spde2.pcmatern(mesh,
