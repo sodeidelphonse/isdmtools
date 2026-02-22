@@ -14,8 +14,7 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  eval = TRUE,
-  cache = TRUE
+  eval = TRUE
 )
 options(rmarkdown.html_vignette.check_title = FALSE)
 ```
@@ -72,7 +71,7 @@ names(r) <- c("cov1", "cov2")
 
 # Spatial Data Partitioning
 
-The partitioning of spatial data into spatial folds is a crucial step in the process of model evaluation via blocked cross-validation, as it assists in the reduction of spatial autocorrelation in the observations. This, in turn, enables the estimation of a more realistic model performance. In the following code chunks, we illustrate two distinct blocking schemes for the purpose of resampling the observed spatial data.
+The partitioning of spatial data into spatial folds is a crucial step in the process of model evaluation via blocked cross-validation, as it assists in the reduction of spatial autocorrelation in the observations. This, in turn, enables the estimation of a more realistic model performance. In the following code chunks, we illustrate with `isdmtools` two distinct blocking schemes for the purpose of resampling the observed spatial data [@valavi_blockcv_2018; @mahoney_assessing_2023].
 
 ```{r }
 # Create the DataFolds object using the default method
@@ -92,7 +91,7 @@ plot(folds, nrow = 2, annotate = FALSE) +
 # Create the DataFolds object using the `spatialsample` blocking engine
 fold_ss <- create_folds(datasets_list, ben_sf, cv_method = "block")
 
-# Using the native autoplot of `spatialesample`
+# Using the native autoplot of `spatialesample` which shows only pooled data
 ggplot2::autoplot(fold_ss)
 ```
 
@@ -103,9 +102,7 @@ summary(fold_ss)
 
 # Folds Diagnostics
 
-The `isdmtools` package introduces various *diagnostic tools* to perform supplementary analyses on the quality of the spatial folds (or blocks) that were created in the previous step. We distinguish between diagnostics in geographical and environmental spaces as well as combined analyses. The *geographical fold diagnostics* are performed using the `check_folds()` method while the *environmental fold diagnostic* is achieved via the `check_env_balance()` method. Depending on the spatial blocking strategy used for data partitioning, both diagnostic analyses can be combined into a unified framework. The following sections introduces how diagnostic tools can be used to assess the validity of spatial folds generated from mutisource data for blocked cross-validation.
-
-In the context of *geographical fold diagnostics*, should any prior information on the spatial range be available from an exploratory analysis, this can be used for the `rho` argument of the `check_folds()`' method. This value can then be compared to the calculated inter-fold gap in order to ascertain whether folds are independent. For instance, the `blockCV::cv_spatial_autocor()` function can help derive prior information on the spatial range [@valavi_blockcv_2018]. Additionally, if the correlation function is part of *Matérn* family, the helper function `solve_practical_range()` from our `isdmtools` package can be utilised to derive the corresponding *practical range* required for spatial diagnostics (see @sode_integrating_2025 forfurther details). The same procedure can be applied to a Bayesian analysis to check if the posterior range estimated aligns with the spatial geometry of the specified folds. 
+The `isdmtools` package has introduced various *diagnostic tools* to perform supplementary analyses on the quality of the spatial folds (or blocks) that were created in the previous step. We distinguish between diagnostics in geographical and environmental spaces as well as combined analyses. The *geographical fold diagnostics* are performed using the `check_folds()` method while the *environmental fold diagnostic* is achieved via the `check_env_balance()` method. Depending on the spatial blocking strategy used for data partitioning, both diagnostic analyses can be combined into a unified framework. The following sections introduces how diagnostic tools can be used to assess the validity of spatial folds generated from mutisource data for blocked cross-validation.
 
 * **Folds diagnostics in geographical space**
 
@@ -122,6 +119,8 @@ plot(geo_diag)
 ```
 
 As the results illustrates, the inter-block gap is approximately 42 km in average. This indicates that there is no contiguous spatial folds from the selected blocking strategy, thereby supporting the hypothesis of no *block leakage*.
+
+In the context of *geographical fold diagnostics*, should any prior information on the spatial range be available from an exploratory analysis, this can be used for the `rho` argument of the `check_folds()`' method. This value can then be compared to the calculated inter-fold gap in order to ascertain whether folds are independent. For instance, the `blockCV::cv_spatial_autocor()` function can help derive prior information on the spatial range [@valavi_blockcv_2018]. Additionally, if the correlation function is part of *Matérn* family, the helper function `solve_practical_range()` from our `isdmtools` package can be utilised to derive the corresponding *practical range* required for spatial diagnostics (see @sode_integrating_2025 for further details). The same procedure can be applied to a Bayesian analysis to check if the *posterior practical range* estimated aligns with the spatial geometry of the specified folds. 
 
 * **Folds diagnostics in the environmental space**
 
@@ -184,6 +183,12 @@ print(env_mixed)
 ```{r env-cat, fig.width = 6, fig.height = 4, out.width = "100%"}
 # Plot outputs
 plot(env_mixed)
+
+```
+
+```{r }
+# Combined diagnostics
+summarise_fold_diagnostics(geo_diag, env_mixed)
 
 ```
 
