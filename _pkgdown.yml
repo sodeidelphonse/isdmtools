@@ -2,6 +2,9 @@ url: https://sodeidelphonse.github.io/isdmtools/
 template:
   bootstrap: 5
   bootswatch: flatly
+  params:
+    ganalytics: UA-XXXXX-Y
+    mathjax: 3
 reference:
 - title: Folds Creation & Management
   desc: Core functions for spatial partitioning.

@@ -1,0 +1,11 @@
+/* pkgdown/extra.css */
+.mjx-container {
+  text-align: left !important;
+  margin-left: 0 !important;
+}
+
+.math.display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  text-align: left !important;
+}
