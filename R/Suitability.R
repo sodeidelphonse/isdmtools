@@ -11,7 +11,7 @@
 #' It also calculates the intensity(rate) or expected count for the count data, depending on whether the model has offset or not.
 #'
 #' @param x A `data.frame` containing `x` and `y` coordinates and the column(s) of the predicted linear predictor variables (e.g., mean, standard deviation and quantiles) or `SpatRaster`.
-#' It can typically be a standardized grid-based output from a \link{prepare_predictions} call to various classes of spatial prediction on a linear scale, e.g. from the `PointedSDMs` or `inlabru` packages.
+#' It can typically be a standardized grid-based output from a \link{format_predictions} call to various classes of spatial prediction on a linear scale, e.g. from the `PointedSDMs` or `inlabru` packages.
 #' @param post_stat character. A vector specifying the column or layer name(s) to use for extracting the model predictions. Defaults to "mean".
 #' @param output_format character. The desired output format and must be one of "prob" (probability-based suitability index), "response" (expected count or rate) or "linear" (linear predictor scale).
 #' @param response_type character. The type of response data the model was fitted with.
@@ -200,14 +200,14 @@ inv_cloglog <- function(eta, scaling = 1) {
 #' grid_r <- terra::rast(grid_df, crs = "epsg:4326")
 #'
 #' # a) A standard data.frame returns the same object
-#' field_pp1 <- prepare_predictions(grid_df)
+#' field_pp1 <- format_predictions(grid_df)
 #' class(field_pp1)
 #'
 #' # b) A grid-based object returns a data.frame
 #' grid_sf <- st_as_sf(grid_df, coords = c("x", "y"), crs = "epsg:4326")
 #' class(grid_sf) <- c("bru_prediction", "sf", "data.frame")
 #'
-#' field_pp2 <- prepare_predictions(grid_sf)
+#' field_pp2 <- format_predictions(grid_sf)
 #' print(class(field_pp2))
 #'
 #' # c) A point-based prediction returns the original class
@@ -227,11 +227,11 @@ inv_cloglog <- function(eta, scaling = 1) {
 #'          median = mean)
 #'  class(sim_field) <- c("bru_prediction", "sf", "data.frame")
 #'
-#'  field_pp3  <- prepare_predictions(sim_field)
+#'  field_pp3  <- format_predictions(sim_field)
 #'  print(class(field_pp3))
 #'  }
 #' }
-prepare_predictions <- function(prediction_data, base_map = NULL) {
+format_predictions <- function(prediction_data, base_map = NULL) {
 
   if(!is.null(base_map)) {
     if (!inherits(base_map, "sf")) {

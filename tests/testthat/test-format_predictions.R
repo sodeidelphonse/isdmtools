@@ -1,17 +1,17 @@
 
-#--- Testing prepare_predictions ----------
+#--- Testing format_predictions ----------
 
 library(testthat)
 library(sf)
 library(terra)
 
-test_that("prepare_predictions handles sf inputs and converts to clean x/y", {
+test_that("format_predictions handles sf inputs and converts to clean x/y", {
 
   # Case 1: Test standard sf to data.frame conversion
   pts <- st_as_sf(data.frame(X = c(1, 2), Y = c(3, 4), val = c(10, 20)),
                   coords = c("X", "Y"), crs = 4326)
 
-  res <- prepare_predictions(pts)
+  res <- format_predictions(pts)
 
   expect_s3_class(res, "data.frame")
   expect_false(inherits(res, "sf"))
@@ -23,33 +23,33 @@ test_that("prepare_predictions handles sf inputs and converts to clean x/y", {
   # If attributes already have an 'x', it should be replaced by the actual 'x'
   pts_dup <- st_as_sf(data.frame(X = 10, Y = 20, x = 999, mean = 0.5),
                       coords = c("X", "Y"), crs = 4326)
-  res_dup <- prepare_predictions(pts_dup)
+  res_dup <- format_predictions(pts_dup)
 
   expect_equal(sum(names(res_dup) == "x"), 1)
   expect_equal(res_dup$x, 10)  # Should be the coordinate, not the attribute 999
 })
 
-test_that("prepare_predictions handles non-standard geometry column names", {
+test_that("format_predictions handles non-standard geometry column names", {
 
   pts <- st_as_sf(data.frame(x = 1:2, y = 3:4, mean = 0.5), coords = c("x", "y"), crs = 4326)
 
   # Use the standard sf helper to rename the geometry column to 'geom'
   pts <- sf::st_set_geometry(pts, "geom")
-  res <- prepare_predictions(pts)
+  res <- format_predictions(pts)
 
   expect_s3_class(res, "data.frame")
   expect_null(res$geom) # confirms 'geom' was successfully identified and dropped
   expect_true("x" %in% names(res))
 })
 
-test_that("prepare_predictions handles model object classes", {
+test_that("format_predictions handles model object classes", {
 
   # Test inlabru-style bru_prediction
   pts <- st_as_sf(data.frame(x = 1:2, y = 3:4, mean = c(0.1, 0.2)),
                   coords = c("x", "y"), crs = 4326)
   class(pts) <- c("bru_prediction", class(pts))
 
-  res_bru <- prepare_predictions(pts)
+  res_bru <- format_predictions(pts)
   expect_true("mean" %in% names(res_bru))
   expect_s3_class(res_bru, "data.frame")
 
@@ -58,7 +58,7 @@ test_that("prepare_predictions handles model object classes", {
   pred_list <- list(predictions = pred_sf)
   class(pred_list) <- "modISDM_predict"
 
-  res_isdm <- prepare_predictions(pred_list)
+  res_isdm <- format_predictions(pred_list)
 
   expect_s3_class(res_isdm, "data.frame")
   expect_true(all(c("x", "y") %in% names(res_isdm)))
@@ -66,7 +66,7 @@ test_that("prepare_predictions handles model object classes", {
   expect_true("mean" %in% names(res_isdm))
 })
 
-test_that("prepare_predictions performs CRS-aware spatial filtering", {
+test_that("format_predictions performs CRS-aware spatial filtering", {
 
   # Case 1: Point predictions in UTM (meters) with .vertex to trigger sf return
   pts <- st_as_sf(data.frame(x = c(500, 1500), y = c(500, 1500), .vertex = 1:2),
@@ -77,13 +77,13 @@ test_that("prepare_predictions performs CRS-aware spatial filtering", {
   base_map <- st_sf(geometry = poly)
 
   # Test that it filters without error despite CRS mismatch
-  expect_no_error(res <- prepare_predictions(pts, base_map = base_map))
+  expect_no_error(res <- format_predictions(pts, base_map = base_map))
   expect_s3_class(res, "sf")
 })
 
-test_that("prepare_predictions handles data.frame with uppercase X/Y", {
+test_that("format_predictions handles data.frame with uppercase X/Y", {
   df <- data.frame(X = 1:5, Y = 6:10, mean = 1:5)
-  res <- prepare_predictions(df)
+  res <- format_predictions(df)
 
   expect_true(all(c("x", "y") %in% names(res)))
   expect_false("X" %in% names(res))
@@ -92,21 +92,21 @@ test_that("prepare_predictions handles data.frame with uppercase X/Y", {
 test_that("error handling for invalid inputs", {
 
   # Invalid base_map class
-  expect_error(prepare_predictions(data.frame(x=1, y=1), base_map = "not_sf"),
+  expect_error(format_predictions(data.frame(x=1, y=1), base_map = "not_sf"),
                "'base_map' must be an sf object")
 
   # Invalid prediction data class
-  expect_error(prepare_predictions(list(a = 1)),
+  expect_error(format_predictions(list(a = 1)),
                "Unsupported prediction object class")
 
   # Missing coordinates in data.frame
-  expect_error(prepare_predictions(data.frame(val = 1:5)),
+  expect_error(format_predictions(data.frame(val = 1:5)),
                "Input data lacks 'x' and 'y' coordinate columns")
 })
 
 if (require(fmesher, quietly = TRUE)) {
 
-  test_that("prepare_predictions correctly handles and preserves bru_prediction structures", {
+  test_that("format_predictions correctly handles and preserves bru_prediction structures", {
     set.seed(42)
     grid_df <- expand.grid(x = 0:20, y = 0:20)
     grid_df$mu <- (grid_df$x + grid_df$y) / 10 + rnorm(nrow(grid_df), 0, 0.1)
@@ -135,7 +135,7 @@ if (require(fmesher, quietly = TRUE)) {
     class(field_sim) <- c("bru_prediction", "sf", "data.frame")
 
     # Assertions
-    grid_pp3 <- prepare_predictions(field_sim)
+    grid_pp3 <- format_predictions(field_sim)
 
     # Verify the class is maintained or transformed correctly
     expect_s3_class(grid_pp3, "bru_prediction")

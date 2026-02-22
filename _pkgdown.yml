@@ -5,12 +5,16 @@ template:
   params:
     ganalytics: UA-XXXXX-Y
     mathjax: 3
+  includes:
+    in_header: |
+      <link rel="stylesheet" href="extra.css">
 reference:
 - title: Folds Creation & Management
   desc: Core functions for spatial partitioning.
   contents:
   - create_folds
   - DataFolds-methods
+
 - title: Spatial Folds Diagnostics
   desc: Evaluate the balance and quality of spatial folds.
   contents:
@@ -19,6 +23,7 @@ reference:
   - summarise_fold_diagnostics
   - GeoDiagnostic-methods
   - EnvDiagnostic-methods
+
 - title: Model Evaluation
   desc: Background sampling and model performance evaluation.
   contents:
@@ -26,18 +31,25 @@ reference:
   - sample_background
   - BackgroundPoints-methods
   - get_background
+
 - title: Post-modelling analysis
-  desc: Habitat suitability and niche overlap analysis.
+  desc: Habitat suitability analysis & mapping
   contents:
   - suitability_index
-  - prepare_predictions
+  - format_predictions
+  - generate_maps
+
 - title: Utilities & Helpers
-  desc: Data cleaning and visualisation.
+  desc: Data cleaning and numerical calculation
   contents:
   - calc_niche_overlap
   - fill_na_near
-  - generate_maps
   - solve_practical_range
+
+- title: "Included Datasets"
+  contents:
+  - benin_shape
+
 navbar:
   type: primary
   components:

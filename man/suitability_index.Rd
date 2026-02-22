@@ -17,7 +17,7 @@ suitability_index(
 }
 \arguments{
 \item{x}{A \code{data.frame} containing \code{x} and \code{y} coordinates and the column(s) of the predicted linear predictor variables (e.g., mean, standard deviation and quantiles) or \code{SpatRaster}.
-It can typically be a standardized grid-based output from a \link{prepare_predictions} call to various classes of spatial prediction on a linear scale, e.g. from the \code{PointedSDMs} or \code{inlabru} packages.}
+It can typically be a standardized grid-based output from a \link{format_predictions} call to various classes of spatial prediction on a linear scale, e.g. from the \code{PointedSDMs} or \code{inlabru} packages.}
 
 \item{post_stat}{character. A vector specifying the column or layer name(s) to use for extracting the model predictions. Defaults to "mean".}
 
@@ -103,7 +103,7 @@ Phillips SJ, Anderson RP, Dudík M, et al Opening the black box: an open‐sourc
 }
 \seealso{
 Other prediction analyses: 
-\code{\link{generate_maps}()},
-\code{\link{prepare_predictions}()}
+\code{\link{format_predictions}()},
+\code{\link{generate_maps}()}
 }
 \concept{prediction analyses}

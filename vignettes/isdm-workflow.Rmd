@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   eval = TRUE,
-  cache = TRUE
+  cache = FALSE
 )
 ```
 
@@ -199,7 +199,7 @@ Once we have obtained the model predictions, we can then use `isdmtools` to perf
 
 ```{r jt-prob, eval = exists("jpred")}
 # Probability of presence
-jpred   <- prepare_predictions(jpred) 
+jpred   <- format_predictions(jpred) 
 jt_prob <- suitability_index(jpred, 
                             post_stat = c("q0.025", "mean", "q0.975"), 
                             output_format = "prob",
@@ -212,7 +212,7 @@ plot(jt_prob)
 
 ```{r jt-count, eval = exists("jpred_count")}
 # Expected counts
-jpred_count <- prepare_predictions(jpred_count)
+jpred_count <- format_predictions(jpred_count)
 jt_count <- suitability_index(jpred_count, 
                               post_stat = c("q0.025", "mean", "q0.975"), 
                               output_format = "response",

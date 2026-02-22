@@ -65,7 +65,7 @@
 #' set.seed(123)
 #' points_sf <- st_as_sf(grid_data[sample(1:10000, 1000), ],
 #'                      coords = c("x", "y"), crs = 32631) # UTM CRS
-#' points_sf <- prepare_predictions(points_sf)
+#' points_sf <- format_predictions(points_sf)
 #'
 #' # Generate the map
 #' generate_maps(
