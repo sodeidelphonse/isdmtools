@@ -1,6 +1,8 @@
 # isdmtools
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/sodeidelphonse/isdmtools/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/sodeidelphonse/isdmtools/actions/workflows/R-CMD-check.yaml) 
+[![R-CMD-check](https://github.com/sodeidelphonse/isdmtools/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/sodeidelphonse/isdmtools/actions/workflows/R-CMD-check) 
+[![lintr status](https://github.com/sodeidelphonse/isdmtools/workflows/lint/badge.svg)](https://github.com/sodeidelphonse/isdmtools/actions)
+[![Project status: active](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental) 
 [![Codecov test coverage](https://codecov.io/gh/sodeidelphonse/isdmtools/graph/badge.svg)](https://app.codecov.io/gh/sodeidelphonse/isdmtools)
 <!-- badges: end -->
@@ -41,13 +43,13 @@ The key methods `check_folds()` and `check_env_balance()` operate on `DataFolds`
 
 **Suitability Analysis**: Standardize model predictions for consistent mapping and compute a final habitat suitability index. The `suitability_index()` function transforms raw integrated model predictions into a suitability score using the inverse of the complementary log-log transform (`cloglog`).
 
-**Model Evaluation**: Compute comprehensive evaluation metrics, including ROC-based and continuous-outcome metrics for each dataset (`"<METRIC>_DatasetName"`) using the `compute_metrics()` constructor. The package also handles *dataset-weighted composite scores* (`"<METRIC>_Comp"`), providing a holistic view of model performance. 
+**Model Evaluation**: Compute comprehensive evaluation metrics, including ROC-based and continuous-outcome metrics for each dataset using the `compute_metrics()` constructor. The package also handles *dataset-weighted composite scores*, providing a holistic view of model performance. 
 Note that the `sample_background()` constructor is called internally to sample pseudo-absences for presence-only data. However, users have the option of extracting the `BackgroundPoints` object with the `get_background()` helper in order to print and visualise the generated pseudo-absences.
 
 **Mapping & Visualization**: Visualize model predictions and final habitat suitability maps. The plotting method `generate_maps()` is designed to provide a clear and informative map by visualizing multiple variables of model predictions (e.g. mean, and quantiles), providing an easy way to interpret models' results. 
 Users can customize the final `ggplot2` object if needed.
 
-**S3 Methods**: The package includes `summary()`, `print()` and `plot()` methods for different classes to provide a concise summary and a clear visualization of spatial data partition outputs, and evaluation metrics. Other methods are discussed in the package vignettes.
+**Other Methods**: The package includes `summary()`, `print()` and `plot()` methods for the available classes to provide a concise summary and a clear visualization of spatial data partition outputs, and evaluation metrics. Other methods are discussed in the package vignettes.
 
 # How does it work?
 The core workflow of `isdmtools` involves creating a `DataFolds` object and then extracting specific folds for a modeling pipeline.
