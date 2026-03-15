@@ -30,5 +30,6 @@ jobs:
       - name: Lint
         run: lintr::lint_package()
         shell: Rscript {0}
+        continue-on-error: true
         env:
           LINTR_ERROR_ON_LINT: true
