@@ -12,19 +12,19 @@ object from an `ISDMmetrics` object.
 
 ``` r
 # S3 method for class 'ISDMmetrics'
+as.data.frame(x, ...)
+
+# S3 method for class 'ISDMmetrics'
 print(x, ...)
 
 # S3 method for class 'ISDMmetrics'
 summary(object, ...)
 
 # S3 method for class 'ISDMmetrics'
-x[...]
-
-# S3 method for class 'ISDMmetrics'
 plot(x, include_composite = TRUE, ...)
 
 # S3 method for class 'ISDMmetrics'
-as.data.frame(x, ...)
+x[...]
 
 get_background(x)
 ```
@@ -50,6 +50,8 @@ get_background(x)
 
 ## Value
 
+- `as.data.frame`: Returns a tidy `data.frame` in long format.
+
 - `print`: Invisibly returns the original object.
 
 - `summary`: Invisibly returns `NULL`.
@@ -57,8 +59,6 @@ get_background(x)
 - `plot`: Returns a `ggplot2` object.
 
 - `[`: Returns a subset of `ISDMmetrics` object.
-
-- `as.data.frame`: Returns a tidy `data.frame` in long format.
 
 The `BackgroundPoints` object if present, otherwise `NULL`.
 

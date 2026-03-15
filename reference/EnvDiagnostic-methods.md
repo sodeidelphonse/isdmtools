@@ -26,7 +26,7 @@ plot(x, ...)
 
 - `print`: Invisibly returns the original object.
 
-- `plot`: Returns a `ggplot2` object for covariates' density plots.
+- `plot`: Returns a `ggplot2` object.
 
 ## See also
 

@@ -96,7 +96,7 @@ needed.
 ## See also
 
 Other prediction analyses:
-[`prepare_predictions()`](https://sodeidelphonse.github.io/isdmtools/reference/prepare_predictions.md),
+[`format_predictions()`](https://sodeidelphonse.github.io/isdmtools/reference/format_predictions.md),
 [`suitability_index()`](https://sodeidelphonse.github.io/isdmtools/reference/suitability_index.md)
 
 ## Examples
@@ -131,7 +131,7 @@ library(sf)
 set.seed(123)
 points_sf <- st_as_sf(grid_data[sample(1:10000, 1000), ],
                      coords = c("x", "y"), crs = 32631) # UTM CRS
-points_sf <- prepare_predictions(points_sf)
+points_sf <- format_predictions(points_sf)
 
 # Generate the map
 generate_maps(

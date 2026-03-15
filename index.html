@@ -10,15 +10,23 @@
 <link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Toolkit for Evaluating and Analysing Integrated Species Distribution Models in R">
+<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><link href="extra.css" rel="stylesheet">
+<meta property="og:title" content="Toolkit for Evaluating and Analysing Integrated Species Distribution Models in R">
 <meta name="description" content="A suite of tools for preparing spatial folds for block cross-validation, evaluating integrated models built from multisource spatial datasets and manipulating and visualising outputs. These tools are designed to assist with building and analyzing Integrated Species Distribution Models (ISDMs) with a particular focus on the Bayesian modelling framework.">
 <meta property="og:description" content="A suite of tools for preparing spatial folds for block cross-validation, evaluating integrated models built from multisource spatial datasets and manipulating and visualising outputs. These tools are designed to assist with building and analyzing Integrated Species Distribution Models (ISDMs) with a particular focus on the Bayesian modelling framework.">
+<!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-XXXXX-Y"></script><script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-XXXXX-Y');
+</script><link rel="stylesheet" href="extra.css">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
-    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+    <nav class="navbar navbar-expand-lg fixed-top bg-primary" data-bs-theme="primary" aria-label="Site navigation"><div class="container">
 
     <a class="navbar-brand me-2" href="index.html">isdmtools</a>
 
@@ -37,8 +45,8 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><h6 class="dropdown-header" data-toc-skip>Tutorials</h6></li>
-    <li><a class="dropdown-item" href="articles/isdmtools.html">Get Started</a></li>
-    <li><a class="dropdown-item" href="articles/isdm-evaluation-workflow.html">ISDM Evaluation Workflow</a></li>
+    <li><a class="dropdown-item" href="articles/isdmtools.html">Get started with isdmtools</a></li>
+    <li><a class="dropdown-item" href="articles/isdm-workflow.html">ISDM Evaluation Workflow</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="articles/index.html">All Articles</a></li>
   </ul>
@@ -62,7 +70,7 @@
 </h1></div>
 <!-- badges: start -->
 
-<p><code>isdmtools</code> is an R package designed to streamline the process of preparing and visualizing spatial data for biodiversity distribution modeling and evaluating the resulting models. The package has been designed with a specific focus on <strong>integrated species distribution models (ISDMs)</strong> based on multisource geospatial datasets within a Bayesian framework. This includes presence-only, count and presence-absence data. It provides a set of tools for producing robust and reproducible workflows for block cross-validation, data management and visualization, and ISDM evaluation.</p>
+<p><code>isdmtools</code> is an R package that streamlines the preparation, visualization, and evaluation of multisource geospatial data for biodiversity modeling. Specifically engineered for <em>Integrated Species Distribution Models (ISDMs)</em> within a Bayesian framework, the package provides a unified suite for managing presence-only, count, and presence-absence data. It ensures robust, reproducible workflows through dedicated tools for block cross-validation, folds diagnostics and standardized model evaluation.</p>
 </div>
 <div class="section level1">
 <h1 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -95,11 +103,11 @@
 <h1 id="key-features">Key Features<a class="anchor" aria-label="anchor" href="#key-features"></a>
 </h1>
 <p>The package provides a set of core functions and classes to handle common tasks of data preparation, visualization and model evaluation:</p>
-<p><strong>Data Preparation</strong>: Create a <code>DataFolds</code> object that bind multiple <code>sf</code> datasets and generate spatially-separated cross-validation folds using the constructor function <code><a href="reference/create_folds.html">create_folds()</a></code>. This ensures the resulting models are robust to spatial autocorrelation. The key methods <code><a href="reference/check_folds.html">check_folds()</a></code> and <code><a href="reference/check_env_balance.html">check_env_balance()</a></code> operate on <code>DataFolds</code> to efficiently check the independence and environmental balance of created folds, respectively. There are S3 methods available for the manipulation of the classes generated by these methods.</p>
+<p><strong>Data Preparation</strong>: Create a <code>DataFolds</code> object that bind multiple <code>sf</code> datasets and generate spatially-separated cross-validation folds using the constructor function <code><a href="reference/create_folds.html">create_folds()</a></code>. This ensures the resulting models are robust to spatial autocorrelation. The key methods <code><a href="reference/check_folds.html">check_folds()</a></code> and <code><a href="reference/check_env_balance.html">check_env_balance()</a></code> operate on <code>DataFolds</code> to efficiently check the independence and environmental balance of created folds, respectively.</p>
 <p><strong>Suitability Analysis</strong>: Standardize model predictions for consistent mapping and compute a final habitat suitability index. The <code><a href="reference/suitability_index.html">suitability_index()</a></code> function transforms raw integrated model predictions into a suitability score using the inverse of the complementary log-log transform (<code>cloglog</code>).</p>
-<p><strong>Model Evaluation</strong>: Compute comprehensive evaluation metrics, including ROC-based and continuous-outcome metrics for each dataset (<code>"&lt;METRIC&gt;_DatasetName"</code>) using the <code><a href="reference/compute_metrics.html">compute_metrics()</a></code> constructor. The package also handles <em>dataset-weighted composite scores</em> (<code>"&lt;METRIC&gt;_Comp"</code>), providing a holistic view of model performance. Note that the <code><a href="reference/sample_background.html">sample_background()</a></code> constructor is called internally to sample pseudo-absences for presence-only data. However, users have the option of extracting the <code>BackgroundPoints</code> object with the <code><a href="reference/ISDMmetrics-methods.html">get_background()</a></code> helper in order to print and visualise the generated pseudo-absences.</p>
-<p><strong>Mapping &amp; Visualization</strong>: Visualize model predictions and final habitat suitability maps. The plotting method <code><a href="reference/generate_maps.html">generate_maps()</a></code> is designed to provide a clear and informative map by visualizing multiple variables of model predictions (e.g. mean, median, standard deviation or quantiles), providing an easy way to interpret models’ results. Users can customize the final <code>ggplot2</code> object if needed.</p>
-<p><strong>S3 Methods</strong>: The package includes <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code>, <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> and <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> methods for different classes to provide a concise summary and a clear visualization of spatial data partitions, folds diagnostics and evaluation metrics. Other methods are discussed in the package vignettes.</p>
+<p><strong>Model Evaluation</strong>: Compute comprehensive evaluation metrics, including ROC-based and continuous-outcome metrics for each dataset using the <code><a href="reference/compute_metrics.html">compute_metrics()</a></code> constructor. The package also handles <em>dataset-weighted composite scores</em>, providing a holistic view of model performance. Note that the <code><a href="reference/sample_background.html">sample_background()</a></code> constructor is called internally to sample pseudo-absences for presence-only data. However, users have the option of extracting the <code>BackgroundPoints</code> object with the <code><a href="reference/ISDMmetrics-methods.html">get_background()</a></code> helper in order to print and visualise the generated pseudo-absences.</p>
+<p><strong>Mapping &amp; Visualization</strong>: Visualize model predictions and final habitat suitability maps. The plotting method <code><a href="reference/generate_maps.html">generate_maps()</a></code> is designed to provide a clear and informative map by visualizing multiple variables of model predictions (e.g. mean, and quantiles), providing an easy way to interpret models’ results. Users can customize the final <code>ggplot2</code> object if needed.</p>
+<p><strong>Other Methods</strong>: The package includes <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code>, <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> and <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> methods for the available classes to provide a concise summary and a clear visualization of spatial data partition outputs, and evaluation metrics. Other methods are discussed in the package vignettes.</p>
 </div>
 <div class="section level1">
 <h1 id="how-does-it-work">How does it work?<a class="anchor" aria-label="anchor" href="#how-does-it-work"></a>
@@ -209,10 +217,11 @@
 <div class="dev-status">
 <h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/sodeidelphonse/isdmtools/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/sodeidelphonse/isdmtools/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://github.com/sodeidelphonse/isdmtools/actions/workflows/R-CMD-check" class="external-link"><img src="https://github.com/sodeidelphonse/isdmtools/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://github.com/sodeidelphonse/isdmtools/actions" class="external-link"><img src="https://github.com/sodeidelphonse/isdmtools/workflows/lint/badge.svg" alt="lintr status"></a></li>
+<li><a href="https://www.repostatus.org/#active" class="external-link"><img src="https://www.repostatus.org/badges/latest/active.svg" alt="Project status: active"></a></li>
 <li><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Lifecycle: experimental"></a></li>
 <li><a href="https://app.codecov.io/gh/sodeidelphonse/isdmtools" class="external-link"><img src="https://codecov.io/gh/sodeidelphonse/isdmtools/graph/badge.svg" alt="Codecov test coverage"></a></li>
-<li><a href="https://github.com/sodeidelphonse/isdmtools/actions?query=workflow%3Apkgcheck" class="external-link"><img src="https://img.shields.io" alt="pkgcheck"></a></li>
 </ul>
 </div>
 

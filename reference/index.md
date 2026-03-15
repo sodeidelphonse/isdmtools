@@ -52,31 +52,38 @@ Background sampling and model performance evaluation.
 
   Methods for `BackgroundPoints` objects
 
-- [`print(`*`<ISDMmetrics>`*`)`](https://sodeidelphonse.github.io/isdmtools/reference/ISDMmetrics-methods.md)
+- [`as.data.frame(`*`<ISDMmetrics>`*`)`](https://sodeidelphonse.github.io/isdmtools/reference/ISDMmetrics-methods.md)
+  [`print(`*`<ISDMmetrics>`*`)`](https://sodeidelphonse.github.io/isdmtools/reference/ISDMmetrics-methods.md)
   [`summary(`*`<ISDMmetrics>`*`)`](https://sodeidelphonse.github.io/isdmtools/reference/ISDMmetrics-methods.md)
-  [`` `[`( ``*`<ISDMmetrics>`*`)`](https://sodeidelphonse.github.io/isdmtools/reference/ISDMmetrics-methods.md)
   [`plot(`*`<ISDMmetrics>`*`)`](https://sodeidelphonse.github.io/isdmtools/reference/ISDMmetrics-methods.md)
-  [`as.data.frame(`*`<ISDMmetrics>`*`)`](https://sodeidelphonse.github.io/isdmtools/reference/ISDMmetrics-methods.md)
+  [`` `[`( ``*`<ISDMmetrics>`*`)`](https://sodeidelphonse.github.io/isdmtools/reference/ISDMmetrics-methods.md)
   [`get_background()`](https://sodeidelphonse.github.io/isdmtools/reference/ISDMmetrics-methods.md)
   : Methods for ISDMmetrics Objects
 
 ## Post-modelling analysis
 
-Habitat suitability and niche overlap analysis.
+Habitat suitability analysis & mapping
 
 - [`suitability_index()`](https://sodeidelphonse.github.io/isdmtools/reference/suitability_index.md)
   : Compute a unified suitability index from integrated spatial model
   predictions.
-- [`prepare_predictions()`](https://sodeidelphonse.github.io/isdmtools/reference/prepare_predictions.md)
+- [`format_predictions()`](https://sodeidelphonse.github.io/isdmtools/reference/format_predictions.md)
   : Obtain a formatted output from spatial predictions.
+- [`generate_maps()`](https://sodeidelphonse.github.io/isdmtools/reference/generate_maps.md)
+  : Generate Multi-panel Maps from Spatial Model Predictions
 
 ## Utilities & Helpers
 
-Data cleaning and visualisation.
+Data cleaning and numerical calculation
 
 - [`calc_niche_overlap()`](https://sodeidelphonse.github.io/isdmtools/reference/calc_niche_overlap.md)
   : Calculate Niche Overlap (Schoener's D)
 - [`fill_na_near()`](https://sodeidelphonse.github.io/isdmtools/reference/fill_na_near.md)
   : Fill NA cells with the nearest cells values
-- [`generate_maps()`](https://sodeidelphonse.github.io/isdmtools/reference/generate_maps.md)
-  : Generate Multi-panel Maps from Spatial Model Predictions
+- [`solve_practical_range()`](https://sodeidelphonse.github.io/isdmtools/reference/solve_practical_range.md)
+  : Solve the practical range of a Matérn covariance function
+
+## Included Datasets
+
+- [`benin_shape`](https://sodeidelphonse.github.io/isdmtools/reference/benin_shape.md)
+  : Shapefile of Benin Republic

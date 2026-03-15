@@ -26,6 +26,12 @@ calc_niche_overlap(x, y, n = 512)
 
 Numeric value between 0 and 1.
 
+## References
+
+Schoener TW. The Anolis Lizards of Bimini: Resource Partitioning in a
+Complex Fauna. *Ecology*(1968) 49:704–726.
+[doi:10.2307/1935534](https://doi.org/10.2307/1935534) .
+
 ## Examples
 
 ``` r

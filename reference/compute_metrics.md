@@ -118,17 +118,17 @@ compute_metrics(
 - metrics:
 
   character. A vector of the metric names to compute. If `NULL`, "auc"
-  (area under the ROC curve), "tss" (true skill statistics), "accuracy",
-  "F1" (F1 score), "precision", and "recall" are computed for ROC-based
-  metrics while "rmse" (root mean squared error), "mae" (mean absolute
-  error) and "r2" (pseudo R-squared) are computed for error-based
-  metrics.
+  (area under the ROC curve), "tss" (true skill statistics), "f1" (F1
+  score), "accuracy", "precision", and "recall" are computed for
+  ROC-based metrics while "rmse" (root mean squared error), "mae" (mean
+  absolute error) and "r2" (pseudo R-squared) are computed for
+  error-based metrics.
 
 - overall_roc_metrics:
 
   character. A vector of a subset of ROC-based metrics to be used for
   the overall composite score (`TOT_ROC_SCORE`). Allowed options are
-  "auc", "tss", "accuracy", and "F1". If `NULL`, the sensible default is
+  "auc", "tss", "accuracy", and "f1". If `NULL`, the sensible default is
   "auc", "tss" and "accuracy". This metric is useful when the objective
   is to obtain a rapid overview of the rank of multiple candidate models
   fitted to datasets via blocked cross-validation using multi-criteria

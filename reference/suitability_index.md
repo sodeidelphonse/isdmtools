@@ -29,7 +29,7 @@ suitability_index(
   the predicted linear predictor variables (e.g., mean, standard
   deviation and quantiles) or `SpatRaster`. It can typically be a
   standardized grid-based output from a
-  [prepare_predictions](https://sodeidelphonse.github.io/isdmtools/reference/prepare_predictions.md)
+  [format_predictions](https://sodeidelphonse.github.io/isdmtools/reference/format_predictions.md)
   call to various classes of spatial prediction on a linear scale, e.g.
   from the `PointedSDMs` or `inlabru` packages.
 
@@ -128,8 +128,8 @@ open‐source release of Maxent. *Ecography* (2017) 40:887–893.
 ## See also
 
 Other prediction analyses:
-[`generate_maps()`](https://sodeidelphonse.github.io/isdmtools/reference/generate_maps.md),
-[`prepare_predictions()`](https://sodeidelphonse.github.io/isdmtools/reference/prepare_predictions.md)
+[`format_predictions()`](https://sodeidelphonse.github.io/isdmtools/reference/format_predictions.md),
+[`generate_maps()`](https://sodeidelphonse.github.io/isdmtools/reference/generate_maps.md)
 
 ## Examples
 

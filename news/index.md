@@ -2,68 +2,73 @@
 
 ## isdmtools 0.3.0
 
-### Continuous Integration & Quality Assurance
+### Continuous Integration & Deployment
 
-- **GitHub Actions Integration**: Established a suite of automated
-  workflows including R-CMD-check for cross-platform stability and
-  Codecov for monitoring unit test coverage.
-- **Automated Documentation**: Implemented an automated pkgdown
-  deployment pipeline to ensure the package website and vignettes are
-  updated upon every push to the main branch.
+- GitHub Actions Integration: Established a suite of automated workflows
+  including R-CMD-check for cross-platform stability and Codecov for
+  monitoring unit test coverage.
+- Automated Documentation: Implemented an automated pkgdown deployment
+  pipeline to ensure the package website and vignettes are updated upon
+  every push to the main branch.
 
-### Major Changes
+### New Features
 
-- **New S3 Class Architecture**: Introduced `GeoDiagnostic`,
+- Tutorials: Added a “Get Started” guide and an advanced “ISDM
+  Evaluation Workflow” vignette with conditional evaluation for external
+  dependencies.
+- New S3 Class Architecture: Introduced `GeoDiagnostic`,
   `EnvDiagnostic`, and `FoldsSummary` classes to structure the spatial
   folds’ diagnostics results.
-- **Diagnostic Framework**: Refined
-  [`check_folds()`](https://sodeidelphonse.github.io/isdmtools/reference/check_folds.md)
-  and
-  [`check_env_balance()`](https://sodeidelphonse.github.io/isdmtools/reference/check_env_balance.md)
-  constructors to evaluate spatial independence and environmental
-  balance of spatial folds.
-- **Documentation Refactor**: Implemented a grouped reference system to
+- Documentation Refactor: Implemented a grouped reference system to
   consolidate S3 methods, significantly improving the package Reference
   index.
 
 ### Improvements
 
-- **Website Launch**: Official `pkgdown` site deployment with a custom
+- Codecov coverage: Set up additional units tests to boost their
+  coverage.
+- Website Launch: Official `pkgdown` site deployment with a custom
   navigation bar and categorised tutorials.
-- **Tutorials**: Added a “Get Started” guide and an advanced “ISDM
-  Evaluation Workflow” vignette with conditional evaluation for external
-  dependencies.
+- BugFixes: Refactoring `ISDMmetrics` methods to handle efficiently
+  datasets’ names with underscores to avoid names collision during
+  string splitting.
+- Blocks Diagnostics: Refined
+  [`check_folds()`](https://sodeidelphonse.github.io/isdmtools/reference/check_folds.md)
+  and
+  [`check_env_balance()`](https://sodeidelphonse.github.io/isdmtools/reference/check_env_balance.md)
+  constructors for evaluating spatial independence and environmental
+  balance of spatial folds.
 
 ## isdmtools 0.2.0
 
 ### New Features
 
-- Add folds diagnostics tools: `check_folds` and `check_env_balance` are
-  key methods operating on `DataFolds` objects to check the independence
-  and representativeness of generated folds.
-
-- New CV Methods: Added support for four new `cv_method` options for
-  advanced spatial cross-validation:
-
-  - “block”: Grid-based blocking via “spatialsample” (similar to
-    “spatial” in blockCV but with exclusion buffer).
-  - “nndm”: Nearest Neighbor Distance Matching for matching prediction
-    and validation environments.
-  - “buffer”: Distance-based exclusion zones (Leave-One-Out with
-    buffer).
-  - “location”: Leave-location-out/Leave-group-out CV, enabling
-    spatiotemporal validation (e.g., by year) and source-specific
-    validation (e.g., by observers, sites or regions).
-
-- Expanded Cross-Validation Engines: Integrated ‘spatialsample’ as a
-  backend, providing a unified interface for advanced spatial resampling
-  methods.
+- Added folds diagnostics tools: `check_folds` and `check_env_balance`
+  are key methods operating on `DataFolds` objects to check the
+  independence and representativeness of folds.
 
 - Buffer-Aware Extraction: Updated
   [`extract_fold()`](https://sodeidelphonse.github.io/isdmtools/reference/DataFolds-methods.md)
   to automatically handle exclusion zones. Points falling within spatial
   buffers are now correctly identified as NA and excluded from both
   training and testing sets to prevent spatial autocorrelation bias.
+
+- New CV Methods: Added support for four new `cv_method` options for
+  advanced spatial cross-validation:
+
+  - `"block"`: Grid-based blocking via “spatialsample” (similar to
+    “spatial” in blockCV but with exclusion buffer).
+  - `"nndm"`: Nearest Neighbor Distance Matching for matching prediction
+    and validation environments.
+  - `"buffer"`: Distance-based exclusion zones (Leave-One-Out with
+    buffer).
+  - `"location"`: Leave-location-out/Leave-group-out CV, enabling
+    spatiotemporal validation (e.g., by year) and source-specific
+    validation (e.g., by observers, sites or regions).
+
+- Expanded Cross-Validation Engines: Integrated ‘spatialsample’ as a
+  backend, providing a unified interface for advanced spatial resampling
+  methods.
 
 - Added `summary.DataFolds` method for providing clean aggregated
   statistics on data partition.
@@ -89,7 +94,7 @@
 
 ## isdmtools 0.1.0.9000
 
-### Refactoring & internal checks
+### Refactoring & Testing Framework
 
 - Integrated unit testing framework using `testthat`.
 - Standardized coordinate column names to lowercase `x` and `y` across

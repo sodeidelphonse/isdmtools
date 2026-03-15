@@ -2,9 +2,9 @@ pandoc: 3.1.11
 pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
-  isdm-evaluation-workflow: isdm-evaluation-workflow.html
+  isdm-workflow: isdm-workflow.html
   isdmtools: isdmtools.html
-last_built: 2026-02-17T16:30Z
+last_built: 2026-03-15T20:38Z
 urls:
   reference: https://sodeidelphonse.github.io/isdmtools/reference
   article: https://sodeidelphonse.github.io/isdmtools/articles

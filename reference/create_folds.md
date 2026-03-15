@@ -44,15 +44,15 @@ bind_datasets(datasets)
 
   character. It specifies the spatial cross-validation method to use.
   Options are `"cluster"` (default) or `"spatial"`, see
-  [cv_cluster](https://rdrr.io/pkg/blockCV/man/cv_cluster.html) or
-  [cv_spatial](https://rdrr.io/pkg/blockCV/man/cv_spatial.html)
+  [`cv_cluster`](https://rdrr.io/pkg/blockCV/man/cv_cluster.html) or
+  [`cv_spatial`](https://rdrr.io/pkg/blockCV/man/cv_spatial.html)
   functions. For `"block"`, `"buffer"`, `"location"`, or `"nndm"`, see
-  the corresponding functions in the `spatialsample` package.
+  the corresponding functions in the spatialsample package.
 
 - ...:
 
-  Additional arguments to be passed to the underlying blocking function
-  in `blockCV` or `spatialsample`.
+  Additional arguments to be passed on to the underlying blocking
+  function in blockCV or spatialsample.
 
 ## Value
 
@@ -75,9 +75,9 @@ and environmental clustering. Methods `"block"`, `"buffer"`, `"nndm"`,
 and `"location"`are useful for distance-based exclusion (buffering) or
 leaving out specific groups/locations (e.g., using
 `group = "column_name"` with the
-[spatial_leave_location_out_cv](https://spatialsample.tidymodels.org/reference/spatial_vfold.html)
-method). Use `"spatial"` for `blockCV` grid-blocking, or `"block"` for
-`spatialsample` grid-blocking.
+[`spatial_leave_location_out_cv`](https://spatialsample.tidymodels.org/reference/spatial_vfold.html)
+method). Use `"spatial"` for blockCV grid-blocking, or `"block"` for
+spatialsample grid-blocking.
 
 The behavior of `create_folds` depends on the `cv_method` chosen.
 Several methods require specific arguments passed via the ellipsis
@@ -87,7 +87,7 @@ Several methods require specific arguments passed via the ellipsis
   define the size of the test/assessment areas and the width of the
   exclusion zones, respectively. Particularly, for grid-blocking with
   `"block"` scheme, additional arguments to
-  [st_make_grid](https://r-spatial.github.io/sf/reference/st_make_grid.html)
+  [`st_make_grid`](https://r-spatial.github.io/sf/reference/st_make_grid.html)
   can be provided.
 
 - **`nndm`**: Requires `prediction_sites`, an `sf` object representing
@@ -102,23 +102,30 @@ Several methods require specific arguments passed via the ellipsis
 
 ## References
 
-Mahoney MJ, Johnson LK, Silge J, Frick H, Kuhn M, Beier CM. Assessing
-the performance of spatial cross-validation approaches for models of
-spatially structured data. *arXiv* (2023)
-[doi:10.48550/arXiv.2303.07334](https://doi.org/10.48550/arXiv.2303.07334)
+- Mahoney MJ, Johnson LK, Silge J, Frick H, Kuhn M, Beier CM. Assessing
+  the performance of spatial cross-validation approaches for models of
+  spatially structured data. *arXiv* (2023).
+  [doi:10.48550/arXiv.2303.07334](https://doi.org/10.48550/arXiv.2303.07334)
+  .
 
-Roberts DR, Bahn V, Ciuti S, Boyce MS, Elith J, Guillera-Arroita G,
-Hauenstein S, Lahoz-Monfort JJ, Schröder B, Thuiller W, et al.
-Cross-validation strategies for data with temporal, spatial,
-hierarchical, or phylogenetic structure. *Ecography* (2017) 40:913–929.
-[doi:10.1111/ecog.02881](https://doi.org/10.1111/ecog.02881)
+- Roberts DR, Bahn V, Ciuti S, Boyce MS, Elith J, Guillera-Arroita G,
+  Hauenstein S, Lahoz-Monfort JJ, Schröder B, Thuiller W, et al.
+  Cross-validation strategies for data with temporal, spatial,
+  hierarchical, or phylogenetic structure. *Ecography* (2017)
+  40:913–929.
+  [doi:10.1111/ecog.02881](https://doi.org/10.1111/ecog.02881) .
 
-Valavi R, Elith J, Lahoz-Monfort JJ, Guillera-Arroita G. blockCV: an R
-package for generating spatially or environmentally separated folds for
-k-fold cross-validation of species distribution models. *bioRxiv*
-(2018). [doi:10.1101/357798](https://doi.org/10.1101/357798)
+- Valavi R, Elith J, Lahoz-Monfort JJ, Guillera-Arroita G. blockCV: an R
+  package for generating spatially or environmentally separated folds
+  for k-fold cross-validation of species distribution models. *bioRxiv*
+  (2018). [doi:10.1101/357798](https://doi.org/10.1101/357798) .
 
 ## See also
+
+[`check_folds()`](https://sodeidelphonse.github.io/isdmtools/reference/check_folds.md)
+and
+[`check_env_balance()`](https://sodeidelphonse.github.io/isdmtools/reference/check_env_balance.md)
+for diagnostic analyses on folds.
 
 Other spatial blocking methods:
 [`DataFolds-methods`](https://sodeidelphonse.github.io/isdmtools/reference/DataFolds-methods.md)

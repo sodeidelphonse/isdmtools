@@ -14,7 +14,7 @@ coordinates of the grids locations.
 ## Usage
 
 ``` r
-prepare_predictions(prediction_data, base_map = NULL)
+format_predictions(prediction_data, base_map = NULL)
 ```
 
 ## Arguments
@@ -61,14 +61,14 @@ head(grid_df)
 grid_r <- terra::rast(grid_df, crs = "epsg:4326")
 
 # a) A standard data.frame returns the same object
-field_pp1 <- prepare_predictions(grid_df)
+field_pp1 <- format_predictions(grid_df)
 class(field_pp1)
 
 # b) A grid-based object returns a data.frame
 grid_sf <- st_as_sf(grid_df, coords = c("x", "y"), crs = "epsg:4326")
 class(grid_sf) <- c("bru_prediction", "sf", "data.frame")
 
-field_pp2 <- prepare_predictions(grid_sf)
+field_pp2 <- format_predictions(grid_sf)
 print(class(field_pp2))
 
 # c) A point-based prediction returns the original class
@@ -88,7 +88,7 @@ if(require("fmesher", quietly = TRUE)) {
          median = mean)
  class(sim_field) <- c("bru_prediction", "sf", "data.frame")
 
- field_pp3  <- prepare_predictions(sim_field)
+ field_pp3  <- format_predictions(sim_field)
  print(class(field_pp3))
  }
 } # }

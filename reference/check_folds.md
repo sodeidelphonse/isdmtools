@@ -27,11 +27,10 @@ check_folds(object, rho = NULL, plot = TRUE, ...)
 
 - rho:
 
-  Numeric. Optional. The spatial range (km) estimated from the
-  exploratory analysis (e.g.,
-  [cv_spatial_autocor](https://rdrr.io/pkg/blockCV/man/cv_spatial_autocor.html))
-  and used as the block size or the one estimated from the integrated
-  model (e.g., the Matérn range parameter).
+  Numeric. Optional. The practical range (km) estimated from the
+  exploratory analysis or the posterior practical range from a Bayesian
+  analysis. the one estimated from the integrated model (e.g., the
+  Matérn range parameter).
 
 - plot:
 
@@ -44,7 +43,7 @@ An object of class `GeoDiagnostic`.
 ## Details
 
 The function assesses independence based on the minimum gap between
-folds compared to the spatial range (\\\rho\\):
+folds compared to the practical range (\\\rho\\):
 
 - **Contiguous**: Gap = 0. High risk of spatial leakage; observations in
   test folds are spatially correlated with training data.
@@ -52,12 +51,23 @@ folds compared to the spatial range (\\\rho\\):
 - **Weakly Independent**: 0 \< Gap \< \\\rho\\. A physical gap exists,
   but correlation remains above 0.1.
 
-- **Independent**: \\\rho \le\\ Gap \< \\2\rho\\. Spatial correlation is
-  below 0.1 at the boundary; considered robust for most CV applications.
+- **Independent**: Gap \\\ge \rho\\. Spatial correlation is below 0.1 at
+  the boundary; satisfying standard requirements for spatial
+  independence for most blocked cross-validation applications (Roberts
+  et al. 2017).
 
-- **Strongly Independent**: Gap \\\ge 2\rho\\. Spatial correlation is
-  effectively zero, providing the most rigorous test of model
-  extrapolation.
+The spatial range can be estimated using the function
+[`cv_spatial_autocor`](https://rdrr.io/pkg/blockCV/man/cv_spatial_autocor.html)
+of the blockCV package (Valavi et al. 2018) or any other tool. The
+authors recommended this value (in metres) as the optimal block size for
+their spatial blocking scheme. For instance, if a covariance model is
+fitted to the experimental variogram, the 10% practical range can be
+derived using an interpolation method. Note that several packages are
+available to estimate the range from the observed spatial data and
+different parameterisations are used. We provide the helper function
+[`solve_practical_range`](https://sodeidelphonse.github.io/isdmtools/reference/solve_practical_range.md)
+to allow to derive a unified practical range for Matérn covariance
+fitted to the data in INLA, geoR or spatstat packages.
 
 ## References
 
@@ -66,7 +76,12 @@ folds compared to the spatial range (\\\rho\\):
   Cross-validation strategies for data with temporal, spatial,
   hierarchical, or phylogenetic structure. *Ecography* (2017)
   40:913–929.
-  [doi:10.1111/ecog.02881](https://doi.org/10.1111/ecog.02881)
+  [doi:10.1111/ecog.02881](https://doi.org/10.1111/ecog.02881) .
+
+- Valavi R, Elith J, Lahoz-Monfort JJ, Guillera-Arroita G. blockCV: an R
+  package for generating spatially or environmentally separated folds
+  for k-fold cross-validation of species distribution models. *bioRxiv*
+  (2018). [doi:10.1101/357798](https://doi.org/10.1101/357798) .
 
 ## See also
 
@@ -117,7 +132,7 @@ folds <- create_folds(
 )
 
 # Check Spatial Independence
-# Assuming autocorrelation range (rho) is 150 km
+# Assuming the autocorrelation practical range (rho) is 150 km
 spat_diag <- check_folds(folds, rho = 150, plot = TRUE)
 
 # View results

@@ -92,6 +92,11 @@ only original columns.
 
 ## See also
 
+[`check_folds()`](https://sodeidelphonse.github.io/isdmtools/reference/check_folds.md)
+and
+[`check_env_balance()`](https://sodeidelphonse.github.io/isdmtools/reference/check_env_balance.md)
+for diagnostic analyses on folds.
+
 Other spatial blocking methods:
 [`create_folds()`](https://sodeidelphonse.github.io/isdmtools/reference/create_folds.md)
 

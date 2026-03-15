@@ -14,7 +14,7 @@ check_env_balance(
   object,
   covariates,
   plot_type = c("density", "boxplot"),
-  n_background = 10000,
+  n_background = 10000L,
   ...
 )
 ```
@@ -27,7 +27,8 @@ check_env_balance(
 
 - ...:
 
-  Additional arguments passed to `sample_background`.
+  Additional arguments passed on to
+  [`sample_background`](https://sodeidelphonse.github.io/isdmtools/reference/sample_background.md).
 
 - covariates:
 
@@ -50,11 +51,12 @@ An object of class `EnvDiagnostic`.
 
 ## Details
 
-The function also calculates the environmental niche overlap using
-Schoener's D metric (Schoener, 1968). This metric ranges from 0 (no
-overlap) to 1 (identical niches).
+The function calculates the *Schoener's D* metric (Schoener, 1968) for
+continuous variables to quantify the actual overlap in environmental
+space.
 
-- **Schoener's D**: Quantifies how well each fold represents the
+- **Schoener's D metric**: This metric ranges from 0 (no overlap) to 1
+  (identical niches) and quantifies how well each fold represents
   available environmental space (the background). A median value is
   reported across all folds for each covariate.
 
@@ -63,6 +65,45 @@ overlap) to 1 (identical niches).
   values suggest that cross-validation results may be biased because the
   model is being tested on environmental conditions it rarely
   encountered during training.
+
+The function also evaluates environmental balance using two distinct
+statistical tests based on the variable type:
+
+- **Continuous Variables:** A *Kruskal-Wallis Rank Sum Test* is
+  performed to determine if the median values of the covariate differ
+  significantly across folds. A \\p \> 0.05\\ suggests that the folds
+  are representative of the same environmental niche.
+
+- **Categorical Variables:** A *Pearson's Chi-squared Test* is
+  conducted. To account for rare classes (e.g., specific land-cover
+  types) and sparse contingency tables, \\p\\-values are computed via
+  *Monte Carlo simulation* (with 2,000 replicates) rather than relying
+  on asymptotic distributions. The Null Hypothesis (\\H_0\\): There is
+  no significant difference in the frequency distribution of categories
+  (e.g., land cover types) across the different data folds. If \\p \>
+  0.05\\ (Homogeneous), we fails to reject \\H_0\\, indicating that the
+  environment is effectively similar in every fold.
+
+Both tests are used to measure the internal consistency of the
+distribution of the environmental variables across the spatial folds.
+The rationale is to ensure that validation metrics reflect the model's
+ability to generalize across the species' niche, rather than its
+proximity to training data.
+
+## References
+
+- Hope, ACA. A simplified Monte Carlo significance test procedure.
+  *Journal of the Royal Statistical Society Series B*(1968) 30:582–598.
+  [doi:10.1111/j.2517-6161.1968.tb00759.x](https://doi.org/10.1111/j.2517-6161.1968.tb00759.x)
+  .
+
+- Patefield, WM. Algorithm AS 159: An efficient method of generating r x
+  c tables with given row and column totals. *Applied Statistics*(1981)
+  30:91–97. [doi:10.2307/2346669](https://doi.org/10.2307/2346669) .
+
+- Schoener TW. The Anolis Lizards of Bimini: Resource Partitioning in a
+  Complex Fauna. *Ecology*(1968) 49:704–726.
+  [doi:10.2307/1935534](https://doi.org/10.2307/1935534) .
 
 ## See also
 

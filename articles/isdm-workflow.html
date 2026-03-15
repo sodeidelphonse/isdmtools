@@ -10,13 +10,21 @@
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="ISDM Evaluation Workflow">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
+<meta property="og:title" content="ISDM Evaluation Workflow">
+<!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-XXXXX-Y"></script><script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-XXXXX-Y');
+</script><link rel="stylesheet" href="extra.css">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
-    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+    <nav class="navbar navbar-expand-lg fixed-top bg-primary" data-bs-theme="primary" aria-label="Site navigation"><div class="container">
 
     <a class="navbar-brand me-2" href="../index.html">isdmtools</a>
 
@@ -35,8 +43,8 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><h6 class="dropdown-header" data-toc-skip>Tutorials</h6></li>
-    <li><a class="dropdown-item" href="../articles/isdmtools.html">Get Started</a></li>
-    <li><a class="dropdown-item" href="../articles/isdm-evaluation-workflow.html">ISDM Evaluation Workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/isdmtools.html">Get started with isdmtools</a></li>
+    <li><a class="dropdown-item" href="../articles/isdm-workflow.html">ISDM Evaluation Workflow</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/index.html">All Articles</a></li>
   </ul>
@@ -65,10 +73,10 @@
                         <h4 data-toc-skip class="author">Akoeugnigan
 Idelphonse SODE</h4>
             
-            <h4 data-toc-skip class="date">Generated on 2026-02-17</h4>
+            <h4 data-toc-skip class="date">Generated on 2026-03-15</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/sodeidelphonse/isdmtools/blob/main/vignettes/isdm-evaluation-workflow.Rmd" class="external-link"><code>vignettes/isdm-evaluation-workflow.Rmd</code></a></small>
-      <div class="d-none name"><code>isdm-evaluation-workflow.Rmd</code></div>
+      <small class="dont-index">Source: <a href="https://github.com/sodeidelphonse/isdmtools/blob/main/vignettes/isdm-workflow.Rmd" class="external-link"><code>vignettes/isdm-workflow.Rmd</code></a></small>
+      <div class="d-none name"><code>isdm-workflow.Rmd</code></div>
     </div>
 
     
@@ -84,58 +92,124 @@ Idelphonse SODE</h4>
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
+<p>Model-based data integration in the context of species distribution
+modeling (SDM) is any statistical approach that combine biodiversity
+data from different sampling schemes (see <a href="10.1016/j.tree.2019.08.006">Isaac et al. 2020</a> for an
+overview). The purpose is to correct for certain biases in the primary
+data, or providing an overall estimation of species distribution based
+on multisource spatial information. A popular integration strategy is
+the joint analysis of presence-only (PO) observations which are
+generally available as citizen science data and abundance observations
+which are often collected through structured sampling protocols. The
+primary objective of <code>isdmtools</code> package is to provide a
+comprehensive and robust framework for data integration in SDM.</p>
 <p>As demonstrated in the <a href="isdmtools.html">Get started</a>
 guide, the first output from the <code>isdmtools</code> package is a set
 of clean <code>sf</code> objects, which makes it easy to integrate with
 various spatial modeling tools using block cross-validation techniques.
 The extracted training and testing data can be directly fed into your
 preferred integrated modeling tools such as <code>inlabru</code>,
-<code>PointedSDMs</code>, or any <code>GLMs/GAMs</code> tools that can
-accommodate multisource spatial data. This ensures that your model
-predictions are validated using a robust spatial cross-validation
-approach and comprehensive evaluation metrics.</p>
-<p>This vignette shows how how the isdmtools can be used with other
-predictive modelling tools such as <code>inlabru</code> for a complete
-workflow of integrated species distribution modelling (ISDM)
-analysis.</p>
+<code>PointedSDMs</code>, or any GLMMs/GAMMs tools that can accommodate
+multisource spatial data. This ensures that your model predictions are
+validated using a robust spatial cross-validation approach and
+comprehensive evaluation metrics.</p>
+<p>This vignette shows step by step how the <code>isdmtools</code> can
+be used with other predictive modelling tools such as
+<code>inlabru</code> for a complete workflow of integrated species
+distribution modelling (ISDM) analysis.</p>
+</div>
+<div class="section level2">
+<h2 id="data-preparation">Data preparation<a class="anchor" aria-label="anchor" href="#data-preparation"></a>
+</h2>
+<p>In this section, we will be looking at the simulated datasets that
+were presented in the previous tutorials. These can be obtained using
+the code snippet below. The objective is to implement an integrated
+model for the joint analysis of both data.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Simulate a list of presence-only and count data</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span>
+<span><span class="va">presence_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">0</span>, <span class="fl">4</span><span class="op">)</span>, </span>
+<span>  y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">6</span>, <span class="fl">13</span><span class="op">)</span>, </span>
+<span>  site <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">1</span>, <span class="fl">0.6</span><span class="op">)</span></span>
+<span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span>coords <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span>, crs <span class="op">=</span> <span class="fl">4326</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">count_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">0</span>, <span class="fl">4</span><span class="op">)</span>, </span>
+<span>  y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">6</span>, <span class="fl">13</span><span class="op">)</span>, </span>
+<span>  count <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Poisson.html" class="external-link">rpois</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">5</span><span class="op">)</span></span>
+<span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span>coords <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span>, crs <span class="op">=</span> <span class="fl">4326</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">datasets_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Presence <span class="op">=</span> <span class="va">presence_data</span>, Count <span class="op">=</span> <span class="va">count_data</span><span class="op">)</span></span></code></pre></div>
+<p>Prior to data partitioning and <em>fold diagnostics</em>, it is
+recommended that the study region be defined as an ‘sf’ polygon. This
+polygon should have the same coordinate reference system (CRS) as the
+data. This will ensure that it is suitable for the visualisation of
+spatial folds and the model fitting processes.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Define the study region (e.g. Benin's boundary rectangle)</span></span>
+<span><span class="va">ben_coords</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">6</span>, <span class="fl">4</span>, <span class="fl">6</span>, <span class="fl">4</span>, <span class="fl">13</span>, <span class="fl">0</span>, <span class="fl">13</span>, <span class="fl">0</span>, <span class="fl">6</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fl">2</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">ben_sf</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sf.html" class="external-link">st_sf</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"Region"</span><span class="op">)</span>, </span>
+<span>                          <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_polygon</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">ben_coords</span><span class="op">)</span><span class="op">)</span>, crs <span class="op">=</span> <span class="st">"epsg:4326"</span><span class="op">)</span></span>
+<span>                <span class="op">)</span></span></code></pre></div>
+<p>Now, we can partition the datasets using the clustering blocking
+scheme for blocked cross-validation.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Create spatial folds</span></span>
+<span><span class="va">folds</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_folds.html">create_folds</a></span><span class="op">(</span><span class="va">datasets_list</span>, <span class="va">ben_sf</span>, cv_method <span class="op">=</span> <span class="st">"cluster"</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   train test</span></span>
+<span><span class="co">#&gt; 1   120   30</span></span>
+<span><span class="co">#&gt; 2   110   40</span></span>
+<span><span class="co">#&gt; 3   125   25</span></span>
+<span><span class="co">#&gt; 4   125   25</span></span>
+<span><span class="co">#&gt; 5   120   30</span></span>
+<span></span>
+<span><span class="co"># Extract the train/test for the third Fold</span></span>
+<span><span class="va">train_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/DataFolds-methods.html">extract_fold</a></span><span class="op">(</span><span class="va">folds</span>, fold <span class="op">=</span> <span class="fl">3</span><span class="op">)</span><span class="op">$</span><span class="va">train</span></span>
+<span><span class="va">test_data</span>  <span class="op">&lt;-</span> <span class="fu"><a href="../reference/DataFolds-methods.html">extract_fold</a></span><span class="op">(</span><span class="va">folds</span>, fold <span class="op">=</span> <span class="fl">3</span><span class="op">)</span><span class="op">$</span><span class="va">test</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="fitting-an-integrated-model-with-inlabru">Fitting an integrated model with <code>inlabru</code><a class="anchor" aria-label="anchor" href="#fitting-an-integrated-model-with-inlabru"></a>
+</h2>
+<p>The <code>inlabru</code> package <span class="citation">(Bachl et al.
+2019)</span> is a wrapper for <code>R-INLA</code> <span class="citation">(Rue, Martino, and Chopin 2009)</span> which is
+designed for Bayesian Latent Gaussian Modelling using Integrated Laplace
+Nested Approximations (INLA) and Extensions. Let us develop a Bayesian
+spatial model with the resampled data above for cross-validation.</p>
 <div class="section level3">
-<h3 id="step-1-fitting-a-bayesian-integrated-model-with-the-inlabru">Step 1: Fitting a Bayesian integrated model with the
-<code>inlabru</code><a class="anchor" aria-label="anchor" href="#step-1-fitting-a-bayesian-integrated-model-with-the-inlabru"></a>
+<h3 id="step-1-model-definition">Step 1: Model definition<a class="anchor" aria-label="anchor" href="#step-1-model-definition"></a>
 </h3>
-<p>The <code>inlabru</code> package is a wrapper for the
-<code>R-INLA</code> package which is designed for Bayesian Latent
-Gaussian Modelling using INLA (Integrated Laplace Nested Approximations)
-and Extensions. Let’s develop a Bayesian spatial model with the
-simulated data presented in <a href="isdmtools.html">Get started</a>
-guide.</p>
-<ul>
-<li><strong>Model definition</strong></li>
-</ul>
 <p>We assume the following basic joint model with a shared latent signal
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ξ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>.</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\xi(.)</annotation></semantics></math>
-(i.e. a Gaussian random field):</p>
-<pre class="math"><code> \begin{matrix} 
- Y_{\mathrm{count},i}|\xi(.) \sim \mathrm{Pois} \left(\mu_i \right), \quad i = 1,\ldots,n,\\
- \log(\mu_i) = \beta_{0,\mathrm{count}} + \xi(\mathbf{s}_i)\\[3mm]
- X_{\mathrm{presence}}|\xi(.) \sim \mathrm{IPP} \left(\lambda(\mathbf{s}) \right),\\
-\log (\lambda(\mathbf{s})) = \beta_{0,\mathrm{presence}} + \xi(\mathbf{s})\\
-\end{matrix}</code></pre>
-<p>where
+represented by a Gaussian random field with a <em>Matern</em>
+correlation function:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>Y</mi><mrow><mtext mathvariant="normal">count</mtext><mo>,</mo><mi>i</mi></mrow></msub><mo stretchy="false" form="prefix">|</mo><mi>ξ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>.</mi><mo stretchy="true" form="postfix">)</mo></mrow></mtd><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>∼</mo><mtext mathvariant="normal">Pois</mtext><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>μ</mi><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mtd><mtd columnalign="right" style="text-align: right"><mi>i</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>n</mi></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>log</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>μ</mi><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mtd><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><msub><mi>β</mi><mrow><mn>0</mn><mo>,</mo><mtext mathvariant="normal">count</mtext></mrow></msub><mo>+</mo><mi>ξ</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>𝐬</mi><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>X</mi><mtext mathvariant="normal">presence</mtext></msub><mo stretchy="false" form="prefix">|</mo><mi>ξ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>.</mi><mo stretchy="true" form="postfix">)</mo></mrow></mtd><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>∼</mo><mtext mathvariant="normal">IPP</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>λ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝐬</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>log</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>λ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝐬</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mtd><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><msub><mi>β</mi><mrow><mn>0</mn><mo>,</mo><mtext mathvariant="normal">presence</mtext></mrow></msub><mo>+</mo><mi>ξ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝐬</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd></mtr></mtable><annotation encoding="application/x-tex">
+\begin{aligned} 
+ &amp;Y_{\text{count},i}|\xi(.) &amp;&amp;\sim \text{Pois} \left(\mu_i \right), &amp; i = 1,\ldots,n\\
+ &amp;\log(\mu_i) &amp;&amp;= \beta_{0,\text{count}} + \xi(\mathbf{s}_i) \\[2mm]
+ &amp;X_{\text{presence}}|\xi(.) &amp;&amp;\sim \text{IPP} (\lambda(\mathbf{s})),\\
+ &amp;\log (\lambda(\mathbf{s})) &amp;&amp;= \beta_{0,\text{presence}} + \xi(\mathbf{s}),\\
+\end{aligned}
+</annotation></semantics></math> where
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">I</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">P</mi></mrow><annotation encoding="application/x-tex">\mathrm{IPP}</annotation></semantics></math>
 means a <em>Inhomogeneous Poisson Process</em> and
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐬</mi><annotation encoding="application/x-tex">\mathbf{s}</annotation></semantics></math>
-the vector of a location coordinates.</p>
-<p>You can now prepare the remaining data required to fit an integrated
-model. First, we need to define the mesh to be used to approximate the
-latent field as well as for the integration points in the IPP
-likelihood. After this step, we set up the prior distributions for the
-latent parameters such as the range and the marginal standard deviation.
-Then we define the observation model for each data type to fuse them
-using a joint likelihood estimation with INLA.</p>
-<ul>
-<li><strong>Model implementation</strong></li>
-</ul>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+the vector of a location coordinates. The IPP model presented here is
+known in spatial statistics as a log-Gaussian Cox process model - LGCP
+(see, <span class="citation">Møller, Syversveen, and Waagepetersen
+(1998)</span>). Although the large-scale component which includes the
+data-specific intercept can also incorporate environmental covariates,
+we assume that the basic joint model above is valid for the data.
+Alternative specifications of data fusion model have been discussed in
+<span class="citation">Sode et al. (2025)</span>.</p>
+</div>
+<div class="section level3">
+<h3 id="step-2-model-implementation">Step 2: Model implementation<a class="anchor" aria-label="anchor" href="#step-2-model-implementation"></a>
+</h3>
+<p>One can now prepare the remaining data required to fit an integrated
+model. First, we set up the mesh to be used for approximating the latent
+field as well as for the integration points in the LGCP likelihood.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create a "mesh" for the latent field </span></span>
 <span><span class="va">mesh</span> <span class="op">&lt;-</span> <span class="fu">fmesher</span><span class="fu">::</span><span class="fu"><a href="https://inlabru-org.github.io/fmesher/reference/fm_mesh_2d.html" class="external-link">fm_mesh_2d</a></span><span class="op">(</span></span>
 <span>     boundary <span class="op">=</span> <span class="va">ben_sf</span>,</span>
@@ -144,13 +218,24 @@ using a joint likelihood estimation with INLA.</p>
 <span>     cutoff <span class="op">=</span> <span class="fl">0.10</span>,</span>
 <span>     crs <span class="op">=</span> <span class="st">"epsg:4326"</span></span>
 <span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu">inlabru</span><span class="fu">::</span><span class="fu"><a href="https://inlabru-org.github.io/inlabru/reference/gg.html" class="external-link">gg</a></span><span class="op">(</span><span class="va">mesh</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<span></span>
+<span><span class="co"># Visualise the whole data points with the mesh</span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu">inlabru</span><span class="fu">::</span><span class="fu"><a href="https://inlabru-org.github.io/inlabru/reference/gg.html" class="external-link">gg</a></span><span class="op">(</span><span class="va">mesh</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://inlabru-org.github.io/inlabru/reference/gg.html" class="external-link">gg</a></span><span class="op">(</span><span class="va">folds</span><span class="op">$</span><span class="va">data_all</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">datasetName</span><span class="op">)</span><span class="op">)</span> </span></code></pre></div>
+<p><img src="isdm-workflow_files/figure-html/mesh-code-1.png" class="r-plt" alt="" width="90%"></p>
+<p>After this step, we can define the prior distributions for the
+hyperparameters of the latent component such as the range and the
+marginal standard deviation, keeping default prior (i.e. Gaussian
+distribution with precision 0.001) for the intercepts. we use the
+penalized model component complexity priors (see <span class="citation">Simpson et al. (2017)</span> for more details). Then we
+define the observation model for each data type and fuse them using a
+joint likelihood estimation with INLA and SPDE techniques <span class="citation">(Simpson et al. 2016)</span>.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Set the PC-prior for the SPDE model. We estimate a longer range value as no spatial </span></span>
 <span><span class="co"># autocorrelation was defined in the data generation process:</span></span>
 <span><span class="va">pcmatern</span> <span class="op">&lt;-</span> <span class="fu">INLA</span><span class="fu">::</span><span class="fu">inla.spde2.pcmatern</span><span class="op">(</span><span class="va">mesh</span>,</span>
-<span>                                      prior.range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">0.1</span><span class="op">)</span>, <span class="co"># P(spatial range &lt; 1) = 0.1</span></span>
-<span>                                      prior.sigma <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">0.1</span><span class="op">)</span>  <span class="co"># P(sigma &gt; 1) = 0.1</span></span>
+<span>                                      prior.range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">0.1</span><span class="op">)</span>, <span class="co"># Prob(spatial range &lt; 1) = 0.1</span></span>
+<span>                                      prior.sigma <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">0.1</span><span class="op">)</span>  <span class="co"># Prob(sigma &gt; 1) = 0.1</span></span>
 <span>                                      <span class="op">)</span></span>
 <span>   </span>
 <span><span class="co"># The shared spatial latent component is denoted by 'spde'</span></span>
@@ -178,8 +263,11 @@ using a joint likelihood estimation with INLA.</p>
 <span>                        options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>control.inla <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>int.strategy <span class="op">=</span> <span class="st">"eb"</span><span class="op">)</span>,</span>
 <span>                                       bru_max_iter <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span>
 <span>                    <span class="op">)</span></span></code></pre></div>
-<p>We can collect model results after the fitting process.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<p>We can collect model results after the process of model fitting. As
+expected, the estimated <em>spatial range</em> is higher than 1. This is
+because there is no strong spatial autocorrelation in the simulated
+data.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span> <span class="va">jfit</span><span class="op">$</span><span class="va">summary.fixed</span></span>
 <span> <span class="co">#&gt;                     mean        sd      0.025quant  0.5quant   0.975quant  mode      kld</span></span>
 <span> <span class="co">#&gt; Count_intercept    -0.2497590 0.3086958 -0.8547916 -0.2497590  0.3552737  -0.2497590  0</span></span>
@@ -189,41 +277,43 @@ using a joint likelihood estimation with INLA.</p>
 <span> <span class="co">#&gt;                mean        sd      0.025quant  0.5quant   0.975quant  mode</span></span>
 <span> <span class="co">#&gt; Range for spde 3.535334 2.5240208  0.9513318   2.8572241  10.2509603  1.9527898</span></span>
 <span> <span class="co">#&gt; Stdev for spde 0.512346 0.1926203  0.2183487   0.4842595  0.9647017   0.4317979</span></span></code></pre></div>
-<p>As expected, the estimated <em>spatial range</em> is higher than 1.
-This is because there is no strong spatial autocorrelation in the
-simulated data.</p>
 </div>
 <div class="section level3">
-<h3 id="step-2-model-prediction">Step 2: Model prediction<a class="anchor" aria-label="anchor" href="#step-2-model-prediction"></a>
+<h3 id="step-3-model-prediction">Step 3: Model prediction<a class="anchor" aria-label="anchor" href="#step-3-model-prediction"></a>
 </h3>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Define the prediction grids and projection system</span></span>
 <span><span class="va">grids</span>      <span class="op">&lt;-</span> <span class="fu">fmesher</span><span class="fu">::</span><span class="fu"><a href="https://inlabru-org.github.io/fmesher/reference/fm_pixels.html" class="external-link">fm_pixels</a></span><span class="op">(</span><span class="va">mesh</span>, mask <span class="op">=</span> <span class="va">ben_sf</span><span class="op">)</span></span>
 <span><span class="va">projection</span> <span class="op">&lt;-</span> <span class="st">"+proj=longlat +ellps=WGS84 +datum=WGS84"</span></span></code></pre></div>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Model predictions</span></span>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Model predictions with 500 posterior samples</span></span>
 <span><span class="va">jpred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">jfit</span>, </span>
 <span>                 newdata <span class="op">=</span> <span class="va">grids</span>, </span>
 <span>                 formula <span class="op">=</span> <span class="op">~</span> <span class="va">spde</span> <span class="op">+</span> <span class="va">Presence_intercept</span>,</span>
 <span>                 n.samples <span class="op">=</span> <span class="fl">500</span>, </span>
 <span>                 seed <span class="op">=</span> <span class="fl">24</span><span class="op">)</span></span>
-<span><span class="va">jpred</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_predictions.html">prepare_predictions</a></span><span class="op">(</span><span class="va">jpred</span><span class="op">)</span> </span>
 <span></span>
 <span><span class="va">jpred_count</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">jfit</span>, </span>
 <span>                       newdata <span class="op">=</span> <span class="va">grids</span>, </span>
 <span>                       formula <span class="op">=</span> <span class="op">~</span> <span class="va">spde</span> <span class="op">+</span> <span class="va">Count_intercept</span> ,</span>
-<span>                       n.samples <span class="op">=</span> <span class="fl">500</span>, seed <span class="op">=</span> <span class="fl">24</span><span class="op">)</span></span>
-<span><span class="va">jpred_count</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_predictions.html">prepare_predictions</a></span><span class="op">(</span><span class="va">jpred_count</span><span class="op">)</span></span></code></pre></div>
+<span>                       n.samples <span class="op">=</span> <span class="fl">500</span>, </span>
+<span>                       seed <span class="op">=</span> <span class="fl">24</span><span class="op">)</span></span></code></pre></div>
 </div>
+</div>
+<div class="section level2">
+<h2 id="suitability-analysis-and-model-evaluation-with-isdmtools">Suitability analysis and model evaluation with
+<code>isdmtools</code><a class="anchor" aria-label="anchor" href="#suitability-analysis-and-model-evaluation-with-isdmtools"></a>
+</h2>
 <div class="section level3">
-<h3 id="step-3-habitat-suitability-analysis">Step 3: Habitat suitability analysis<a class="anchor" aria-label="anchor" href="#step-3-habitat-suitability-analysis"></a>
+<h3 id="step-4-habitat-suitability-analysis">Step 4: Habitat suitability analysis<a class="anchor" aria-label="anchor" href="#step-4-habitat-suitability-analysis"></a>
 </h3>
-<p>Once we have obtained the model predictions, we can then use the
+<p>Once we have obtained the model predictions, we can then use
 <code>isdmtools</code> to perform habitat suitability analysis. This
 will allow us to proceed with the evaluation of models and the
 visualisation of results.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Probability of presence</span></span>
+<span><span class="va">jpred</span>   <span class="op">&lt;-</span> <span class="fu"><a href="../reference/format_predictions.html">format_predictions</a></span><span class="op">(</span><span class="va">jpred</span><span class="op">)</span> </span>
 <span><span class="va">jt_prob</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/suitability_index.html">suitability_index</a></span><span class="op">(</span><span class="va">jpred</span>, </span>
 <span>                            post_stat <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"q0.025"</span>, <span class="st">"mean"</span>, <span class="st">"q0.975"</span><span class="op">)</span>, </span>
 <span>                            output_format <span class="op">=</span> <span class="st">"prob"</span>,</span>
@@ -232,8 +322,9 @@ visualisation of results.</p>
 <span>                            scale_independent <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span>                            <span class="op">)</span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">jt_prob</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Expected counts</span></span>
+<span><span class="va">jpred_count</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/format_predictions.html">format_predictions</a></span><span class="op">(</span><span class="va">jpred_count</span><span class="op">)</span></span>
 <span><span class="va">jt_count</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/suitability_index.html">suitability_index</a></span><span class="op">(</span><span class="va">jpred_count</span>, </span>
 <span>                              post_stat <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"q0.025"</span>, <span class="st">"mean"</span>, <span class="st">"q0.975"</span><span class="op">)</span>, </span>
 <span>                              output_format <span class="op">=</span> <span class="st">"response"</span>,</span>
@@ -243,11 +334,18 @@ visualisation of results.</p>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">jt_count</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="step-4-model-performance-evaluation-using-the-test-data">Step 4: Model performance evaluation using the test data<a class="anchor" aria-label="anchor" href="#step-4-model-performance-evaluation-using-the-test-data"></a>
+<h3 id="step-5-model-performance-evaluation">Step 5: Model performance evaluation<a class="anchor" aria-label="anchor" href="#step-5-model-performance-evaluation"></a>
 </h3>
 <p>Various performance metrics can now be computed, including
-dataset-specific and weighted composite scores.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+dataset-specific and weighted composite scores using the test data and
+model predictions. As you will notice, certain arguments to the
+suitability_index() function are left at their default values.
+Specifically, this concerns the number of background points, the
+threshold method (which is “best”), and the best method (which is
+“youden”). The latter is the <em>Youden</em> criterion, which
+corresponds to the threshold that maximises both sensitivity and
+specificity.</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span> <span class="va">xy_observed</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_coordinates.html" class="external-link">st_coordinates</a></span><span class="op">(</span><span class="va">datasets_list</span><span class="op">$</span><span class="va">Presence</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"X"</span>,<span class="st">"Y"</span><span class="op">)</span><span class="op">]</span>, </span>
 <span>              <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_coordinates.html" class="external-link">st_coordinates</a></span><span class="op">(</span><span class="va">datasets_list</span><span class="op">$</span><span class="va">Count</span><span class="op">)</span><span class="op">[</span><span class="va">datasets_list</span><span class="op">$</span><span class="va">Count</span><span class="op">$</span><span class="va">count</span> <span class="op">&gt;</span> <span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"X"</span>,<span class="st">"Y"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
 <span>   </span>
@@ -272,7 +370,7 @@ dataset-specific and weighted composite scores.</p>
 <span><span class="co">#&gt; ----------------------------------------------</span></span></code></pre></div>
 <p>One can obtain detailed overview of the evaluation results via the
 <code><a href="https://rspatial.github.io/terra/reference/summary.html" class="external-link">summary()</a></code> method.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rspatial.github.io/terra/reference/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">eval_metrics</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#&gt; ==============================================</span></span>
@@ -309,20 +407,24 @@ dataset-specific and weighted composite scores.</p>
 available for presence-only data, which makes sense. Furthermore, the
 weighted composite scores for continuous responses are identical to
 their individual counterparts, since there is only one count response.
-Moreover, you can check out the <a href="../reference/get_background.html"><code>get_background()</code></a>
+Moreover, you can check out the <code><a href="../reference/ISDMmetrics-methods.html">get_background()</a></code>
 documentation for more details on background sample generated during the
 model evaluation.</p>
 <p>Next, you can iterate through all five spatial folds to obtain an
 average model performance, then calculate the variation in metrics
-between blocks. Finally, run a model on the full ‘datasets_list’ to make
-the final prediction.</p>
+between blocks. Finally, you should run a model on the full data
+(i.e. ‘datasets_list’) in order to make the final prediction.</p>
 </div>
 <div class="section level3">
-<h3 id="step-5-prediction-mapping">Step 5: Prediction mapping<a class="anchor" aria-label="anchor" href="#step-5-prediction-mapping"></a>
+<h3 id="step-6-prediction-mapping">Step 6: Prediction mapping<a class="anchor" aria-label="anchor" href="#step-6-prediction-mapping"></a>
 </h3>
-<p>You can now generate a formal prediction map ready for
-publication.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<p>You can now generate a formal prediction map ready for publication.
+Assume that the probability of the species presence is stored in the
+object ‘jt_prob’ after the final model fitting, key summary statistics
+in this object can be visualised using the <code><a href="../reference/generate_maps.html">generate_maps()</a></code>
+helper which return a ggplot object that can be customised by the
+user.</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">map</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generate_maps.html">generate_maps</a></span><span class="op">(</span><span class="va">jt_prob</span>, </span>
 <span>                   var_names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"q0.025"</span>, <span class="st">"mean"</span>, <span class="st">"q0.975"</span><span class="op">)</span>, </span>
 <span>                   base_map <span class="op">=</span> <span class="va">ben_sf</span>,</span>
@@ -332,18 +434,76 @@ publication.</p>
 <span>                   yaxis_breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">6</span>, <span class="fl">13</span>, <span class="fl">2</span><span class="op">)</span></span>
 <span>                   <span class="op">)</span></span>
 <span><span class="va">map</span></span></code></pre></div>
+<div class="figure">
+<img src="../reference/figures/prediction_map.png" class="r-plt" alt="Prediction map of the ISDM model" width="100%"><p class="caption">
+Prediction map of the ISDM model
+</p>
+</div>
 </div>
 </div>
 <div class="section level2">
 <h2 id="conclusion">Conclusion<a class="anchor" aria-label="anchor" href="#conclusion"></a>
 </h2>
-<p>You have successfully fused multi-source biodiversity data and
-generated spatially independent partitions for robust model validation
-using <code>isdmtools</code>. The toolkit has enabled the resampling of
-data, thereby reducing spatial autocorrelation effects in the modelling
-process. This has facilitated the analysis and a comprehensive
-evaluation of ISDM using well-known metrics from the fields of
-statistics and machine learning.</p>
+<p>Using <code>isdmtools</code>, you have successfully fused
+multi-source biodiversity data and generated spatially independent
+partitions for robust model validation. The toolkit has enabled the
+<em>resampling of data</em> and the diagnostics of folds, thereby
+reducing the effects of <em>spatial autocorrelation</em> in the
+modelling process. It has also facilitated the analysis and
+comprehensive evaluation of ISDM using well-known metrics from the
+fields of statistics and machine learning. The outputs of the final
+model are visualised to obtain an annotated map ready to be interpreted
+for deriving valuable insights from the integrated analysis. The
+flexibility of <code>isdmtools</code> in providing a unified framework
+for evaluating ISDM based on any combination of the major three types of
+SDM data as well as its versatility to be integrated with other
+competing tools make it an appealing toolkit for ecologists and spatial
+statisticians.</p>
+</div>
+<div class="section level2">
+<h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="ref-bachl_inlabru_2019" class="csl-entry">
+Bachl, Fabian E., Finn Lindgren, David L. Borchers, and Janine B.
+Illian. 2019. <span>“Inlabru: An <span>R</span> Package for
+<span>Bayesian</span> Spatial Modelling from Ecological Survey
+Data.”</span> <em>Methods in Ecology and Evolution</em> 10 (6): 760–66.
+<a href="https://doi.org/10.1111/2041-210X.13168" class="external-link">https://doi.org/10.1111/2041-210X.13168</a>.
+</div>
+<div id="ref-moller_log_1998" class="csl-entry">
+Møller, Jesper, Anne Randi Syversveen, and Rasmus Plenge Waagepetersen.
+1998. <span>“Log <span>Gaussian Cox Processes</span>.”</span>
+<em>Scandinavian Journal of Statistics</em> 25 (3): 451–82. <a href="https://doi.org/10.1111/1467-9469.00115" class="external-link">https://doi.org/10.1111/1467-9469.00115</a>.
+</div>
+<div id="ref-rue_approximate_2009" class="csl-entry">
+Rue, Håvard, Sara Martino, and Nicolas Chopin. 2009. <span>“Approximate
+<span>Bayesian</span> Inference for Latent <span>Gaussian</span> Models
+by Using Integrated Nested <span>Laplace</span> Approximations.”</span>
+<em>Journal of the Royal Statistical Society Series B: Statistical
+Methodology</em> 71 (2): 319–92. <a href="https://doi.org/10.1111/j.1467-9868.2008.00700.x" class="external-link">https://doi.org/10.1111/j.1467-9868.2008.00700.x</a>.
+</div>
+<div id="ref-simpson_going_2016" class="csl-entry">
+Simpson, Daniel, Janine Baerbel Illian, Finn Lindgren, Sigrunn H.
+Sørbye, and Havard Rue. 2016. <span>“Going Off Grid:
+<span>Computationally</span> Efficient Inference for Log-<span>Gaussian
+Cox</span> Processes.”</span> <em>Biometrika</em> 103 (1): 49–70. <a href="https://doi.org/10.1093/biomet/asv064" class="external-link">https://doi.org/10.1093/biomet/asv064</a>.
+</div>
+<div id="ref-simpson_penalising_2017" class="csl-entry">
+Simpson, Daniel, Håvard Rue, Andrea Riebler, Thiago G. Martins, and
+Sigrunn H. Sørbye. 2017. <span>“Penalising <span>Model Component
+Complexity</span>: <span>A Principled</span>, <span>Practical
+Approach</span> to <span>Constructing Priors</span>.”</span>
+<em>Statistical Science</em> 32 (1): 1–28. <a href="https://doi.org/10.1214/16-STS576" class="external-link">https://doi.org/10.1214/16-STS576</a>.
+</div>
+<div id="ref-sode_integrating_2025" class="csl-entry">
+Sode, A. Idelphonse, A. Belarmain Fandohan, Elias T. Krainski, Achille
+E. Assogbadjo, and Romain Glèlè Kakaï. 2025. <span>“Integrating <span class="nocase">Presence-only</span> and <span>Abundance Data</span> to
+<span>Predict Baobab</span> (<span>Adansonia</span> Digitata
+<span>L</span>.) <span>Distribution</span>: <span>A Bayesian Data Fusion
+Framework</span>.”</span> Preprint. <a href="https://doi.org/10.21203/rs.3.rs-7871875/v1" class="external-link">https://doi.org/10.21203/rs.3.rs-7871875/v1</a>.
+</div>
+</div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
