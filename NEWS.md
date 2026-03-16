@@ -1,17 +1,20 @@
 # isdmtools 0.3.0
 
 ## Continuous Integration & Deployment 
-- GitHub Actions Integration: Established a suite of automated workflows including R-CMD-check for cross-platform stability and Codecov for monitoring unit test coverage.
+- GitHub Actions Integration: Established a suite of automated workflows including R-CMD-check for cross-platform stability and `Codecov`for monitoring unit test coverage.
 - Automated Documentation: Implemented an automated pkgdown deployment pipeline to ensure the package website and vignettes are updated upon every push to the main branch.
+- Website Launch: Official `pkgdown` site deployment with a custom navigation bar and categorised tutorials.
+- Code styling: Configure the `lintr` workflow for the automated detection of syntax errors and code styling issues.
 
 ## New Features
 - Tutorials: Added a "Get Started" guide and an advanced "ISDM Evaluation Workflow" vignette with conditional evaluation for external dependencies.
 - New S3 Class Architecture: Introduced `GeoDiagnostic`, `EnvDiagnostic`, and `FoldsSummary` classes to structure the spatial folds' diagnostics results.
-- Documentation Refactor: Implemented a grouped reference system to consolidate S3 methods, significantly improving the package Reference index.
+- Documentation Refactor: Implemented a grouped reference system to consolidate S3 methods for improving the package Reference index.
 
 ## Improvements
-- Codecov coverage: Set up additional units tests to boost their coverage.
-- Website Launch: Official `pkgdown` site deployment with a custom navigation bar and categorised tutorials.
+- R Compatibility: Full support for the native pipe `|>` across the package.
+- System Dependencies: Fixed the `units` and `sf` installation issues by adding `libudunits2-dev` to the environment.
+- Codecov coverage: Set up additional units tests to boost the Codecov test coverage.
 - BugFixes: Refactoring `ISDMmetrics` methods to handle efficiently datasets' names with underscores to avoid names collision during string splitting.
 - Blocks Diagnostics: Refined `check_folds()` and `check_env_balance()` constructors for evaluating spatial independence and environmental balance of spatial folds.
 
@@ -32,7 +35,7 @@ Points falling within spatial buffers are now correctly identified as NA and exc
 * Added `summary.DataFolds` method for providing clean aggregated statistics on data partition.
 * Added relevant tests for `DataFolds` and `BackgroundPoints` classes and their constructors/methods. 
 
-## Enhanced Features
+## Improvements
 * Refactoring: Remove unnecessary dependencies (`reshape2`, `purrr` and `ggspatial`) and ensure consistent argument naming (snake_case).
 * Unified CV Constructor: `create_folds()` now acts as a high-level bridge between `blockCV` and `spatialsample`.
 * Standardized S3 Outputs: The `DataFolds` object now standardizes internal indexing across different blocking engines, ensuring "folds_ids" are consistent regardless of the underlying package used.
@@ -46,7 +49,7 @@ Points falling within spatial buffers are now correctly identified as NA and exc
 * Standardized coordinate column names to lowercase `x` and `y` across all functions.
 * Updated internal logic to use `.data` pronouns to resolve global variable notes.
 
-## Enhanced Features
+## Improvements
 * Implemented S3 methods for `ISDMmetrics`: `print()`, `summary()`, `plot()`, `as.data.frame()`, and `[`.
 * Added `ISDMmetrics` S3 class to handle outputs from `compute_metrics()`.
 * Implemented `get_background` helper function for selected background points.
