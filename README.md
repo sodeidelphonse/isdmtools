@@ -5,6 +5,7 @@
 [![Project status: active](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![Lifecycle: maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://lifecycle.r-lib.org/articles/stages.html#maturing) 
 [![Codecov test](https://codecov.io/gh/sodeidelphonse/isdmtools/graph/badge.svg)](https://app.codecov.io/gh/sodeidelphonse/isdmtools)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 <!-- badges: end -->
 
 ## Table of contents
@@ -118,6 +119,9 @@ For a detailed introduction to the package, please see the [Get started](article
 
 ## Contributing
 We welcome contributions! If you encounter an issue or have a feature request, please open an issue on the GitHub repository [here](https://github.com/sodeidelphonse/isdmtools/issues).
+
+Please note that the `isdmtools` project is released with a [Contributor Code of Conduct](https://www.contributor-covenant.org/version/2/1/code_of_conduct/code_of_conduct.md). 
+By contributing to this project, you agree to abide by its terms.
 
 ## Citation
 To cite this package in your research work, run the following command in your R session to generate the plain text and `BiTex` entry of the citation:
