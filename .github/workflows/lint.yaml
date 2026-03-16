@@ -27,6 +27,10 @@ jobs:
           extra-packages: any::lintr, local::.
           needs: lint
 
+      - name: Install lintr
+        run: install.packages("lintr")
+        shell: Rscript {0}
+
       - name: Lint
         run: lintr::lint_package()
         shell: Rscript {0}

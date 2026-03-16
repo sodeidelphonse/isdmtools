@@ -1,9 +1,9 @@
 # isdmtools
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/sodeidelphonse/isdmtools/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/sodeidelphonse/isdmtools/actions/workflows/R-CMD-check) 
-[![lintr status](https://github.com/sodeidelphonse/isdmtools/actions/workflows/lint.yaml/badge.svg)](https://github.com/sodeidelphonse/isdmtools/actions)
+[![lintr status](https://github.com/sodeidelphonse/isdmtools/actions/workflows/lint.yaml/badge.svg)](https://github.com/sodeidelphonse/isdmtools/actions/workflows/lint)
 [![Project status: active](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
-[![Lifecycle: maturing](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#maturing) 
+[![Lifecycle: maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://lifecycle.r-lib.org/articles/stages.html#maturing) 
 [![Codecov test](https://codecov.io/gh/sodeidelphonse/isdmtools/graph/badge.svg)](https://app.codecov.io/gh/sodeidelphonse/isdmtools)
 <!-- badges: end -->
 
@@ -70,7 +70,7 @@ set.seed(42)
 presence_data <- data.frame(
   x = runif(100, 0, 4),
   y = runif(100, 6, 13),
-) %>%
+) |>
   st_as_sf(coords = c("x", "y"), crs = 4326)
 
 # Count data (e.g. species count from a structured design)
@@ -78,7 +78,7 @@ count_data <- data.frame(
   x = runif(50, 0, 4),
   y = runif(50, 6, 13),
   count = rpois(50, 5)
-) %>%
+) |>
   st_as_sf(coords = c("x", "y"), crs = 4326)
 
 # Create a list of datasets
