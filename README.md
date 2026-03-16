@@ -2,7 +2,7 @@
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/sodeidelphonse/isdmtools/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/sodeidelphonse/isdmtools/actions/workflows/R-CMD-check) 
 [![Project status: active](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
-[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental) 
+[![Lifecycle: maturing](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#maturing) 
 [![Codecov test](https://codecov.io/gh/sodeidelphonse/isdmtools/graph/badge.svg)](https://app.codecov.io/gh/sodeidelphonse/isdmtools)
 [![lintr status](https://github.com/sodeidelphonse/isdmtools/workflows/lint/badge.svg)](https://github.com/sodeidelphonse/isdmtools/actions)
 <!-- badges: end -->
