@@ -1,4 +1,3 @@
-
 #' Calculate Niche Overlap (Schoener's D)
 #'
 #' @description Computes the overlap between two distributions.
@@ -27,9 +26,15 @@
 #' Schoener TW. The Anolis Lizards of Bimini: Resource Partitioning in a Complex Fauna. _Ecology_(1968) 49:704–726. \doi{10.2307/1935534}.
 #'
 calc_niche_overlap <- function(x, y, n = 512) {
-  if (!is.numeric(x) || !is.numeric(y)) return(NA_real_)
-  if (length(stats::na.omit(x)) < 2 || length(stats::na.omit(y)) < 2) return(NA_real_)
-  if (stats::sd(x, na.rm = TRUE) == 0 || stats::sd(y, na.rm = TRUE) == 0) return(NA_real_)
+  if (!is.numeric(x) || !is.numeric(y)) {
+    return(NA_real_)
+  }
+  if (length(stats::na.omit(x)) < 2 || length(stats::na.omit(y)) < 2) {
+    return(NA_real_)
+  }
+  if (stats::sd(x, na.rm = TRUE) == 0 || stats::sd(y, na.rm = TRUE) == 0) {
+    return(NA_real_)
+  }
 
   # Estimate densities
   rng <- range(c(x, y), na.rm = TRUE)
@@ -96,24 +101,25 @@ calc_niche_overlap <- function(x, y, n = 512) {
 #' \item Diggle PJ, Ribeiro PJ. Model-based Geostatistics. 1st ed. New York, NY: Springer. (2007). \doi{10.1007/978-0-387-48536-2}
 #' \item Lindgren F, Rue H, Lindström J. An explicit link between Gaussian fields and Gaussian Markov random fields: the stochastic partial differential equation approach.
 #' _Journal of the Royal Statistical Society: Series B (Statistical Methodology)_ (2011) 73:423–498. \doi{10.1111/j.1467-9868.2011.00777.x}
-#'}
+#' }
 solve_practical_range <- function(param_val,
                                   nu,
                                   sigma_sq = 1,
                                   thresh = 0.1,
-                                  package = c("inla", "geor", "spatstat")
-                                  ) {
+                                  package = c("inla", "geor", "spatstat")) {
   package <- match.arg(package)
 
   # Corr(X * d) = thresh/sigma_sq
   multiplier <- switch(package,
-                       "geor"     = 1 / param_val,
-                       "spatstat" = sqrt(2 * nu) / param_val,
-                       "inla"     = sqrt(8 * nu) / param_val
-                       )
+    "geor"     = 1 / param_val,
+    "spatstat" = sqrt(2 * nu) / param_val,
+    "inla"     = sqrt(8 * nu) / param_val
+  )
 
   matern_corr <- function(d, nu, X) {
-    if (d == 0) return(1)
+    if (d == 0) {
+      return(1)
+    }
     res <- (X * d)^nu * besselK(X * d, nu) / (2^(nu - 1) * gamma(nu))
     return(res)
   }
@@ -122,7 +128,8 @@ solve_practical_range <- function(param_val,
   target_corr <- thresh / sigma_sq
 
   sol <- uniroot(function(d) matern_corr(d, nu, multiplier) - target_corr,
-                 interval = c(1e-8, param_val * 20))
+    interval = c(1e-8, param_val * 20)
+  )
 
   return(sol$root)
 }
@@ -145,6 +152,7 @@ solve_practical_range <- function(param_val,
 .check_suggests <- function(pkg) {
   if (!requireNamespace(pkg, quietly = TRUE)) {
     stop(sprintf("Package '%s' is required for this function or option. Please install it.", pkg),
-         call. = FALSE)
+      call. = FALSE
+    )
   }
 }

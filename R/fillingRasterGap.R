@@ -1,5 +1,3 @@
-
-
 #-----------------------------------------------------------------------------------------
 #--- Imputing missing values in SpatRaster with the nearest values using a moving window
 #-----------------------------------------------------------------------------------------
@@ -52,13 +50,12 @@
 #' }
 #'
 fill_na_near <- function(x, boundary = NULL, fun = mean, na.policy = "only", na.rm = TRUE,
-                          start.window = 1, ...) {
-
-  if(!inherits(x, c("SpatRaster", "RasterLayer"))) {
+                         start.window = 1, ...) {
+  if (!inherits(x, c("SpatRaster", "RasterLayer"))) {
     stop(sprintf("'%s' must be a 'SpatRaster' or 'RasterLayer' object.", deparse(substitute(x))), call. = FALSE)
   }
 
-  if(inherits(x, "RasterLayer")) {
+  if (inherits(x, "RasterLayer")) {
     message(sprintf("Converting '%s' into a 'spatRaster' object.", deparse(substitute(x))))
     filled <- terra::rast(x)
   } else {
@@ -76,14 +73,14 @@ fill_na_near <- function(x, boundary = NULL, fun = mean, na.policy = "only", na.
   w <- start.window
 
   to_fill <- TRUE
-  while(to_fill) {
+  while (to_fill) {
     w <- w + 2
     list_args <- list(x = filled, w = w, fun = fun, na.policy = na.policy, na.rm = na.rm)
-    filled    <- do.call(terra::focal, c(list_args, extra_args))
-    to_fill   <- terra::global(filled, function(x) any(is.na(x)))[,1]
+    filled <- do.call(terra::focal, c(list_args, extra_args))
+    to_fill <- terra::global(filled, function(x) any(is.na(x)))[, 1]
   }
 
-  if(!is.null(boundary)) {
+  if (!is.null(boundary)) {
     bndr <- boundary
     if (inherits(boundary, "SpatVector")) {
       if (terra::geomtype(boundary) != "polygons") {
@@ -96,7 +93,7 @@ fill_na_near <- function(x, boundary = NULL, fun = mean, na.policy = "only", na.
     } else {
       stop(sprintf("Unsupported geometries. '%s' must be a spatial polygon from 'sf' or 'terra'.", boundary), call. = FALSE)
     }
-    filled  <- terra::mask(filled, bndr)
+    filled <- terra::mask(filled, bndr)
     names(filled) <- names(x)
   }
 

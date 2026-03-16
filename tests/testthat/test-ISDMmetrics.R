@@ -1,5 +1,4 @@
 test_that("ISDMmetrics data structure handles NA and weights correctly", {
-
   # Setup mock data
   n_pres <- 300
   n_count <- 50
@@ -9,33 +8,33 @@ test_that("ISDMmetrics data structure handles NA and weights correctly", {
   tss_p <- 0.70
   tss_c <- 0.60
 
-  rmse_p <- NA_real_  # Presence-only has no Error metric
+  rmse_p <- NA_real_ # Presence-only has no Error metric
   rmse_c <- 0.40
-  mae_p  <- NA_real_  # Presence-only has no Error metric
-  mae_c  <- 0.60
+  mae_p <- NA_real_ # Presence-only has no Error metric
+  mae_c <- 0.60
 
   auc_comp <- ((auc_p * n_pres) + (auc_c * n_count)) / (n_pres + n_count)
   tss_comp <- ((tss_p * n_pres) + (tss_c * n_count)) / (n_pres + n_count)
-  tot_roc <- (auc_comp + tss_comp)/2
+  tot_roc <- (auc_comp + tss_comp) / 2
 
   # Composite Error ignores NA (just takes the Count value)
   rmse_comp <- rmse_c
-  mae_comp  <- mae_c
-  tot_error <- (rmse_comp + mae_comp)/2
+  mae_comp <- mae_c
+  tot_error <- (rmse_comp + mae_comp) / 2
 
   m <- list(
-    AUC_Presence  = auc_p,
-    AUC_Count     = auc_c,
+    AUC_Presence = auc_p,
+    AUC_Count = auc_c,
     TSS_Presence = tss_p,
-    TSS_Count    = tss_c,
+    TSS_Count = tss_c,
     RMSE_Presence = rmse_p,
-    RMSE_Count    = rmse_c,
+    RMSE_Count = rmse_c,
     MAE_Presence = mae_p,
-    MAE_Count    = mae_c,
-    AUC_Comp     = auc_comp,
-    TSS_Comp     = tss_comp,
-    RMSE_Comp    = rmse_comp,
-    MAE_Comp     = mae_comp,
+    MAE_Count = mae_c,
+    AUC_Comp = auc_comp,
+    TSS_Comp = tss_comp,
+    RMSE_Comp = rmse_comp,
+    MAE_Comp = mae_comp,
     TOT_ROC_SCORE = tot_roc,
     TOT_ERROR_SCORE = tot_error
   )

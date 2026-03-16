@@ -79,13 +79,13 @@ presence_data <- data.frame(
   x = runif(100, 0, 4),
   y = runif(100, 6, 13),
   site = rbinom(100, 1, 0.6)
-) \%>\% st_as_sf(coords = c("x", "y"), crs = 4326)
+) |> st_as_sf(coords = c("x", "y"), crs = 4326)
 
 count_data <- data.frame(
   x = runif(50, 0, 4),
   y = runif(50, 6, 13),
   count = rpois(50, 5)
-) \%>\% st_as_sf(coords = c("x", "y"), crs = 4326)
+) |> st_as_sf(coords = c("x", "y"), crs = 4326)
 
 # Create a list of datasets
 datasets_list <- list(Presence = presence_data, Count = count_data)

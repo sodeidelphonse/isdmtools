@@ -8,8 +8,8 @@
 \description{
 \code{isdmtools} provides a set of tools for preparing, analyzing and visualizing spatial data for integrated species distribution models (ISDMs).
 It is designed to help users prepare multisource spatial point datasets for block cross-validation, with a focus on Bayesian inference.
-It analyses the habitat suitability from joint model predictions and maps the results. The package also provides a holistic view of model performance
-by computing a comprehensive evaluation metrics, including ROC-based and continuous-outcome weighted composite scores.
+It analyses the habitat suitability from joint model predictions and maps the results. The package also provides a holistic view of model
+performance by computing a comprehensive evaluation metrics, including ROC-based and continuous-outcome weighted composite scores.
 }
 \seealso{
 Useful links:

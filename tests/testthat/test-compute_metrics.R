@@ -1,4 +1,3 @@
-
 library(testthat)
 library(terra)
 library(sf)
@@ -7,7 +6,6 @@ library(isdmtools)
 options(warn = -1)
 
 test_that("compute_metrics handles Presence-Absence data", {
-
   # A small raster of probabilities (0 to 1)
   r_prob <- terra::rast(ncols = 10, nrows = 10, vals = runif(100), crs = "epsg:4326")
   names(r_prob) <- "prob"
@@ -43,7 +41,6 @@ test_that("compute_metrics handles Presence-Absence data", {
 
 
 test_that("compute_metrics handles Presence-Only data and background points", {
-
   r_prob <- terra::rast(ncols = 10, nrows = 10, vals = runif(100), crs = "epsg:4326")
   names(r_prob) <- "prob"
 
@@ -75,9 +72,10 @@ test_that("compute_metrics handles Presence-Only data and background points", {
 
 
 test_that("compute_metrics handles Count data and Error scores", {
-
-  r_exp <- terra::rast(ncols = 10, nrows = 10, vals = seq(1, 5, length.out = 100),
-                       crs = "epsg:4326")
+  r_exp <- terra::rast(
+    ncols = 10, nrows = 10, vals = seq(1, 5, length.out = 100),
+    crs = "epsg:4326"
+  )
   names(r_exp) <- "intensity"
 
   pts <- sf::st_as_sf(data.frame(
@@ -102,8 +100,10 @@ test_that("compute_metrics handles Count data and Error scores", {
 
 
 test_that("compute_metrics handles Presence-Absence with custom label name", {
-  r_prob <- terra::rast(ncols = 10, nrows = 10, vals = runif(100),
-                        crs = "epsg:4326")
+  r_prob <- terra::rast(
+    ncols = 10, nrows = 10, vals = runif(100),
+    crs = "epsg:4326"
+  )
 
   # Standardized PA data
   pts1 <- sf::st_as_sf(data.frame(
@@ -118,25 +118,25 @@ test_that("compute_metrics handles Presence-Absence with custom label name", {
     status = c(1, 1, 1, 0)
   ), coords = c("x", "y"), crs = 4326)
 
-  test_data = list(Data1_PA = pts1, Data2_PA = pts2)
+  test_data <- list(Data1_PA = pts1, Data2_PA = pts2)
 
   results <- compute_metrics(
     test_data = test_data,
     prob_raster = r_prob,
     response_pa = "status",
     metrics = c("auc", "precision")
-    )
+  )
 
   # Should be NULL for PA data
   expect_type(get_background(results), "NULL")
 
   expect_true(any(grepl("AUC_Data1|PRECISION_Data1|AUC_Data2|PRECISION_Data2", names(results),
-                        ignore.case = TRUE))
-             )
+    ignore.case = TRUE
+  )))
 
   expect_true(any(grepl("AUC_Comp|PRECISION_Comp|TOT_ROC_SCORE|TOT_ERROR_SCORE", names(results),
-                        ignore.case = TRUE))
-             )
+    ignore.case = TRUE
+  )))
 
   expect_false("TSS_Data1" %in% names(results))
   expect_false("RMSE_Data1" %in% names(results))

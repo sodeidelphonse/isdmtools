@@ -1,4 +1,3 @@
-
 test_that("extract_fold correctly partitions data including NAs", {
   skip_if_not_installed("spatialsample")
 
@@ -22,7 +21,7 @@ test_that("extract_fold correctly partitions data including NAs", {
 
   # Count observations in the resulting lists
   n_train <- nrow(extracted$train$PO)
-  n_test  <- nrow(extracted$test$PO)
+  n_test <- nrow(extracted$test$PO)
 
   # Training set points + testing set points = total points MINUS the points excluded.
   expect_equal(n_train + n_test, n_total - n_excluded_global)
@@ -48,16 +47,17 @@ test_that("extract_fold handles multisource datasets correctly", {
 
 
 test_that("extract_fold preserves metadata and attributes", {
-
   # Create dummy datasets
   pts1 <- sf::st_as_sf(data.frame(x = 1:5, y = 1:5, env = runif(5)),
-                       coords = c("x", "y"), crs = 32631)
+    coords = c("x", "y"), crs = 32631
+  )
   pts2 <- sf::st_as_sf(data.frame(x = 10:14, y = 10:14, count = rpois(5, 2)),
-                       coords = c("x", "y"), crs = 32631)
+    coords = c("x", "y"), crs = 32631
+  )
   dsets <- list(Presence = pts1, Abundance = pts2)
 
   folds <- create_folds(dsets, k = 2, cv_method = "spatial")
-  res   <- extract_fold(folds, fold = 1)
+  res <- extract_fold(folds, fold = 1)
 
   # Check CRS preservation during filtering
   expect_equal(sf::st_crs(res$train$Presence), sf::st_crs(pts1))
@@ -73,12 +73,13 @@ test_that("extract_fold preserves metadata and attributes", {
 })
 
 test_that("extract_fold handles empty subsets gracefully", {
-
   # Scenario: A dataset so small it only exists in one fold
   pts_large <- sf::st_as_sf(data.frame(x = 1:10, y = 1:10),
-                            coords = c("x", "y"), crs = 32631)
+    coords = c("x", "y"), crs = 32631
+  )
   pts_small <- sf::st_as_sf(data.frame(x = 0.1, y = 0.1),
-                            coords = c("x", "y"), crs = 32631)
+    coords = c("x", "y"), crs = 32631
+  )
   dsets <- list(Main = pts_large, Rare = pts_small)
 
   folds <- create_folds(dsets, k = 2, cv_method = "spatial")

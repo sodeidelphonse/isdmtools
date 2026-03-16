@@ -1,4 +1,3 @@
-
 library(testthat)
 library(ggplot2)
 library(sf)
@@ -30,7 +29,7 @@ test_that("plot.DataFolds uses correct color mapping", {
   actual_colors <- unique(point_data$colour)
 
   expect_equal(length(actual_colors), 3)
-  expect_true("blue" %in% actual_colors)   # Train
+  expect_true("blue" %in% actual_colors) # Train
   expect_true("orange" %in% actual_colors) # Test
-  expect_true("grey" %in% actual_colors)   # Excluded
+  expect_true("grey" %in% actual_colors) # Excluded
 })

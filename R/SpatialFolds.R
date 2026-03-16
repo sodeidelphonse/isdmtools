@@ -1,4 +1,3 @@
-
 #' @title Create block cross-validation folds for multisource spatial datasets
 #'
 #' @description
@@ -58,13 +57,13 @@
 #'   x = runif(100, 0, 4),
 #'   y = runif(100, 6, 13),
 #'   site = rbinom(100, 1, 0.6)
-#' ) %>% st_as_sf(coords = c("x", "y"), crs = 4326)
+#' ) |> st_as_sf(coords = c("x", "y"), crs = 4326)
 #'
 #' count_data <- data.frame(
 #'   x = runif(50, 0, 4),
 #'   y = runif(50, 6, 13),
 #'   count = rpois(50, 5)
-#' ) %>% st_as_sf(coords = c("x", "y"), crs = 4326)
+#' ) |> st_as_sf(coords = c("x", "y"), crs = 4326)
 #'
 #' # Create a list of datasets
 #' datasets_list <- list(Presence = presence_data, Count = count_data)
@@ -86,40 +85,39 @@
 #'  \item Valavi R, Elith J, Lahoz-Monfort JJ, Guillera-Arroita G. blockCV: an R package for generating spatially or environmentally separated folds for k-fold cross-validation of species distribution models. _bioRxiv_ (2018). \doi{10.1101/357798}.
 #' }
 create_folds <- function(datasets, region_polygon = NULL, k = 5, seed = 23, cv_method = "cluster", ...) {
-
   xy_all <- bind_datasets(datasets)
-  n_obs  <- nrow(xy_all)
+  n_obs <- nrow(xy_all)
 
   set.seed(seed)
   folds_cv <- switch(cv_method,
-                     "cluster" = blockCV::cv_cluster(x = xy_all, k = k, ...),
-                     "spatial" = blockCV::cv_spatial(x = xy_all, k = k, ...),
-                     "nndm" = {
-                       .check_suggests("spatialsample")
-                       res <- spatialsample::spatial_nndm_cv(xy_all, ...)
-                       list(folds_ids = .extract_spatialsample_ids(res, n_obs), folds_data = res)
-                     },
-                     "buffer" = {
-                       .check_suggests("spatialsample")
-                       res <- spatialsample::spatial_buffer_vfold_cv(xy_all, v = k, ...)
-                       list(folds_ids = .extract_spatialsample_ids(res, n_obs), folds_data = res)
-                     },
-                     "location" = {
-                       .check_suggests("spatialsample")
-                       dots <- rlang::list2(...)
-                       if (!"group" %in% names(dots)) {
-                         stop("The 'group' argument (column name) is required for 'location out' CV.")
-                       }
-                       res <- spatialsample::spatial_leave_location_out_cv(xy_all, v = k, ...)
-                       list(folds_ids = .extract_spatialsample_ids(res, n_obs), folds_data = res)
-                     },
-                     "block" = {
-                       .check_suggests("spatialsample")
-                       res <- spatialsample::spatial_block_cv(xy_all, v = k, ...)
-                       list(folds_ids = .extract_spatialsample_ids(res, n_obs), folds_data = res)
-                     },
-                     stop("Invalid `cv_method`. Supported: 'cluster', 'spatial', 'block', 'buffer', 'location', 'nndm'.")
-                     )
+    "cluster" = blockCV::cv_cluster(x = xy_all, k = k, ...),
+    "spatial" = blockCV::cv_spatial(x = xy_all, k = k, ...),
+    "nndm" = {
+      .check_suggests("spatialsample")
+      res <- spatialsample::spatial_nndm_cv(xy_all, ...)
+      list(folds_ids = .extract_spatialsample_ids(res, n_obs), folds_data = res)
+    },
+    "buffer" = {
+      .check_suggests("spatialsample")
+      res <- spatialsample::spatial_buffer_vfold_cv(xy_all, v = k, ...)
+      list(folds_ids = .extract_spatialsample_ids(res, n_obs), folds_data = res)
+    },
+    "location" = {
+      .check_suggests("spatialsample")
+      dots <- rlang::list2(...)
+      if (!"group" %in% names(dots)) {
+        stop("The 'group' argument (column name) is required for 'location out' CV.")
+      }
+      res <- spatialsample::spatial_leave_location_out_cv(xy_all, v = k, ...)
+      list(folds_ids = .extract_spatialsample_ids(res, n_obs), folds_data = res)
+    },
+    "block" = {
+      .check_suggests("spatialsample")
+      res <- spatialsample::spatial_block_cv(xy_all, v = k, ...)
+      list(folds_ids = .extract_spatialsample_ids(res, n_obs), folds_data = res)
+    },
+    stop("Invalid `cv_method`. Supported: 'cluster', 'spatial', 'block', 'buffer', 'location', 'nndm'.")
+  )
 
   xy_all$folds_ids <- folds_cv$folds_ids
 
@@ -161,7 +159,7 @@ bind_datasets <- function(datasets) {
   }
 
   datasets_labeled <- lapply(names(datasets), function(ds_name) {
-    datasets[[ds_name]] %>%
+    datasets[[ds_name]] |>
       dplyr::mutate(datasetName = ds_name)
   })
   bound_data <- dplyr::bind_rows(datasets_labeled)
@@ -231,13 +229,13 @@ bind_datasets <- function(datasets) {
 #'   x = runif(100, 0, 4),
 #'   y = runif(100, 6, 13),
 #'   site = rbinom(100, 1, 0.6)
-#' ) %>% st_as_sf(coords = c("x", "y"), crs = 4326)
+#' ) |> st_as_sf(coords = c("x", "y"), crs = 4326)
 #'
 #' count_data <- data.frame(
 #'   x = runif(50, 0, 4),
 #'   y = runif(50, 6, 13),
 #'   count = rpois(50, 5)
-#' ) %>% st_as_sf(coords = c("x", "y"), crs = 4326)
+#' ) |> st_as_sf(coords = c("x", "y"), crs = 4326)
 #'
 #' datasets_list <- list(Presence = presence_data, Count = count_data)
 #'
@@ -296,11 +294,11 @@ extract_fold.DataFolds <- function(object, fold, ...) {
     stop(paste("Invalid fold number. Must be between 1 and", object$k))
   }
 
-  train_folds_splits <- object$data_all %>% dplyr::filter(.data$folds_ids != fold & !is.na(.data$folds_ids))
-  test_folds_splits <- object$data_all %>% dplyr::filter(.data$folds_ids == fold)
+  train_folds_splits <- object$data_all |> dplyr::filter(.data$folds_ids != fold & !is.na(.data$folds_ids))
+  test_folds_splits <- object$data_all |> dplyr::filter(.data$folds_ids == fold)
 
   train_splits_list <- split(train_folds_splits, train_folds_splits$datasetName)
-  test_splits_list  <- split(test_folds_splits, test_folds_splits$datasetName)
+  test_splits_list <- split(test_folds_splits, test_folds_splits$datasetName)
 
   # We iterate over the original datasets names
   train_data <- lapply(names(object$original_datasets), function(nm) {
@@ -331,13 +329,12 @@ extract_fold.DataFolds <- function(object, fold, ...) {
 #' @rdname DataFolds-methods
 #' @export
 plot.DataFolds <- function(x, nrow = 1, annotate = TRUE, ...) {
-
   num_datasets <- length(x$dataset_names)
   shapes <- c(16, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)[1:num_datasets]
   names(shapes) <- x$dataset_names
 
   plot_data_list <- lapply(1:x$k, function(fold_id) {
-    x$data_all %>%
+    x$data_all |>
       dplyr::mutate(
         Partition = dplyr::case_when(
           is.na(.data$folds_ids) ~ "Excluded",
@@ -361,9 +358,10 @@ plot.DataFolds <- function(x, nrow = 1, annotate = TRUE, ...) {
     ggplot2::geom_sf(ggplot2::aes(color = .data$Partition, shape = .data$datasetName), size = 1.2) +
     ggplot2::scale_color_manual(name = "Partition", values = c("Train" = "blue", "Test" = "orange", "Excluded" = "grey")) +
     ggplot2::scale_shape_manual(name = "Dataset", values = shapes) +
-    ggplot2::facet_wrap(~ fold_panel,
-                        labeller = ggplot2::labeller(fold_panel = function(x) paste("Fold", x)),
-                        nrow = nrow) +
+    ggplot2::facet_wrap(~fold_panel,
+      labeller = ggplot2::labeller(fold_panel = function(x) paste("Fold", x)),
+      nrow = nrow
+    ) +
     ggplot2::theme_bw(base_size = 12) +
     ggplot2::theme(
       legend.position = "right",
@@ -371,13 +369,17 @@ plot.DataFolds <- function(x, nrow = 1, annotate = TRUE, ...) {
       panel.grid.major = ggplot2::element_line(color = "grey80"),
       panel.grid.minor = ggplot2::element_line(color = "grey90")
     ) +
-    ggplot2::labs(title = paste("Block Cross-Validation Folds"),
-                  x = "Longitude",
-                  y = "Latitude")
+    ggplot2::labs(
+      title = paste("Block Cross-Validation Folds"),
+      x = "Longitude",
+      y = "Latitude"
+    )
 
   if (annotate && requireNamespace("ggspatial", quietly = TRUE)) {
-    plot_cv <- plot_cv + ggspatial::annotation_north_arrow(location = "tl", height = grid::unit(0.6, "cm"),
-                                                           width = grid::unit(0.3, "cm")) +
+    plot_cv <- plot_cv + ggspatial::annotation_north_arrow(
+      location = "tl", height = grid::unit(0.6, "cm"),
+      width = grid::unit(0.3, "cm")
+    ) +
       ggspatial::annotation_scale(location = "br", bar_cols = c("grey60", "white"))
   }
 
@@ -391,9 +393,9 @@ print.DataFolds <- function(x, ...) {
   cat("Datasets included:", paste(x$dataset_names, collapse = ", "), "\n\n")
   cat("Summary of individuals per dataset:\n")
 
-  summary_df <- x$data_all %>%
-    dplyr::mutate(fold = ifelse(is.na(.data$folds_ids), "Excluded (Buffer)", as.character(.data$folds_ids))) %>%
-    dplyr::group_by(.data$datasetName, .data$folds_ids) %>%
+  summary_df <- x$data_all |>
+    dplyr::mutate(fold = ifelse(is.na(.data$folds_ids), "Excluded (Buffer)", as.character(.data$folds_ids))) |>
+    dplyr::group_by(.data$datasetName, .data$folds_ids) |>
     dplyr::summarise(n = dplyr::n(), .groups = "drop")
 
   print(summary_df)
@@ -437,8 +439,7 @@ summary.DataFolds <- function(object, ...) {
 #' @importFrom ggplot2 autoplot
 #' @export
 autoplot.DataFolds <- function(object, ...) {
-
-  engine_data      <- object$folds_info$folds_data
+  engine_data <- object$folds_info$folds_data
   is_spatial_style <- inherits(engine_data, "rset") || inherits(engine_data, "rsplit")
 
   if (is_spatial_style) {
@@ -465,5 +466,3 @@ autoplot.DataFolds <- function(object, ...) {
   }
   return(ids)
 }
-
-

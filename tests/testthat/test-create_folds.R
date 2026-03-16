@@ -57,7 +57,6 @@ test_that("spatialsample bridge handles buffers (NA values)", {
 })
 
 test_that("create_folds errors gracefully on missing packages", {
-
   if (requireNamespace("spatialsample", quietly = TRUE)) {
     skip("spatialsample is installed, cannot test missing package error.")
   }

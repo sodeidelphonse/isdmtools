@@ -1,6 +1,4 @@
-
 test_that("benin_shape is correctly integrated and spatially valid", {
-
   # Check if the object is accessible (lazy setup) with the right format
   expect_true(exists("benin_shape"))
   expect_s3_class(benin_shape, "sf")
@@ -18,11 +16,10 @@ test_that("benin_shape is correctly integrated and spatially valid", {
 })
 
 test_that("prepare_predictions works with internal data", {
-
   # Create a dummy point inside Benin
   test_point <- sf::st_sfc(sf::st_point(c(2.4, 9.3)), crs = 4326)
 
   # Check if the internal data can perform a spatial operation
   is_inside <- sf::st_intersects(test_point, benin_shape, sparse = FALSE)
-  expect_true(is_inside[1,1])
+  expect_true(is_inside[1, 1])
 })

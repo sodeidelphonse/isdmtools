@@ -1,4 +1,3 @@
-
 library(testthat)
 library(sf)
 library(terra)
@@ -7,13 +6,12 @@ library(isdmtools)
 options(warn = -1) # Suppresses warnings globally in the current session
 
 test_that("GeoDiagnostic identifies distance categories correctly", {
-
-  # Create dummy datasets
   set.seed(123)
-  pts <- data.frame(v1 = c(runif(10, 0, 10), runif(10, 20, 30)),
-                    v2 = c(runif(10, 0, 10), runif(10, 20, 30)),
-                    folds_ids = rep(1:2, each = 5)
-                   )
+  pts <- data.frame(
+    v1 = c(runif(10, 0, 10), runif(10, 20, 30)),
+    v2 = c(runif(10, 0, 10), runif(10, 20, 30)),
+    folds_ids = rep(1:2, each = 5)
+  )
   pts_sf <- st_as_sf(pts, coords = c("v1", "v2"), crs = 32631)
 
   r <- rast(ext(0, 30, 0, 30), res = 1)
@@ -25,7 +23,8 @@ test_that("GeoDiagnostic identifies distance categories correctly", {
   mock_folds <- list(data_all = pts_sf, k = 2)
   class(mock_folds) <- "DataFolds"
 
-  # These points are > 10 units apart, so with rho=2, they should be Independent
+  # These points are located more than 10 units apart, so with rho=2,
+  # they should be Independent
   geo_res <- check_folds(mock_folds, rho = 2)
 
   expect_s3_class(geo_res, "GeoDiagnostic")
@@ -37,7 +36,6 @@ test_that("GeoDiagnostic identifies distance categories correctly", {
 })
 
 test_that("check_spatial_geometry works with realistic integer fold IDs", {
-
   pts <- data.frame(
     v1 = c(1, 1.1, 5, 5.1),
     v2 = c(1, 1.1, 5, 5.1),
@@ -58,13 +56,13 @@ test_that("check_spatial_geometry works with realistic integer fold IDs", {
 
 
 test_that("EnvDiagnostic extracts values and runs stats", {
-
   # Create dummy datasets
   set.seed(123)
-  pts <- data.frame(v1 = c(runif(10, 0, 10), runif(10, 20, 30)),
-                    v2 = c(runif(10, 0, 10), runif(10, 20, 30)),
-                    folds_ids = rep(1:2, each = 5)
-                   )
+  pts <- data.frame(
+    v1 = c(runif(10, 0, 10), runif(10, 20, 30)),
+    v2 = c(runif(10, 0, 10), runif(10, 20, 30)),
+    folds_ids = rep(1:2, each = 5)
+  )
   pts_sf <- st_as_sf(pts, coords = c("v1", "v2"), crs = "EPSG:32631")
 
   r <- rast(ext(0, 30, 0, 30), res = 1, crs = "EPSG:32631")
@@ -88,13 +86,12 @@ test_that("EnvDiagnostic extracts values and runs stats", {
 
 
 test_that("EnvDiagnostic handles categorical variables correctly", {
-
   r_cat <- terra::rast(extent = c(0, 10, 0, 10), res = 1, crs = "EPSG:32631")
 
   # Create 3 habitat classes
   terra::values(r_cat) <- sample(c(1, 2, 3), terra::ncell(r_cat), replace = TRUE)
   levels(r_cat) <- data.frame(ID = 1:3, habitat = c("Forest", "Grassland", "Urban"))
-  names(r_cat)  <- "land_cover"
+  names(r_cat) <- "land_cover"
 
   pts <- data.frame(
     x = runif(20, 0, 10),
@@ -122,7 +119,6 @@ test_that("EnvDiagnostic handles categorical variables correctly", {
 
 
 test_that("Environmental overlap logic (Schoener's D) works correctly", {
-
   #--- Test the internal helper function
   # Create two identical distributions (should have high overlap)
   v1 <- rnorm(1000, mean = 10, sd = 1)
@@ -161,7 +157,6 @@ test_that("Environmental overlap logic (Schoener's D) works correctly", {
 
 
 test_that("EnvDiagnostic correctly integrates background in summary and plot", {
-
   r <- terra::rast(extent = c(0, 10, 0, 10), res = 1, val = 1:100, crs = "EPSG:32631")
   names(r) <- "env_var"
 
@@ -173,7 +168,7 @@ test_that("EnvDiagnostic correctly integrates background in summary and plot", {
   class(mock_folds) <- "DataFolds"
 
   # We use a small n_background for speed in testing
-  env_diag  <- check_env_balance(mock_folds, covariates = r, n_background = 100)
+  env_diag <- check_env_balance(mock_folds, covariates = r, n_background = 100)
   plot_data <- env_diag$plot$data
 
   # Ensure background (BG) is present in the data used for the plot
@@ -186,11 +181,11 @@ test_that("EnvDiagnostic correctly integrates background in summary and plot", {
 
 
 test_that("GeoDiagnostic lifecycle works", {
-
-  pts <- data.frame(x = runif(10, 0, 2),
-                    y = runif(10, 0, 2),
-                    folds_ids = rep(1:2, each = 5)
-                    )
+  pts <- data.frame(
+    x = runif(10, 0, 2),
+    y = runif(10, 0, 2),
+    folds_ids = rep(1:2, each = 5)
+  )
   pts_sf <- st_as_sf(pts, coords = c("x", "y"), crs = "EPSG:32631")
 
   folds <- list(data_all = pts_sf)
@@ -205,4 +200,3 @@ test_that("GeoDiagnostic lifecycle works", {
   p <- plot(diag_obj)
   expect_s3_class(p, "ggplot")
 })
-

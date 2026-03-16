@@ -1,4 +1,3 @@
-
 library(testthat)
 library(terra)
 library(sf)
@@ -7,7 +6,6 @@ library(isdmtools)
 options(warn = -1) # Suppresses warnings globally
 
 test_that("summarise_fold_diagnostics is robust to handle both diagnostic classes", {
-
   # GeoDiagnostic object: Folds are contiguous (gap = 0)
   geo_mock <- list(
     summary = data.frame(
@@ -48,7 +46,6 @@ test_that("summarise_fold_diagnostics is robust to handle both diagnostic classe
 })
 
 test_that("summarise_fold_diagnostics handles categorical-only NAs gracefully", {
-
   # Mock GeoDiagnostic (spatially independent)
   geo_mock <- list(
     summary = data.frame(
@@ -64,7 +61,7 @@ test_that("summarise_fold_diagnostics handles categorical-only NAs gracefully", 
     summary = data.frame(
       Variable = "land_cover",
       Type = "Categorical",
-      p_val = 0.08,         # Balanced
+      p_val = 0.08, # Balanced
       Schoener_D = NA_real_ # Expected for categorical
     )
   )
@@ -95,7 +92,6 @@ test_that("summarise_fold_diagnostics handles categorical-only NAs gracefully", 
 
 
 test_that("summarise_fold_diagnostics provides a unified report", {
-
   # Create mock data
   r <- terra::rast(extent = c(0, 1000, 0, 1000), res = 1, crs = "EPSG:32631")
   terra::values(r) <- seq(1, terra::ncell(r))
@@ -126,10 +122,12 @@ test_that("summarise_fold_diagnostics provides a unified report", {
   expect_no_error(print(summarise_fold_diagnostics(geo_diag, env_diag)))
 
   # Check for presence of key metrics from both worlds
-  expected_metrics <- c("Avg Internal Distance (km)",
-                        "Avg Inter-Fold Gap (km)",
-                        "Median Overlap (D)",
-                        "Minimum p-value")
+  expected_metrics <- c(
+    "Avg Internal Distance (km)",
+    "Avg Inter-Fold Gap (km)",
+    "Median Overlap (D)",
+    "Minimum p-value"
+  )
 
   expect_true(all(expected_metrics %in% report$Metric))
 

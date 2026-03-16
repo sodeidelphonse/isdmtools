@@ -1,4 +1,3 @@
-
 #----------------------------------------------------------
 #--- Multi-panel plot for spatial data visualization
 #----------------------------------------------------------
@@ -64,7 +63,8 @@
 #' library(sf)
 #' set.seed(123)
 #' points_sf <- st_as_sf(grid_data[sample(1:10000, 1000), ],
-#'                      coords = c("x", "y"), crs = 32631) # UTM CRS
+#'   coords = c("x", "y"), crs = 32631
+#' ) # UTM CRS
 #' points_sf <- format_predictions(points_sf)
 #'
 #' # Generate the map
@@ -93,12 +93,11 @@ generate_maps <- function(data,
                           xaxis_breaks = NULL,
                           yaxis_breaks = NULL,
                           annotate = TRUE) {
-
   if (!inherits(data, c("data.frame", "sf", "SpatRaster"))) {
     stop("'data' must be a data.frame, an sf object, or a SpatRaster.", call. = FALSE)
   }
 
-  if(inherits(data, "SpatRaster")) {
+  if (inherits(data, "SpatRaster")) {
     data <- as.data.frame(data, xy = TRUE)
   }
   if (is.data.frame(data) && !inherits(data, "sf") && !all(c("x", "y") %in% names(data))) {
@@ -111,11 +110,13 @@ generate_maps <- function(data,
 
   if (!all(var_names %in% names(data))) {
     missing_vars <- setdiff(var_names, names(data))
-    stop(paste("The following variables in 'var_names' were not found in 'data':",
-               paste(missing_vars, collapse = ", ")), call. = FALSE)
+    stop(paste(
+      "The following variables in 'var_names' were not found in 'data':",
+      paste(missing_vars, collapse = ", ")
+    ), call. = FALSE)
   }
 
-  if(!is.null(base_map)) {
+  if (!is.null(base_map)) {
     if (!inherits(base_map, "sf")) {
       stop("'base_map' must be an sf object.", call. = FALSE)
     }
@@ -141,7 +142,7 @@ generate_maps <- function(data,
   is_sf_data <- inherits(data, "sf")
   multi_panel <- length(var_names) > 1
 
-  if(multi_panel) {
+  if (multi_panel) {
     long_data_list <- lapply(var_names, function(vn) {
       if (is_sf_data) {
         tmp <- data[, vn]
@@ -163,10 +164,9 @@ generate_maps <- function(data,
     } else {
       long_data$prediction_var <- factor(long_data$prediction_var, levels = var_names, labels = panel_labels)
     }
-
   } else {
     long_data <- data
-    fill_col  <- var_names
+    fill_col <- var_names
   }
 
   p <- ggplot2::ggplot(long_data)
@@ -180,7 +180,7 @@ generate_maps <- function(data,
     p <- p + ggplot2::geom_sf(data = base_map_to_plot, fill = NA, color = "grey20")
   }
 
-  fill_col <- if(multi_panel) "value" else var_names
+  fill_col <- if (multi_panel) "value" else var_names
 
   if (is_sf_data) {
     p <- p +
@@ -200,19 +200,19 @@ generate_maps <- function(data,
 
   # Conditional Faceting
   if (multi_panel) {
-    p <- p + ggplot2::facet_wrap(~ prediction_var, strip.position = "top", nrow = nrow)
+    p <- p + ggplot2::facet_wrap(~prediction_var, strip.position = "top", nrow = nrow)
   } else {
-    plot_title <- if(!is.null(panel_labels)) panel_labels else var_names
+    plot_title <- if (!is.null(panel_labels)) panel_labels else var_names
     p <- p + ggplot2::labs(title = plot_title)
   }
 
   p <- p + ggplot2::theme(
-      axis.title.x = ggplot2::element_text(margin = ggplot2::margin(t = 10, b = 10)),
-      axis.title.y = ggplot2::element_text(margin = ggplot2::margin(r = 10, l = 10)),
-      panel.border = ggplot2::element_rect(color = "grey", fill = NA),
-      strip.text = ggplot2::element_text(hjust = 0, vjust = 1),
-      plot.title = ggplot2::element_text(size = 13, face = "bold", margin = ggplot2::margin(b = 10))
-    )
+    axis.title.x = ggplot2::element_text(margin = ggplot2::margin(t = 10, b = 10)),
+    axis.title.y = ggplot2::element_text(margin = ggplot2::margin(r = 10, l = 10)),
+    panel.border = ggplot2::element_rect(color = "grey", fill = NA),
+    strip.text = ggplot2::element_text(hjust = 0, vjust = 1),
+    plot.title = ggplot2::element_text(size = 13, face = "bold", margin = ggplot2::margin(b = 10))
+  )
 
   if (annotate && requireNamespace("ggspatial", quietly = TRUE)) {
     p <- p +

@@ -1,4 +1,3 @@
-
 #-----------------------------------------------------------
 #--- Function to compute an habitat suitability from ISDM
 #-----------------------------------------------------------
@@ -91,7 +90,6 @@ suitability_index <- function(x,
                               has_offset = FALSE,
                               scale_independent = FALSE,
                               projection = NULL, ...) {
-
   output_format <- match.arg(output_format)
   response_type <- match.arg(response_type)
 
@@ -104,23 +102,25 @@ suitability_index <- function(x,
     }
     if (!all(post_stat %in% names(x))) {
       missing_stats <- post_stat[!post_stat %in% names(x)]
-      stop(paste0("The following 'post_stat' columns were not found in the input data.frame: ",
-                  paste(missing_stats, collapse = ", ")), call. = FALSE)
+      stop(paste0(
+        "The following 'post_stat' columns were not found in the input data.frame: ",
+        paste(missing_stats, collapse = ", ")
+      ), call. = FALSE)
     }
 
-    target_crs <- if(is.null(projection)) "" else projection
+    target_crs <- if (is.null(projection)) "" else projection
     eta_rast <- terra::rast(x[, c("x", "y", post_stat)], type = "xyz", crs = target_crs, ...)
-
   } else if (inherits(x, "SpatRaster")) {
     if (!all(post_stat %in% names(x))) {
       missing_stats <- post_stat[!post_stat %in% names(x)]
-      stop(paste0("The following 'post_stat' layers were not found in the input raster: ",
-                  paste(missing_stats, collapse = ", ")), call. = FALSE)
+      stop(paste0(
+        "The following 'post_stat' layers were not found in the input raster: ",
+        paste(missing_stats, collapse = ", ")
+      ), call. = FALSE)
     }
 
     eta_rast <- x[[post_stat]]
     if (!is.null(projection)) terra::crs(eta_rast) <- projection
-
   } else {
     stop("Input 'x' must be a data.frame or a SpatRaster object.", call. = FALSE)
   }
@@ -143,10 +143,10 @@ suitability_index <- function(x,
   prob_rast <- 1 - exp(-(scaling_factor * expected_response))
 
   out <- switch(output_format,
-                prob = prob_rast,
-                response = expected_response,
-                linear = eta_rast
-                )
+    prob = prob_rast,
+    response = expected_response,
+    linear = eta_rast
+  )
   names(out) <- post_stat
 
   return(out)
@@ -211,29 +211,30 @@ inv_cloglog <- function(eta, scaling = 1) {
 #' print(class(field_pp2))
 #'
 #' # c) A point-based prediction returns the original class
-#' if(require("fmesher", quietly = TRUE)) {
-#'   bnd  <- fm_nonconvex_hull(as.matrix(grid_df[, c("x", "y")]), convex = -0.10)
+#' if (require("fmesher", quietly = TRUE)) {
+#'   bnd <- fm_nonconvex_hull(as.matrix(grid_df[, c("x", "y")]), convex = -0.10)
 #'   mesh <- fm_mesh_2d(boundary = bnd, max.edge = c(3, 30), crs = "epsg:4326")
 #'   vt <- fm_vertices(mesh, format = "sf")
 #'
-#' # An inlabru-like prediction at mesh vertices (extended areas are imputed)
-#'  sampled_vals <- terra::extract(grid_r, vt)
-#'  sim_field <- vt %>%
-#'    mutate(mean = dplyr::coalesce(sampled_vals$mu, mean(grid_df$mu, na.rm = TRUE)),
-#'          sd    = dplyr::coalesce(sampled_vals$sd, mean(grid_df$sd, na.rm = TRUE)),
-#'          q0.025 = mean - 1.96 * sd,
-#'          q0.5   = mean,
-#'          q0.975 = mean + 1.96 * sd,
-#'          median = mean)
-#'  class(sim_field) <- c("bru_prediction", "sf", "data.frame")
+#'   # An inlabru-like prediction at mesh vertices (extended areas are imputed)
+#'   sampled_vals <- terra::extract(grid_r, vt)
+#'   sim_field <- vt %>%
+#'     mutate(
+#'       mean = dplyr::coalesce(sampled_vals$mu, mean(grid_df$mu, na.rm = TRUE)),
+#'       sd = dplyr::coalesce(sampled_vals$sd, mean(grid_df$sd, na.rm = TRUE)),
+#'       q0.025 = mean - 1.96 * sd,
+#'       q0.5 = mean,
+#'       q0.975 = mean + 1.96 * sd,
+#'       median = mean
+#'     )
+#'   class(sim_field) <- c("bru_prediction", "sf", "data.frame")
 #'
-#'  field_pp3  <- format_predictions(sim_field)
-#'  print(class(field_pp3))
-#'  }
+#'   field_pp3 <- format_predictions(sim_field)
+#'   print(class(field_pp3))
+#' }
 #' }
 format_predictions <- function(prediction_data, base_map = NULL) {
-
-  if(!is.null(base_map)) {
+  if (!is.null(base_map)) {
     if (!inherits(base_map, "sf")) {
       stop("'base_map' must be an sf object.", call. = FALSE)
     }
@@ -260,7 +261,7 @@ format_predictions <- function(prediction_data, base_map = NULL) {
 
     if (!is.null(base_map)) {
       pred_crs <- sf::st_crs(data_to_prepare)
-      map_crs  <- sf::st_crs(base_map)
+      map_crs <- sf::st_crs(base_map)
 
       if (is.na(pred_crs) || is.na(map_crs)) {
         warning("One of the inputs lacks a CRS. Spatial filtering may be inaccurate.", call. = FALSE)
@@ -269,11 +270,9 @@ format_predictions <- function(prediction_data, base_map = NULL) {
       }
 
       return(sf::st_filter(data_to_prepare, base_map))
-
     } else {
       return(data_to_prepare)
     }
-
   } else {
     if (inherits(data_to_prepare, "sf")) {
       coords <- sf::st_coordinates(data_to_prepare)
@@ -284,7 +283,6 @@ format_predictions <- function(prediction_data, base_map = NULL) {
       df <- df[, !(names(df) %in% c("x", "y", "X", "Y")), drop = FALSE]
 
       return(cbind(df, x = coords[, "X"], y = coords[, "Y"]))
-
     } else {
       df <- as.data.frame(data_to_prepare)
       names(df)[names(df) == "X"] <- "x"
@@ -298,5 +296,3 @@ format_predictions <- function(prediction_data, base_map = NULL) {
     }
   }
 }
-
-

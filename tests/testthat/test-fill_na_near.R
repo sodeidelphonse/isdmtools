@@ -1,5 +1,4 @@
 test_that("fill_na_near handles input validation and conversions", {
-
   r <- terra::rast(matrix(c(1, 2, NA, 4), nrow = 2))
 
   # Test input arguments
@@ -9,7 +8,6 @@ test_that("fill_na_near handles input validation and conversions", {
 })
 
 test_that("fill_na_near logic and boundary masking works", {
-
   # Create small raster with a central NA
   r <- terra::rast(ncols = 3, nrows = 3, vals = 1)
   r[5] <- NA

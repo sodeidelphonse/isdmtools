@@ -1,5 +1,3 @@
-
-
 #-----------------------------------------------------------------
 #--- Function to generate background points without NA cells
 #-----------------------------------------------------------------
@@ -27,7 +25,7 @@
 #' \dontrun{
 #' library(terra)
 #' set.seed(123)
-#' r  <- rast(nrows = 100, ncols = 100, xmin = 0, xmax = 10, ymin = 0, ymax = 10)
+#' r <- rast(nrows = 100, ncols = 100, xmin = 0, xmax = 10, ymin = 0, ymax = 10)
 #' terra::values(r) <- runif(ncell(r))
 #' pts <- spatSample(r, size = 100, xy = TRUE, values = FALSE)
 #'
@@ -38,14 +36,13 @@
 #' print(bg_sample1)
 #'
 #' # Requesting points more than available non-NA cells
-#' bg_sample2 <- sample_background(r, points = pts, n = 10000, xy =TRUE, cells = FALSE)
+#' bg_sample2 <- sample_background(r, points = pts, n = 10000, xy = TRUE, cells = FALSE)
 #' dim(bg_sample2$bg)
 #' plot(bg_sample2)
 #' }
 #'
 sample_background <- function(mask, points = NULL, n = 1000, method = "random", cells = FALSE,
                               xy = TRUE, as.points = FALSE, na.rm = TRUE, ...) {
-
   if (!any(c(cells, xy, as.points))) {
     stop("At least one of 'cells', 'xy', or 'as.points' must be TRUE.")
   }
@@ -65,25 +62,22 @@ sample_background <- function(mask, points = NULL, n = 1000, method = "random", 
         stop(sprintf("'%s' SpatVector must contain only point geometries.", deparse(substitute(points))), call. = FALSE)
       }
       pts <- terra::geom(points)[, c("x", "y")]
-
     } else if (inherits(points, "sf")) {
       if (!all(sf::st_geometry_type(points) %in% c("POINT", "MULTIPOINT"))) {
         stop(sprintf("'%s' sf object must contain only POINT geometries.", deparse(substitute(points))), call. = FALSE)
       }
       pts <- sf::st_coordinates(points)[, c("X", "Y"), drop = FALSE]
-
     } else if (is.matrix(points) || is.data.frame(points)) {
       if (ncol(points) < 2) {
         stop(sprintf("'%s' must have at least two columns (x and y).", deparse(substitute(points))), call. = FALSE)
       }
       pts <- as.matrix(points)[, 1:2]
-
     } else {
       stop("Unsupported 'points' format. Must be object from sf, terra, or a matrix/data.frame.", call. = FALSE)
     }
 
     excluded_cells <- unique(terra::cellFromXY(mask, pts))
-    mask_modified  <- mask
+    mask_modified <- mask
     mask_modified[excluded_cells] <- NA
   } else {
     warning("'points' argument is NULL. You can supply known 'points' to be excluded from the sample.", call. = FALSE)
@@ -95,22 +89,25 @@ sample_background <- function(mask, points = NULL, n = 1000, method = "random", 
     warning("Requested more background points than available non-NA pixels.", call. = FALSE)
   }
 
-  result <- tryCatch({
-    bg_points <- terra::spatSample(
-      mask_modified,
-      size = n,
-      method = method,
-      na.rm = na.rm,
-      cells = cells,
-      xy = xy,
-      as.points = as.points,
-      ...
-    )
-    structure(list(bg = bg_points, mask = mask_modified), class = "BackgroundPoints")
-  }, error = function(e) {
-    message(sprintf("Sampling background points failed: %s", conditionMessage(e)))
-    return(NULL)
-  })
+  result <- tryCatch(
+    {
+      bg_points <- terra::spatSample(
+        mask_modified,
+        size = n,
+        method = method,
+        na.rm = na.rm,
+        cells = cells,
+        xy = xy,
+        as.points = as.points,
+        ...
+      )
+      structure(list(bg = bg_points, mask = mask_modified), class = "BackgroundPoints")
+    },
+    error = function(e) {
+      message(sprintf("Sampling background points failed: %s", conditionMessage(e)))
+      return(NULL)
+    }
+  )
 
   return(result)
 }
@@ -144,7 +141,7 @@ sample_background <- function(mask, points = NULL, n = 1000, method = "random", 
 #' \dontrun{
 #' library(terra)
 #' set.seed(123)
-#' r  <- rast(nrows = 100, ncols = 100, xmin = 0, xmax = 10, ymin = 0, ymax = 10)
+#' r <- rast(nrows = 100, ncols = 100, xmin = 0, xmax = 10, ymin = 0, ymax = 10)
 #' terra::values(r) <- runif(ncell(r))
 #' pts <- spatSample(r, size = 100, xy = TRUE, values = FALSE)
 #'
@@ -155,15 +152,16 @@ sample_background <- function(mask, points = NULL, n = 1000, method = "random", 
 #' print(bg_sample1)
 #'
 #' # Requesting points more than available non-NA cells
-#' bg_sample2 <- sample_background(r, points = pts, n = 10000, xy =TRUE, cells = FALSE)
+#' bg_sample2 <- sample_background(r, points = pts, n = 10000, xy = TRUE, cells = FALSE)
 #' dim(bg_sample2$bg)
 #' plot(bg_sample2)
 #' }
 #'
 plot.BackgroundPoints <- function(x, ...) {
-
   extract_points <- function(bg, mask) {
-    if (inherits(bg, "SpatVector")) return(terra::crds(bg))
+    if (inherits(bg, "SpatVector")) {
+      return(terra::crds(bg))
+    }
     if (is.matrix(bg) || is.data.frame(bg)) {
       if (all(c("x", "y") %in% colnames(bg))) {
         return(bg[, c("x", "y")])
@@ -189,7 +187,6 @@ print.BackgroundPoints <- function(x, ...) {
   cat("Generated Background Points:\n")
   print_bg(x$bg)
   cat("Modified Mask available in `$mask`.\n")
-
 }
 
 
@@ -221,5 +218,3 @@ print_bg <- function(x) {
   }
   cat("\n")
 }
-
-

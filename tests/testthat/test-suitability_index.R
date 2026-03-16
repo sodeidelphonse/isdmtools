@@ -2,7 +2,6 @@ library(testthat)
 library(terra)
 
 test_that("suitability_index handles data.frame and SpatRaster inputs", {
-
   # Create dummy data
   df <- data.frame(x = c(0, 1), y = c(0, 1), mean = c(0, 1))
   projection <- "+proj=utm +zone=31 +units=km"
@@ -20,11 +19,10 @@ test_that("suitability_index handles data.frame and SpatRaster inputs", {
 })
 
 test_that("scale_independent argument correctly modifies probability", {
-
   # Set up a raster with 10km2 cells (res = sqrt(10))
   side <- sqrt(10)
-  r <- terra::rast(nrows=1, ncols=1, xmin=0, xmax=side, ymin=0, ymax=side)
-  r[]      <- 0  # eta = 0, so exp(eta) = 1
+  r <- terra::rast(nrows = 1, ncols = 1, xmin = 0, xmax = side, ymin = 0, ymax = side)
+  r[] <- 0 # eta = 0, so exp(eta) = 1
   names(r) <- "mean"
   terra::crs(r) <- "+proj=utm +zone=31 +units=km"
 
@@ -38,9 +36,7 @@ test_that("scale_independent argument correctly modifies probability", {
 })
 
 
-
 test_that("error handling triggers for missing columns/layers", {
-
   # Case 1: Data frame with wrong column name
   df <- data.frame(x = c(0, 1), y = c(0, 1), wrong_name = c(0, 1))
   expect_error(
@@ -58,7 +54,6 @@ test_that("error handling triggers for missing columns/layers", {
 })
 
 test_that("suitability_index handles lowercase x and y", {
-
   # Use a simple planar projection
   proj_planar <- "+proj=utm +zone=31 +units=km"
 
@@ -87,14 +82,15 @@ test_that("output_format returns correct scales", {
 
 
 test_that("longlat area calculation uses km2 for PO intensity scaling", {
-
   # Define a resolution roughly equivalent to 10km2 at 45 degrees North
   # 0.033 degrees is approx 3.6km. 3.6 * (3.6 * cos(45)) approx 10km2.
   res_deg <- 0.033
-  r <- terra::rast(nrows = 10, ncols = 10,
-                   xmin = 0, xmax = 10 * res_deg,
-                   ymin = 45, ymax = 45 + 10 * res_deg)
-  r[] <- -2  # constant log-intensity
+  r <- terra::rast(
+    nrows = 10, ncols = 10,
+    xmin = 0, xmax = 10 * res_deg,
+    ymin = 45, ymax = 45 + 10 * res_deg
+  )
+  r[] <- -2 # constant log-intensity
   names(r) <- "mean"
   terra::crs(r) <- "+proj=longlat +datum=WGS84"
 
@@ -113,4 +109,3 @@ test_that("longlat area calculation uses km2 for PO intensity scaling", {
   expected_p <- 1 - exp(-(area_km2 * exp(-2)))
   expect_equal(val, expected_p, tolerance = 1e-6)
 })
-

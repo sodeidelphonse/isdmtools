@@ -49,25 +49,27 @@ field_pp2 <- format_predictions(grid_sf)
 print(class(field_pp2))
 
 # c) A point-based prediction returns the original class
-if(require("fmesher", quietly = TRUE)) {
-  bnd  <- fm_nonconvex_hull(as.matrix(grid_df[, c("x", "y")]), convex = -0.10)
+if (require("fmesher", quietly = TRUE)) {
+  bnd <- fm_nonconvex_hull(as.matrix(grid_df[, c("x", "y")]), convex = -0.10)
   mesh <- fm_mesh_2d(boundary = bnd, max.edge = c(3, 30), crs = "epsg:4326")
   vt <- fm_vertices(mesh, format = "sf")
 
-# An inlabru-like prediction at mesh vertices (extended areas are imputed)
- sampled_vals <- terra::extract(grid_r, vt)
- sim_field <- vt \%>\%
-   mutate(mean = dplyr::coalesce(sampled_vals$mu, mean(grid_df$mu, na.rm = TRUE)),
-         sd    = dplyr::coalesce(sampled_vals$sd, mean(grid_df$sd, na.rm = TRUE)),
-         q0.025 = mean - 1.96 * sd,
-         q0.5   = mean,
-         q0.975 = mean + 1.96 * sd,
-         median = mean)
- class(sim_field) <- c("bru_prediction", "sf", "data.frame")
+  # An inlabru-like prediction at mesh vertices (extended areas are imputed)
+  sampled_vals <- terra::extract(grid_r, vt)
+  sim_field <- vt \%>\%
+    mutate(
+      mean = dplyr::coalesce(sampled_vals$mu, mean(grid_df$mu, na.rm = TRUE)),
+      sd = dplyr::coalesce(sampled_vals$sd, mean(grid_df$sd, na.rm = TRUE)),
+      q0.025 = mean - 1.96 * sd,
+      q0.5 = mean,
+      q0.975 = mean + 1.96 * sd,
+      median = mean
+    )
+  class(sim_field) <- c("bru_prediction", "sf", "data.frame")
 
- field_pp3  <- format_predictions(sim_field)
- print(class(field_pp3))
- }
+  field_pp3 <- format_predictions(sim_field)
+  print(class(field_pp3))
+}
 }
 }
 \seealso{

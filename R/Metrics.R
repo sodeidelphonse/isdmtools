@@ -1,4 +1,3 @@
-
 #--------------------------------------------------------------------------------------------------------
 #--- Function to compute comprehensive evaluation metrics for integrated or standalone spatial models
 #--------------------------------------------------------------------------------------------------------
@@ -161,8 +160,8 @@ compute_metrics <- function(test_data,
                             xy_excluded = NULL,
                             expected_response = NULL,
                             n_background = 1000,
-                            response_counts = 'counts',
-                            response_pa = 'present',
+                            response_counts = "counts",
+                            response_pa = "present",
                             threshold_method = c("best", "fixed"),
                             best_method = c("youden", "closest.topleft"),
                             fixed_threshold = NA_real_,
@@ -173,16 +172,17 @@ compute_metrics <- function(test_data,
                             is_pred_rate = FALSE,
                             exposure = NULL,
                             seed = 25, ...) {
-
   # Master list of allowed metrics
   error_metrics <- c("rmse", "mae", "mape", "r2")
-  roc_metrics <- c("auc", "tss", "accuracy", "precision", "recall", "specificity",
-                   "npv", "fpr", "fnr", "fdr", "f1", "threshold", "tpr", "tnr")
+  roc_metrics <- c(
+    "auc", "tss", "accuracy", "precision", "recall", "specificity",
+    "npv", "fpr", "fnr", "fdr", "f1", "threshold", "tpr", "tnr"
+  )
   master_allowed_metrics <- c(roc_metrics, error_metrics)
 
   # --- Critical validation for required inputs ----
   threshold_method <- match.arg(threshold_method)
-  best_method      <- match.arg(best_method)
+  best_method <- match.arg(best_method)
   best_threshold_policy <- match.arg(best_threshold_policy)
 
   has_roc_metrics <- any(roc_metrics %in% metrics)
@@ -197,7 +197,7 @@ compute_metrics <- function(test_data,
     stop("Continuous-outcome metrics were requested but 'expected_response' raster was not provided.", call. = FALSE)
   }
 
-  default_roc_metrics  <- c("auc", "tss", "accuracy", "f1", "recall", "precision")
+  default_roc_metrics <- c("auc", "tss", "accuracy", "f1", "recall", "precision")
   default_error_metrics <- c("rmse", "mae", "r2")
 
   if (is.null(metrics)) {
@@ -221,11 +221,11 @@ compute_metrics <- function(test_data,
     }
   }
 
-  if(!is.null(prob_raster) || !missing(prob_raster)) {
-    if(!inherits(prob_raster, "SpatRaster")) {
+  if (!is.null(prob_raster) || !missing(prob_raster)) {
+    if (!inherits(prob_raster, "SpatRaster")) {
       stop(sprintf("'%s' must be a SpatRaster object.", prob_raster), call. = FALSE)
     } else {
-      vals <- terra::values(prob_raster)[,1]
+      vals <- terra::values(prob_raster)[, 1]
       vals <- vals[!is.na(vals)]
       if (length(vals) == 0) {
         stop("Probabilities raster contains only NA values. Cannot compute metrics.", call. = FALSE)
@@ -241,18 +241,18 @@ compute_metrics <- function(test_data,
     }
   }
 
-  if(!is.null(expected_response)) {
-    if(!inherits(expected_response, "SpatRaster")) {
+  if (!is.null(expected_response)) {
+    if (!inherits(expected_response, "SpatRaster")) {
       stop(sprintf("'%s' must be a SpatRaster object.", deparse(substitute(expected_response))), call. = FALSE)
     }
-    vals <- terra::values(expected_response)[,1]
+    vals <- terra::values(expected_response)[, 1]
     vals <- vals[!is.na(vals)]
-    if(any(vals < 0)) {
+    if (any(vals < 0)) {
       stop("'expected_response' must be positive values.", call. = FALSE)
     }
   }
 
-  if(!inherits(test_data, "list") || is.null(names(test_data))) {
+  if (!inherits(test_data, "list") || is.null(names(test_data))) {
     stop(sprintf("'%s' must be a named list.", deparse(substitute(test_data))), call. = FALSE)
   }
 
@@ -272,21 +272,27 @@ compute_metrics <- function(test_data,
 
   if (is.null(overall_roc_metrics)) {
     roc_metrics_to_average <- c("auc", "tss", "accuracy")
-    message(sprintf("No 'overall_roc_metrics' specified. Overall ROC score will be computed for available metrics among: %s.",
-                    paste(toupper(roc_metrics_to_average), collapse = ", ")))
+    message(sprintf(
+      "No 'overall_roc_metrics' specified. Overall ROC score will be computed for available metrics among: %s.",
+      paste(toupper(roc_metrics_to_average), collapse = ", ")
+    ))
   } else {
     if (!is.character(overall_roc_metrics)) {
       stop("'overall_roc_metrics' must be a character vector of metric names.", call. = FALSE)
     }
     valid_options <- c("auc", "tss", "accuracy", "f1")
-    if(!all(overall_roc_metrics %in% valid_options)) {
-      stop(sprintf("Invalid metric(s) selected for 'overall_roc_metrics': %s. Allowed composite metrics are: %s.",
-                   paste(setdiff(overall_roc_metrics, valid_options), collapse = ", "),
-                   paste(valid_options, collapse = ", ")), call. = FALSE)
+    if (!all(overall_roc_metrics %in% valid_options)) {
+      stop(sprintf(
+        "Invalid metric(s) selected for 'overall_roc_metrics': %s. Allowed composite metrics are: %s.",
+        paste(setdiff(overall_roc_metrics, valid_options), collapse = ", "),
+        paste(valid_options, collapse = ", ")
+      ), call. = FALSE)
     }
     if (!all(overall_roc_metrics %in% metrics)) {
-      stop(sprintf("Metric(s) selected for 'overall_roc_metrics' (%s) were not requested in the general 'metrics' argument. Please ensure all composite metrics are also in 'metrics'.",
-                   paste(setdiff(overall_roc_metrics, metrics), collapse = ", ")), call. = FALSE)
+      stop(sprintf(
+        "Metric(s) selected for 'overall_roc_metrics' (%s) were not requested in the general 'metrics' argument. Please ensure all composite metrics are also in 'metrics'.",
+        paste(setdiff(overall_roc_metrics, metrics), collapse = ", ")
+      ), call. = FALSE)
     }
     if (length(overall_roc_metrics) < 1) {
       stop("At least one metric must be requested for 'overall_roc_metrics' to calculate an overall composite score.", call. = FALSE)
@@ -296,21 +302,27 @@ compute_metrics <- function(test_data,
 
   if (is.null(overall_error_metrics)) {
     error_metrics_to_average <- c("rmse", "mae")
-    message(sprintf("No 'overall_error_metrics' specified. Overall continuous-outcome score will be computed for available metrics among: %s.",
-                    paste(toupper(error_metrics_to_average), collapse = ", ")))
+    message(sprintf(
+      "No 'overall_error_metrics' specified. Overall continuous-outcome score will be computed for available metrics among: %s.",
+      paste(toupper(error_metrics_to_average), collapse = ", ")
+    ))
   } else {
     if (!is.character(overall_error_metrics)) {
       stop("'overall_error_metrics' must be a character vector of metric names.", call. = FALSE)
     }
     valid_options <- c("rmse", "mae", "r2")
-    if(!all(overall_error_metrics %in% valid_options)) {
-      stop(sprintf("Invalid metric(s) selected for 'overall_error_metrics': %s. Allowed composite metrics are: %s.",
-                   paste(setdiff(overall_error_metrics, valid_options), collapse = ", "),
-                   paste(valid_options, collapse = ", ")), call. = FALSE)
+    if (!all(overall_error_metrics %in% valid_options)) {
+      stop(sprintf(
+        "Invalid metric(s) selected for 'overall_error_metrics': %s. Allowed composite metrics are: %s.",
+        paste(setdiff(overall_error_metrics, valid_options), collapse = ", "),
+        paste(valid_options, collapse = ", ")
+      ), call. = FALSE)
     }
     if (!all(overall_error_metrics %in% metrics)) {
-      stop(sprintf("Metric(s) selected for 'overall_error_metrics' (%s) were not requested in the general 'metrics' argument. Please ensure all composite metrics are also in 'metrics'.",
-                   paste(setdiff(overall_error_metrics, metrics), collapse = ", ")), call. = FALSE)
+      stop(sprintf(
+        "Metric(s) selected for 'overall_error_metrics' (%s) were not requested in the general 'metrics' argument. Please ensure all composite metrics are also in 'metrics'.",
+        paste(setdiff(overall_error_metrics, metrics), collapse = ", ")
+      ), call. = FALSE)
     }
     if (length(overall_error_metrics) < 1) {
       stop("At least one metric must be requested for 'overall_error_metrics' to calculate an overall composite score.", call. = FALSE)
@@ -341,22 +353,22 @@ compute_metrics <- function(test_data,
     }
 
     is_count_data <- response_counts %in% names(current_data)
-    is_pa_data    <- response_pa %in% names(current_data)
+    is_pa_data <- response_pa %in% names(current_data)
 
     # --- Conditional continuous-outcome metrics calculation ---
     if (has_error_metrics && response_counts %in% names(current_data)) {
       raw_expected <- terra::extract(expected_response, loc)[, 1]
-      valid_idx    <- is.finite(raw_expected)
+      valid_idx <- is.finite(raw_expected)
 
       if (any(valid_idx)) {
         if (isTRUE(is_pred_rate)) {
           if (is.null(exposure)) {
             warning("Predictions are marked as 'intensity', but no 'exposure' was provided. Assuming exposure is 1.", call. = FALSE)
             predicted <- raw_expected[valid_idx]
-            observed  <- current_data[[response_counts]][valid_idx]
+            observed <- current_data[[response_counts]][valid_idx]
           } else {
             predicted <- raw_expected[valid_idx]
-            observed  <- current_data[[response_counts]][valid_idx] / current_data[[exposure]][valid_idx]
+            observed <- current_data[[response_counts]][valid_idx] / current_data[[exposure]][valid_idx]
           }
         } else {
           if (!is.null(exposure)) {
@@ -389,8 +401,10 @@ compute_metrics <- function(test_data,
         eval_resp_roc <- current_data[[response_pa]][valid_idx]
         metrics_ds$sample_size <- length(prob_roc)
       } else {
-        bg_points_po <- sample_background(mask = prob_raster, points = xy_excluded,
-                                          n = n_background, xy = TRUE, values = FALSE)
+        bg_points_po <- sample_background(
+          mask = prob_raster, points = xy_excluded,
+          n = n_background, xy = TRUE, values = FALSE
+        )
         final_bg_obj <- bg_points_po
 
         if (!is.null(bg_points_po$bg)) {
@@ -402,8 +416,10 @@ compute_metrics <- function(test_data,
             prob_roc_po <- c(prob_roc, prob_bg_po)
             metrics_ds$sample_size <- length(prob_roc)
           } else {
-            message(sprintf("Not enough valid presence (%s) or background (%s) points to compute ROC for '%s' (PO data).",
-                            length(prob_roc), length(prob_bg_po), ds_name))
+            message(sprintf(
+              "Not enough valid presence (%s) or background (%s) points to compute ROC for '%s' (PO data).",
+              length(prob_roc), length(prob_bg_po), ds_name
+            ))
           }
         } else {
           message(sprintf("No background points sampled for '%s' (PO data). Cannot compute ROC metrics.", ds_name))
@@ -430,9 +446,9 @@ compute_metrics <- function(test_data,
           "threshold" = "threshold",
           "specificity" = "specificity",
           "recall" = "sensitivity", # sensitivity is recall
-          "tpr" =  "sensitivity",   # sensisitivity is tpr
-          "tnr" = "specificity",    # sepecificity is tnr
-          "precision" = "ppv",      # ppv is precision
+          "tpr" = "sensitivity", # sensisitivity is tpr
+          "tnr" = "specificity", # sepecificity is tnr
+          "precision" = "ppv", # ppv is precision
           "accuracy" = "accuracy",
           "npv" = "npv",
           "fpr" = "fpr",
@@ -444,11 +460,13 @@ compute_metrics <- function(test_data,
 
         if (length(coords_rets_to_pass) > 0) {
           coords_x_val <- if (threshold_method == "best") "best" else fixed_threshold
-          coords_results_df <- pROC::coords(roc = roc_obj,
-                                            x = coords_x_val,
-                                            ret = coords_rets_to_pass,
-                                            best.method = best_method,
-                                            transpose = FALSE, ...)
+          coords_results_df <- pROC::coords(
+            roc = roc_obj,
+            x = coords_x_val,
+            ret = coords_rets_to_pass,
+            best.method = best_method,
+            transpose = FALSE, ...
+          )
 
           temp_metrics_values <- list()
           for (coord_metric_name in names(metric_map_for_coords)) {
@@ -497,7 +515,6 @@ compute_metrics <- function(test_data,
             }
           }
         }
-
       } else {
         message(sprintf("Skipping ROC-based metrics for '%s' due to single response class or no valid predictions.", ds_name))
       }
@@ -584,7 +601,7 @@ compute_metrics <- function(test_data,
   }
 
   return_list <- c(return_list, weighted_composite_scores)
-  return_list$TOT_ROC_SCORE   <- TOT_ROC_SCORE
+  return_list$TOT_ROC_SCORE <- TOT_ROC_SCORE
   return_list$TOT_ERROR_SCORE <- TOT_ERROR_SCORE
 
   # Capture settings for replication/summary and assign class
@@ -599,7 +616,7 @@ compute_metrics <- function(test_data,
   )
 
   class(return_list) <- c("ISDMmetrics", "list")
-  attr(return_list, "settings")  <- settings
+  attr(return_list, "settings") <- settings
   attr(return_list, "bg_points") <- final_bg_obj
 
   return(return_list)
@@ -643,7 +660,7 @@ compute_metrics <- function(test_data,
 #'   n_background = 1000,
 #'   metrics = c("rmse", "mae", "auc", "tss"),
 #'   is_pred_rate = TRUE, # model with offset
-#'   exposure = "area"    # standardized exposure name across the counts data
+#'   exposure = "area" # standardized exposure name across the counts data
 #' )
 #'
 #' #--- Quick view of the results
@@ -671,15 +688,16 @@ compute_metrics <- function(test_data,
 #' }
 #'
 as.data.frame.ISDMmetrics <- function(x, ...) {
-
   all_names <- names(x)
-  if (is.null(all_names)) return(data.frame())
+  if (is.null(all_names)) {
+    return(data.frame())
+  }
 
   values <- as.numeric(unlist(unclass(x), use.names = FALSE))
 
   df <- data.frame(
     Full_Name = all_names,
-    Value     = values,
+    Value = values,
     stringsAsFactors = FALSE
   )
 
@@ -687,9 +705,13 @@ as.data.frame.ISDMmetrics <- function(x, ...) {
 
   df$Metric <- sapply(parts, `[`, 1)
   df$Source <- sapply(parts, function(p) {
-    if (length(p) == 1) return("Global")
+    if (length(p) == 1) {
+      return("Global")
+    }
     src <- paste(p[-1], collapse = "_")
-    if (src == "Comp") return("Weighted Composite")
+    if (src == "Comp") {
+      return("Weighted Composite")
+    }
     return(src)
   })
 
@@ -709,19 +731,19 @@ print.ISDMmetrics <- function(x, ...) {
   tot_rows <- df[df$Source == "Global", ]
   ind_rows <- df[!(df$Source %in% c("Global", "Weighted Composite")), ]
 
-  if(nrow(tot_rows) > 0) {
+  if (nrow(tot_rows) > 0) {
     datasets <- unique(ind_rows$Source)
 
     cat("Datasets Evaluated:", paste(datasets, collapse = ", "), "\n\n")
     cat("Overall Performance:\n")
 
-    for(i in 1:nrow(tot_rows)) {
+    for (i in seq_len(nrow(tot_rows))) {
       label <- gsub("_", " ", tot_rows$Full_Name[i])
       cat(sprintf("  %-18s: %0.4f\n", label, tot_rows$Value[i]))
     }
-  } else {    # Fallback for subset view
+  } else { # Fallback for subset view
     cat("Note: Subsetted metrics view\n\n")
-    for(i in 1:nrow(df)) {
+    for (i in seq_len(nrow(df))) {
       label <- gsub("_", " ", df$Full_Name[i])
       cat(sprintf("  %-18s: %0.4f\n", label, df$Value[i]))
     }
@@ -735,19 +757,18 @@ print.ISDMmetrics <- function(x, ...) {
 #' @rdname ISDMmetrics-methods
 #' @export
 summary.ISDMmetrics <- function(object, ...) {
-
-  s  <- attr(object, "settings")
+  s <- attr(object, "settings")
   bg_attr <- attr(object, "bg_points")
 
   cat("\n==============================================\n")
   cat("       ISDM EVALUATION SUMMARY REPORT\n")
   cat("==============================================\n")
-  if(!is.null(s$timestamp)) cat("Generated on:", format(s$timestamp, "%Y-%m-%d %H:%M:%S"), "\n\n")
+  if (!is.null(s$timestamp)) cat("Generated on:", format(s$timestamp, "%Y-%m-%d %H:%M:%S"), "\n\n")
 
   cat("--- Model Evaluation Settings ---\n")
   cat(sprintf("%-20s: %s\n", "Random Seed", ifelse(is.null(s$seed), "N/A", s$seed)))
 
-  bg_display <- if(is.null(bg_attr)) "N/A" else s$n_background
+  bg_display <- if (is.null(bg_attr)) "N/A" else s$n_background
 
   cat(sprintf("%-20s: %s\n", "Background Points", bg_display))
   if (!is.null(bg_attr)) {
@@ -755,11 +776,11 @@ summary.ISDMmetrics <- function(object, ...) {
   }
 
   cat(sprintf("%-20s: %s\n", "Threshold Logic", s$threshold_method))
-  if(!is.null(s$threshold_method) && s$threshold_method == "best") {
+  if (!is.null(s$threshold_method) && s$threshold_method == "best") {
     cat(sprintf("%-20s: %s\n", "Optimality Criterion", s$best_method))
   }
 
-  is_rate <- if(is.null(s$is_pred_rate)) {
+  is_rate <- if (is.null(s$is_pred_rate)) {
     "Not specified"
   } else if (s$is_pred_rate) {
     "Rate (Count per Offset unit)"
@@ -774,15 +795,16 @@ summary.ISDMmetrics <- function(object, ...) {
   # Filter for individual dataset metrics
   ind_df <- df[!(df$Source %in% c("Global", "Weighted Composite")), ]
 
-  if(nrow(ind_df) > 0) {
-    metrics_found  <- unique(ind_df$Metric)
+  if (nrow(ind_df) > 0) {
+    metrics_found <- unique(ind_df$Metric)
     datasets_found <- unique(ind_df$Source)
 
-    res_mat <- matrix(NA, nrow = length(metrics_found),
-                      ncol = length(datasets_found),
-                      dimnames = list(metrics_found, datasets_found)
-                      )
-    for(i in 1:nrow(ind_df)) {
+    res_mat <- matrix(NA,
+      nrow = length(metrics_found),
+      ncol = length(datasets_found),
+      dimnames = list(metrics_found, datasets_found)
+    )
+    for (i in seq_len(nrow(ind_df))) {
       res_mat[ind_df$Metric[i], ind_df$Source[i]] <- ind_df$Value[i]
     }
     print(round(res_mat, 3), na.print = "N/A")
@@ -791,7 +813,7 @@ summary.ISDMmetrics <- function(object, ...) {
   cat("\n--- Weighted Composite Scores (Weighted) ---\n")
   comp_df <- df[df$Source == "Weighted Composite", ]
 
-  if(nrow(comp_df) > 0) {
+  if (nrow(comp_df) > 0) {
     comp_vals <- comp_df$Value
     names(comp_vals) <- comp_df$Metric
     print(round(comp_vals, 3))
@@ -801,9 +823,9 @@ summary.ISDMmetrics <- function(object, ...) {
 
   glob_df <- df[df$Source == "Global", ]
 
-  if(nrow(glob_df) > 0) {
+  if (nrow(glob_df) > 0) {
     cat("\n--- Overall Performance ---\n")
-    for(i in 1:nrow(glob_df)) {
+    for (i in seq_len(nrow(glob_df))) {
       label <- gsub("_", " ", glob_df$Full_Name[i])
       cat(sprintf("  %-18s: %0.3f\n", label, glob_df$Value[i]))
     }
@@ -817,7 +839,6 @@ summary.ISDMmetrics <- function(object, ...) {
 #' @rdname ISDMmetrics-methods
 #' @export
 plot.ISDMmetrics <- function(x, include_composite = TRUE, ...) {
-
   plot_data <- as.data.frame(x)
 
   # Data-specific metrics and/or composite
@@ -862,14 +883,13 @@ plot.ISDMmetrics <- function(x, include_composite = TRUE, ...) {
 #' @rdname ISDMmetrics-methods
 #' @export
 `[.ISDMmetrics` <- function(x, ...) {
-
   settings_attr <- attr(x, "settings")
-  bg_attr       <- attr(x, "bg_points")
+  bg_attr <- attr(x, "bg_points")
 
   out <- NextMethod("[")
 
   class(out) <- c("ISDMmetrics", "list")
-  attr(out, "settings")  <- settings_attr
+  attr(out, "settings") <- settings_attr
   attr(out, "bg_points") <- bg_attr
 
   return(out)
@@ -883,7 +903,6 @@ plot.ISDMmetrics <- function(x, include_composite = TRUE, ...) {
 #' @return The \code{BackgroundPoints} object if present, otherwise \code{NULL}.
 #' @export
 get_background <- function(x) {
-
   if (!inherits(x, "ISDMmetrics")) {
     stop("Argument 'x' must be an object of class 'ISDMmetrics'.")
   }
@@ -916,7 +935,7 @@ mae <- function(observed, predicted) {
 # MAPE (mean absolute percentage error) -- only valid for non-null response
 mape <- function(observed, predicted) {
   stopifnot(length(observed) == length(predicted))
-  100*mean(abs(observed - predicted)/observed, na.rm = TRUE)
+  100 * mean(abs(observed - predicted) / observed, na.rm = TRUE)
 }
 
 # Pseudo R-squared
@@ -924,5 +943,5 @@ r_squared <- function(observed, predicted) {
   stopifnot(length(observed) == length(predicted))
   ss_res <- sum((observed - predicted)^2, na.rm = TRUE)
   ss_tot <- sum((observed - mean(observed, na.rm = TRUE))^2, na.rm = TRUE)
-  1 - ss_res/ss_tot
+  1 - ss_res / ss_tot
 }

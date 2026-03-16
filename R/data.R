@@ -1,10 +1,8 @@
-
 #' Shapefile of Benin Republic
 #'
-#' A simplified sf object representing the national boundary of Benin,
-#' extracted from the \code{rnaturalearth} package.
+#' A simplified sf object representing the national boundary of Benin
 #'
-#' @format An sf object with 1 row and 2 variables:
+#' @format An sf object with 1 row and 3 variables:
 #' \describe{
 #'   \item{name}{Country name}
 #'   \item{iso_a3}{Country code}

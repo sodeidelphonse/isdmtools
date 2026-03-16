@@ -1,4 +1,3 @@
-
 #' Diagnostic for Spatial Folds Geometry
 #'
 #' @description
@@ -13,40 +12,41 @@
 #' @keywords internal
 #'
 check_spatial_geometry <- function(data_all, fold_col = "folds_ids", rho = NULL, plot = TRUE) {
-
   data_all[[fold_col]] <- as.factor(data_all[[fold_col]])
   folds_ids <- levels(data_all[[fold_col]])
 
   # Folds centroids
-  centroids <- data_all %>%
-    dplyr::group_by(.data[[fold_col]]) %>%
-    dplyr::summarise(geometry = sf::st_union(.data$geometry), .groups = "drop") %>%
+  centroids <- data_all |>
+    dplyr::group_by(.data[[fold_col]]) |>
+    dplyr::summarise(geometry = sf::st_union(.data$geometry), .groups = "drop") |>
     sf::st_centroid()
 
   coords_mat <- sf::st_coordinates(centroids)
-  centroids_data <- sf::st_drop_geometry(centroids) %>%
+  centroids_data <- sf::st_drop_geometry(centroids) |>
     dplyr::mutate(x = coords_mat[, 1], y = coords_mat[, 2])
 
   # Internal distances (point-to-centroid)
-  points_with_centroids <- data_all %>%
+  points_with_centroids <- data_all |>
     dplyr::left_join(
-      as.data.frame(centroids) %>%
+      as.data.frame(centroids) |>
         dplyr::select(!!rlang::sym(fold_col), centroid_geom = .data$geometry),
       by = fold_col
     )
 
   dist_raw <- sf::st_distance(
-      sf::st_geometry(points_with_centroids),
-      sf::st_geometry(points_with_centroids$centroid_geom),
-      by_element = TRUE
-    )
+    sf::st_geometry(points_with_centroids),
+    sf::st_geometry(points_with_centroids$centroid_geom),
+    by_element = TRUE
+  )
   points_with_centroids$dist_val <- as.numeric(units::set_units(dist_raw, "km"))
 
   # Inter-block gap
   min_gaps <- vapply(folds_ids, function(id) {
     block_pts <- data_all[data_all$folds_ids == id, ]
     other_pts <- data_all[data_all$folds_ids != id, ]
-    if(nrow(other_pts) == 0) return(NA_real_)
+    if (nrow(other_pts) == 0) {
+      return(NA_real_)
+    }
     d_m <- min(sf::st_distance(block_pts, other_pts))
     as.numeric(units::set_units(d_m, "km"))
   }, FUN.VALUE = numeric(1))
@@ -57,25 +57,25 @@ check_spatial_geometry <- function(data_all, fold_col = "folds_ids", rho = NULL,
     stringsAsFactors = FALSE
   )
   colnames(gap_df)[1] <- fold_col
-  gap_df[[fold_col]]  <- factor(gap_df[[fold_col]], levels = folds_ids)
+  gap_df[[fold_col]] <- factor(gap_df[[fold_col]], levels = folds_ids)
 
   # Merging summary stats
-  summary_stats <- points_with_centroids %>%
-    sf::st_drop_geometry() %>%
-    dplyr::group_by(.data[[fold_col]]) %>%
+  summary_stats <- points_with_centroids |>
+    sf::st_drop_geometry() |>
+    dplyr::group_by(.data[[fold_col]]) |>
     dplyr::summarise(
       n_points = dplyr::n(),
       max_dist_km = max(.data$dist_val, na.rm = TRUE),
       mean_dist_km = mean(.data$dist_val, na.rm = TRUE),
       median_dist_km = stats::median(.data$dist_val, na.rm = TRUE),
       .groups = "drop"
-    ) %>%
-    dplyr::left_join(gap_df, by = fold_col) %>%
+    ) |>
+    dplyr::left_join(gap_df, by = fold_col) |>
     dplyr::left_join(centroids_data, by = fold_col)
 
   # Independence logic
   if (!is.null(rho)) {
-    summary_stats <- summary_stats %>%
+    summary_stats <- summary_stats |>
       dplyr::mutate(
         gap_rho_ratio = .data$min_gap_km / rho,
         independence = dplyr::case_when(
@@ -86,7 +86,7 @@ check_spatial_geometry <- function(data_all, fold_col = "folds_ids", rho = NULL,
         )
       )
   } else {
-    summary_stats <- summary_stats %>%
+    summary_stats <- summary_stats |>
       dplyr::mutate(
         gap_rho_ratio = NA_real_,
         independence = dplyr::if_else(.data$min_gap_km > 0, "Separated", "Contiguous")
@@ -99,27 +99,32 @@ check_spatial_geometry <- function(data_all, fold_col = "folds_ids", rho = NULL,
     buffer_geoms <- sf::st_buffer(
       sf::st_geometry(centroids),
       dist = units::set_units(summary_stats$max_dist_km, "km")
-      )
+    )
 
-    buffers <- centroids %>%
-      dplyr::mutate(geometry = buffer_geoms) %>%
+    buffers <- centroids |>
+      dplyr::mutate(geometry = buffer_geoms) |>
       dplyr::left_join(as.data.frame(summary_stats), by = fold_col)
 
     rho_val <- if (is.null(rho)) "N/A" else rho
     sub_text <- bquote(paste("Estimated range (", rho, ") = ", .(rho_val), " km"))
 
     diag_plot <- ggplot2::ggplot() +
-      ggplot2::geom_sf(data = buffers, ggplot2::aes(fill = .data[[fold_col]]),
-                       alpha = 0.1, linetype = "dashed", color = "black") +
+      ggplot2::geom_sf(
+        data = buffers, ggplot2::aes(fill = .data[[fold_col]]),
+        alpha = 0.1, linetype = "dashed", color = "black"
+      ) +
       ggplot2::geom_sf(data = data_all, ggplot2::aes(color = .data[[fold_col]]), size = 1) +
-      ggplot2::geom_sf(data = centroids, ggplot2::aes(shape = "Fold Centroid"),
-                       color = "black", size = 3, stroke = 1) +
+      ggplot2::geom_sf(
+        data = centroids, ggplot2::aes(shape = "Fold Centroid"),
+        color = "black", size = 3, stroke = 1
+      ) +
       ggplot2::scale_shape_manual(name = "Reference", values = c("Fold Centroid" = 3)) +
       ggplot2::theme_minimal() +
-      ggplot2::labs(title = "Spatial Fold Partitioning",
-                    subtitle = sub_text,
-                    fill = "Folds", color = "Folds"
-                    )
+      ggplot2::labs(
+        title = "Spatial Fold Partitioning",
+        subtitle = sub_text,
+        fill = "Folds", color = "Folds"
+      )
   }
 
   return(list(summary = summary_stats, plot = diag_plot, rho = rho))
@@ -156,7 +161,7 @@ check_spatial_geometry <- function(data_all, fold_col = "folds_ids", rho = NULL,
 #' The spatial range can be estimated using the function \code{\link[blockCV]{cv_spatial_autocor}} of
 #' the \pkg{blockCV} package (Valavi et al. 2018) or any other tool. The authors recommended this value (in metres)
 #' as the optimal block size for their spatial blocking scheme. For instance, if a covariance model is fitted
-#' to the experimental variogram, the 10% practical range can be derived using an interpolation method.
+#' to an experimental variogram, the 10% practical range can be derived using an interpolation method.
 #' Note that several packages are available to estimate the range from the observed spatial data and
 #' different parameterisations are used. We provide the helper function \code{\link{solve_practical_range}} to allow to
 #' derive a unified practical range for Matérn covariance fitted to the data in INLA, geoR or spatstat packages.
@@ -183,16 +188,16 @@ check_spatial_geometry <- function(data_all, fold_col = "folds_ids", rho = NULL,
 #' # Generate the data as a list of sf objects
 #' set.seed(42)
 #' presence_data <- data.frame(
-#'  x = runif(100, 0, 4),
-#'  y = runif(100, 6, 13),
-#'  site = rbinom(100, 1, 0.6)
-#' ) %>% st_as_sf(coords = c("x", "y"), crs = 4326)
+#'   x = runif(100, 0, 4),
+#'   y = runif(100, 6, 13),
+#'   site = rbinom(100, 1, 0.6)
+#' ) |> st_as_sf(coords = c("x", "y"), crs = 4326)
 #'
 #' count_data <- data.frame(
 #'   x = runif(50, 0, 4),
-#'  y = runif(50, 6, 13),
-#'  count = rpois(50, 5)
-#' ) %>% st_as_sf(coords = c("x", "y"), crs = 4326)
+#'   y = runif(50, 6, 13),
+#'   count = rpois(50, 5)
+#' ) |> st_as_sf(coords = c("x", "y"), crs = 4326)
 #'
 #' datasets_list <- list(Presence = presence_data, Count = count_data)
 #'
@@ -224,7 +229,6 @@ check_folds <- function(object, ...) {
 #' @method check_folds DataFolds
 #' @export
 check_folds.DataFolds <- function(object, rho = NULL, plot = TRUE, ...) {
-
   if (!inherits(object, "DataFolds") || is.null(object$data_all)) {
     stop("Input must be a valid 'DataFolds' object.", call. = FALSE)
   }
@@ -233,7 +237,7 @@ check_folds.DataFolds <- function(object, rho = NULL, plot = TRUE, ...) {
     stop("The DataFolds object must contain an 'sf' object in the 'data_all' slot.", call. = FALSE)
   }
 
-  if(!is.null(rho) && !is.numeric(rho)) {
+  if (!is.null(rho) && !is.numeric(rho)) {
     stop("'rho' must be numeric if it is not null.", call. = FALSE)
   }
 
@@ -270,8 +274,8 @@ print.GeoDiagnostic <- function(x, ...) {
   if (!is.null(x$rho)) {
     cat(paste0("Model Spatial Range (rho): ", x$rho, " km\n\n"))
     if ("independence" %in% names(x$summary)) {
-      status_summary <- x$summary %>%
-        dplyr::group_by(.data$independence) %>%
+      status_summary <- x$summary |>
+        dplyr::group_by(.data$independence) |>
         dplyr::summarise(Count = dplyr::n(), .groups = "drop")
       print(as.data.frame(status_summary))
     }
@@ -320,7 +324,7 @@ plot.GeoDiagnostic <- function(x, ...) {
 #' It must have the same coordinate reference system (CRS) as the sf objects used for blocking.
 #' @param plot_type Character. Either "density" (default) or "boxplot".
 #' @param n_background Numeric. Number of background points to sample for environmental
-#' space representation. Default 10,000.
+#' space representation. Defaulted to 10,000.
 #' @param ... Additional arguments passed on to \code{\link{sample_background}}.
 #'
 #' @details
@@ -343,8 +347,8 @@ plot.GeoDiagnostic <- function(x, ...) {
 #' \itemize{
 #'   \item \strong{Continuous Variables:} A *Kruskal-Wallis Rank Sum Test* is
 #'   performed to determine if the median values of the covariate differ significantly
-#'   across folds. A \eqn{p > 0.05} suggests that the folds are representative of
-#'   the same environmental niche.
+#'   across spatial folds. A \eqn{p > 0.05} suggests that the folds are representative
+#'   of the same environmental niche.
 #'
 #'   \item \strong{Categorical Variables:} A *Pearson's Chi-squared Test* is
 #'   conducted. To account for rare classes (e.g., specific land-cover types) and
@@ -383,16 +387,16 @@ plot.GeoDiagnostic <- function(x, ...) {
 #' # Generate data as a list of sf objects
 #' set.seed(42)
 #' presence_data <- data.frame(
-#'  x = runif(100, 0, 4),
-#'  y = runif(100, 6, 13),
-#'  site = rbinom(100, 1, 0.6)
-#' ) %>% st_as_sf(coords = c("x", "y"), crs = 4326)
+#'   x = runif(100, 0, 4),
+#'   y = runif(100, 6, 13),
+#'   site = rbinom(100, 1, 0.6)
+#' ) |> st_as_sf(coords = c("x", "y"), crs = 4326)
 #'
 #' count_data <- data.frame(
 #'   x = runif(50, 0, 4),
-#'  y = runif(50, 6, 13),
-#'  count = rpois(50, 5)
-#' ) %>% st_as_sf(coords = c("x", "y"), crs = 4326)
+#'   y = runif(50, 6, 13),
+#'   count = rpois(50, 5)
+#' ) |> st_as_sf(coords = c("x", "y"), crs = 4326)
 #'
 #' datasets_list <- list(Presence = presence_data, Count = count_data)
 #'
@@ -401,9 +405,9 @@ plot.GeoDiagnostic <- function(x, ...) {
 #' ben_sf <- st_sf(data.frame(name = "Benin"), ben_sf)
 #'
 #' # a) Continuous covariates
-#' r   <- rast(ben_sf, nrow = 100, ncol = 100, crs = 'epsg:4326')
+#' r <- rast(ben_sf, nrow = 100, ncol = 100, crs = "epsg:4326")
 #' r[] <- rnorm(ncell(r))
-#' rtmp   <- r
+#' rtmp <- r
 #' rtmp[] <- runif(ncell(r), 5, 10)
 #'
 #' r_stk <- c(r, rtmp + r)
@@ -420,8 +424,8 @@ plot.GeoDiagnostic <- function(x, ...) {
 #' env_diag <- suppressWarnings(check_env_balance(
 #'   folds,
 #'   covariates = r_stk,
-#'   n_background = 5000)
-#' )
+#'   n_background = 5000
+#' ))
 #'
 #' # View p-values in console
 #' print(env_diag)
@@ -463,11 +467,10 @@ check_env_balance <- function(object, ...) {
 check_env_balance.DataFolds <- function(object, covariates,
                                         plot_type = c("density", "boxplot"),
                                         n_background = 10000L, ...) {
-
-  plot_type <-match.arg(plot_type)
+  plot_type <- match.arg(plot_type)
 
   # Prepare point data
-  data_sf <- object$data_all %>%
+  data_sf <- object$data_all |>
     dplyr::filter(!is.na(.data$folds_ids))
 
   if (!inherits(covariates, "SpatRaster")) stop("covariates must be a SpatRaster.")
@@ -483,7 +486,7 @@ check_env_balance.DataFolds <- function(object, covariates,
   )
 
   # Sample background points
-  back_pts  <- sample_background(mask = covariates, n = n_background, values = FALSE, ...)
+  back_pts <- sample_background(mask = covariates, n = n_background, values = FALSE, ...)
   back_vals <- terra::extract(covariates, back_pts$bg[, c("x", "y")])
 
   back_data <- data.frame(
@@ -498,20 +501,22 @@ check_env_balance.DataFolds <- function(object, covariates,
   # Statistical testing and overlap calculation
   stats_list <- lapply(cov_names, function(v) {
     if (is.numeric(raw_data[[v]])) {
-
       # Internal balance: are folds statistically different from each other?
       test <- stats::kruskal.test(raw_data[[v]] ~ raw_data$folds_ids)
       type <- "Continuous"
 
       # External balance: niche overlap between folds and background
       d_vals <- vapply(split(raw_data[[v]], raw_data$folds_ids),
-                       function(x) calc_niche_overlap(x, back_data[[v]]),
-                       FUN.VALUE = numeric(1))
+        function(x) calc_niche_overlap(x, back_data[[v]]),
+        FUN.VALUE = numeric(1)
+      )
       overlap_val <- round(stats::median(d_vals, na.rm = TRUE), 3)
     } else {
       test <- suppressWarnings(
-                stats::chisq.test(table(raw_data[[v]], raw_data$folds_ids),
-                                simulate.p.value = TRUE, B = 2000))
+        stats::chisq.test(table(raw_data[[v]], raw_data$folds_ids),
+          simulate.p.value = TRUE, B = 2000
+        )
+      )
       type <- "Categorical"
       overlap_val <- NA_real_
     }
@@ -542,8 +547,9 @@ check_env_balance.DataFolds <- function(object, covariates,
   plot_df <- dplyr::bind_rows(plot_list)
 
   plot_df$Variable <- factor(plot_df$Variable,
-                             levels = stats_df$Variable,
-                             labels = stats_df$label)
+    levels = stats_df$Variable,
+    labels = stats_df$label
+  )
 
   n_folds <- length(levels(raw_data$folds_ids))
   fold_colors <- .get_isdm_palette(n_folds)
@@ -552,7 +558,7 @@ check_env_balance.DataFolds <- function(object, covariates,
   all_colors <- c("BG" = "#FF8C00", fold_colors)
 
   p <- ggplot2::ggplot(plot_df, ggplot2::aes(x = .data$Value, fill = .data$Fold)) +
-    ggplot2::facet_wrap(~ Variable, scales = "free") +
+    ggplot2::facet_wrap(~Variable, scales = "free") +
     ggplot2::scale_fill_manual(values = all_colors) +
     ggplot2::theme_bw() +
     ggplot2::labs(
@@ -599,15 +605,19 @@ print.EnvDiagnostic <- function(x, ...) {
   if (any(x$summary$Schoener_D < 0.6, na.rm = TRUE)) {
     low_d_vars <- x$summary$Variable[!is.na(x$summary$Schoener_D) & x$summary$Schoener_D < 0.6]
     if (length(low_d_vars) > 0) {
-      cat(paste("\nWARNING: Poor environmental representation (D < 0.6) in:",
-                paste(low_d_vars, collapse = ", "), "\n"))
+      cat(paste(
+        "\nWARNING: Poor environmental representation (D < 0.6) in:",
+        paste(low_d_vars, collapse = ", "), "\n"
+      ))
     }
   }
 
   if (any(x$summary$p_val < 0.05)) {
     biased_p_vars <- x$summary$Variable[x$summary$p_val < 0.05]
-    cat(paste("WARNING: Significant differences between folds (p < 0.05) in:",
-              paste(biased_p_vars, collapse = ", "), "\n"))
+    cat(paste(
+      "WARNING: Significant differences between folds (p < 0.05) in:",
+      paste(biased_p_vars, collapse = ", "), "\n"
+    ))
   }
 
   cat("==================================================\n")
@@ -658,21 +668,21 @@ plot.EnvDiagnostic <- function(x, ...) {
 #'   x = runif(100, 0, 4),
 #'   y = runif(100, 6, 13),
 #'   site = rbinom(100, 1, 0.6)
-#' ) %>% st_as_sf(coords = c("x", "y"), crs = 4326)
+#' ) |> st_as_sf(coords = c("x", "y"), crs = 4326)
 #'
 #' count_data <- data.frame(
 #'   x = runif(50, 0, 4),
 #'   y = runif(50, 6, 13),
-#'  count = rpois(50, 5)
-#' ) %>% st_as_sf(coords = c("x", "y"), crs = 4326)
+#'   count = rpois(50, 5)
+#' ) |> st_as_sf(coords = c("x", "y"), crs = 4326)
 #'
 #' datasets_list <- list(Presence = presence_data, Count = count_data)
 #'
 #' # Environmental data
 #' set.seed(42)
-#' r <- rast(extent = c(0, 4, 6, 13), nrow=100, ncol=100, crs='epsg:4326')
+#' r <- rast(extent = c(0, 4, 6, 13), nrow = 100, ncol = 100, crs = "epsg:4326")
 #' r[] <- rnorm(ncell(r))
-#' rtmp   <- r
+#' rtmp <- r
 #' rtmp[] <- runif(ncell(r), 5, 10)
 #'
 #' r_stk <- c(r, rtmp + r)
@@ -688,8 +698,8 @@ plot.EnvDiagnostic <- function(x, ...) {
 #' env_diag <- suppressWarnings(check_env_balance(
 #'   folds,
 #'   covariates = r_stk,
-#'   n_background = 5000)
-#' )
+#'   n_background = 5000
+#' ))
 #'
 #' # Combined diagnostics
 #' sum_diag <- summarise_fold_diagnostics(spat_diag, env_diag)
@@ -697,7 +707,6 @@ plot.EnvDiagnostic <- function(x, ...) {
 #' }
 #'
 summarise_fold_diagnostics <- function(geo_diag, env_diag) {
-
   if (!inherits(geo_diag, "GeoDiagnostic") || !inherits(env_diag, "EnvDiagnostic")) {
     stop("Inputs must be 'GeoDiagnostic' and 'EnvDiagnostic' objects.")
   }
@@ -706,8 +715,10 @@ summarise_fold_diagnostics <- function(geo_diag, env_diag) {
   geo_df <- data.frame(
     Domain = "Geographic",
     Metric = c("Avg Internal Distance (km)", "Avg Inter-Fold Gap (km)"),
-    Value = c(mean(geo_diag$summary$max_dist_km, na.rm = TRUE),
-              mean(geo_diag$summary$min_gap_km, na.rm = TRUE)),
+    Value = c(
+      mean(geo_diag$summary$max_dist_km, na.rm = TRUE),
+      mean(geo_diag$summary$min_gap_km, na.rm = TRUE)
+    ),
     Status = ifelse(any(geo_diag$summary$min_gap_km == 0), "Contiguous", "Separated"),
     stringsAsFactors = FALSE
   )
@@ -724,10 +735,10 @@ summarise_fold_diagnostics <- function(geo_diag, env_diag) {
     Status = c(
       dplyr::case_when(
         is.na(med_d) ~ "N/A",
-        med_d < 0.2  ~ "Very Low Overlap",
-        med_d < 0.4  ~ "Low Overlap",
-        med_d < 0.6  ~ "Moderate Overlap",
-        TRUE         ~ "Balanced"
+        med_d < 0.2 ~ "Very Low Overlap",
+        med_d < 0.4 ~ "Low Overlap",
+        med_d < 0.6 ~ "Moderate Overlap",
+        TRUE ~ "Balanced"
       ),
       ifelse(min_p < 0.05, "Biased", "Balanced")
     ),
@@ -735,7 +746,7 @@ summarise_fold_diagnostics <- function(geo_diag, env_diag) {
   )
 
   res <- dplyr::bind_rows(geo_df, env_df)
-  res$Value  <- round(res$Value, 3)
+  res$Value <- round(res$Value, 3)
   class(res) <- c("FoldsSummary", "data.frame")
 
   return(res)
@@ -754,12 +765,12 @@ print.FoldsSummary <- function(x, ...) {
   cat("\n------------------------------------------\n")
 
   # Schoener's D > 0.6 is a common threshold for good niche representativeness
-  is_sep  <- all(x$Status[x$Domain == "Geographic"] == "Separated")
+  is_sep <- all(x$Status[x$Domain == "Geographic"] == "Separated")
 
   env_statuses <- x$Status[x$Domain == "Environmental"]
   is_bal <- all(env_statuses %in% c("Balanced", "N/A"))
 
-  avg_d  <- x$Value[x$Metric == "Median Overlap (D)"]
+  avg_d <- x$Value[x$Metric == "Median Overlap (D)"]
 
   cat("CONCLUSION: ")
   if (is_sep && is_bal && (is.na(avg_d) || avg_d > 0.6)) {

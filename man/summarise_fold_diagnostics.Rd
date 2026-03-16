@@ -42,21 +42,21 @@ presence_data <- data.frame(
   x = runif(100, 0, 4),
   y = runif(100, 6, 13),
   site = rbinom(100, 1, 0.6)
-) \%>\% st_as_sf(coords = c("x", "y"), crs = 4326)
+) |> st_as_sf(coords = c("x", "y"), crs = 4326)
 
 count_data <- data.frame(
   x = runif(50, 0, 4),
   y = runif(50, 6, 13),
- count = rpois(50, 5)
-) \%>\% st_as_sf(coords = c("x", "y"), crs = 4326)
+  count = rpois(50, 5)
+) |> st_as_sf(coords = c("x", "y"), crs = 4326)
 
 datasets_list <- list(Presence = presence_data, Count = count_data)
 
 # Environmental data
 set.seed(42)
-r <- rast(extent = c(0, 4, 6, 13), nrow=100, ncol=100, crs='epsg:4326')
+r <- rast(extent = c(0, 4, 6, 13), nrow = 100, ncol = 100, crs = "epsg:4326")
 r[] <- rnorm(ncell(r))
-rtmp   <- r
+rtmp <- r
 rtmp[] <- runif(ncell(r), 5, 10)
 
 r_stk <- c(r, rtmp + r)
@@ -72,8 +72,8 @@ spat_diag <- check_folds(folds, plot = TRUE)
 env_diag <- suppressWarnings(check_env_balance(
   folds,
   covariates = r_stk,
-  n_background = 5000)
-)
+  n_background = 5000
+))
 
 # Combined diagnostics
 sum_diag <- summarise_fold_diagnostics(spat_diag, env_diag)

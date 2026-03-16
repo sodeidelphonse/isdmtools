@@ -5,7 +5,7 @@
 \alias{benin_shape}
 \title{Shapefile of Benin Republic}
 \format{
-An sf object with 1 row and 2 variables:
+An sf object with 1 row and 3 variables:
 \describe{
 \item{name}{Country name}
 \item{iso_a3}{Country code}
@@ -19,7 +19,6 @@ World Map Data from Natural Earth (\url{https://www.naturalearthdata.com/})
 benin_shape
 }
 \description{
-A simplified sf object representing the national boundary of Benin,
-extracted from the \code{rnaturalearth} package.
+A simplified sf object representing the national boundary of Benin
 }
 \keyword{datasets}
