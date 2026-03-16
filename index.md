@@ -177,6 +177,11 @@ We welcome contributions! If you encounter an issue or have a feature
 request, please open an issue on the GitHub repository
 [here](https://github.com/sodeidelphonse/isdmtools/issues).
 
+Please note that the `isdmtools` project is released with a [Contributor
+Code of
+Conduct](https://www.contributor-covenant.org/version/2/1/code_of_conduct/code_of_conduct.md).
+By contributing to this project, you agree to abide by its terms.
+
 ## Citation
 
 To cite this package in your research work, run the following command in
