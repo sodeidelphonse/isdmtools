@@ -80,7 +80,7 @@ eval_results <- compute_metrics(
   n_background = 1000,
   metrics = c("rmse", "mae", "auc", "tss"),
   is_pred_rate = TRUE, # model with offset
-  exposure = "area"    # standardized exposure name across the counts data
+  exposure = "area" # standardized exposure name across the counts data
 )
 
 #--- Quick view of the results

@@ -35,30 +35,33 @@ scenario of spatially autocorreleted datasets.
 # Simulate a list of presence-only and count data
 set.seed(42)
 presence_data <- data.frame(
-  x = runif(100, 0, 4), 
-  y = runif(100, 6, 13), 
+  x = runif(100, 0, 4),
+  y = runif(100, 6, 13),
   site = rbinom(100, 1, 0.6)
-) %>% st_as_sf(coords = c("x", "y"), crs = 4326)
+) |> st_as_sf(coords = c("x", "y"), crs = 4326)
 
 count_data <- data.frame(
-  x = runif(50, 0, 4), 
-  y = runif(50, 6, 13), 
+  x = runif(50, 0, 4),
+  y = runif(50, 6, 13),
   count = rpois(50, 5)
-) %>% st_as_sf(coords = c("x", "y"), crs = 4326)
+) |> st_as_sf(coords = c("x", "y"), crs = 4326)
 
 datasets_list <- list(Presence = presence_data, Count = count_data)
 
 # Define the study region (e.g. Benin's boundary rectangle)
 ben_coords <- matrix(c(0, 6, 4, 6, 4, 13, 0, 13, 0, 6), ncol = 2, byrow = TRUE)
-ben_sf <- st_sf(data.frame(name = "Region"), 
-                          st_sfc(st_polygon(list(ben_coords)), 
-                          crs = 4326))
-                          
+ben_sf <- st_sf(
+  data.frame(name = "Region"),
+  st_sfc(st_polygon(list(ben_coords)),
+    crs = 4326
+  )
+)
+
 # Generate some continuous covariates
 set.seed(42)
-r   <- rast(ben_sf, nrow = 100, ncol = 100)
+r <- rast(ben_sf, nrow = 100, ncol = 100)
 r[] <- rnorm(ncell(r))
-rtmp   <- r
+rtmp <- r
 rtmp[] <- runif(ncell(r), 5, 10)
 
 r <- c(r, rtmp + r)
@@ -170,7 +173,7 @@ print(geo_diag)
 #> ==========================================
 
 # Plot results
-plot(geo_diag) 
+plot(geo_diag)
 ```
 
 ![](isdmtools_files/figure-html/geo-diag-1.png)
@@ -208,11 +211,11 @@ with the modelling process.
 
 ``` r
 # Check environmental balance of folds
-set.seed(42)  # set this for background sample reproducibility
+set.seed(42) # set this for background sample reproducibility
 env_diag <- check_env_balance(folds,
-                              covariates = r,
-                              n_background = 5000
-                              )
+  covariates = r,
+  n_background = 5000
+)
 print(env_diag)
 #> 
 #> === isdmtools: Environmental Balance Diagnostic ===

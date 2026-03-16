@@ -43,7 +43,7 @@ check_env_balance(
 - n_background:
 
   Numeric. Number of background points to sample for environmental space
-  representation. Default 10,000.
+  representation. Defaulted to 10,000.
 
 ## Value
 
@@ -71,8 +71,8 @@ statistical tests based on the variable type:
 
 - **Continuous Variables:** A *Kruskal-Wallis Rank Sum Test* is
   performed to determine if the median values of the covariate differ
-  significantly across folds. A \\p \> 0.05\\ suggests that the folds
-  are representative of the same environmental niche.
+  significantly across spatial folds. A \\p \> 0.05\\ suggests that the
+  folds are representative of the same environmental niche.
 
 - **Categorical Variables:** A *Pearson's Chi-squared Test* is
   conducted. To account for rare classes (e.g., specific land-cover
@@ -128,16 +128,16 @@ library(isdmtools)
 # Generate data as a list of sf objects
 set.seed(42)
 presence_data <- data.frame(
- x = runif(100, 0, 4),
- y = runif(100, 6, 13),
- site = rbinom(100, 1, 0.6)
-) %>% st_as_sf(coords = c("x", "y"), crs = 4326)
+  x = runif(100, 0, 4),
+  y = runif(100, 6, 13),
+  site = rbinom(100, 1, 0.6)
+) |> st_as_sf(coords = c("x", "y"), crs = 4326)
 
 count_data <- data.frame(
   x = runif(50, 0, 4),
- y = runif(50, 6, 13),
- count = rpois(50, 5)
-) %>% st_as_sf(coords = c("x", "y"), crs = 4326)
+  y = runif(50, 6, 13),
+  count = rpois(50, 5)
+) |> st_as_sf(coords = c("x", "y"), crs = 4326)
 
 datasets_list <- list(Presence = presence_data, Count = count_data)
 
@@ -146,9 +146,9 @@ ben_sf <- st_sfc(st_polygon(list(ben_coords)), crs = 4326)
 ben_sf <- st_sf(data.frame(name = "Benin"), ben_sf)
 
 # a) Continuous covariates
-r   <- rast(ben_sf, nrow = 100, ncol = 100, crs = 'epsg:4326')
+r <- rast(ben_sf, nrow = 100, ncol = 100, crs = "epsg:4326")
 r[] <- rnorm(ncell(r))
-rtmp   <- r
+rtmp <- r
 rtmp[] <- runif(ncell(r), 5, 10)
 
 r_stk <- c(r, rtmp + r)
@@ -165,8 +165,8 @@ folds <- create_folds(
 env_diag <- suppressWarnings(check_env_balance(
   folds,
   covariates = r_stk,
-  n_background = 5000)
-)
+  n_background = 5000
+))
 
 # View p-values in console
 print(env_diag)

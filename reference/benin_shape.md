@@ -1,7 +1,6 @@
 # Shapefile of Benin Republic
 
-A simplified sf object representing the national boundary of Benin,
-extracted from the `rnaturalearth` package.
+A simplified sf object representing the national boundary of Benin
 
 ## Usage
 
@@ -11,7 +10,7 @@ benin_shape
 
 ## Format
 
-An sf object with 1 row and 2 variables:
+An sf object with 1 row and 3 variables:
 
 - name:
 

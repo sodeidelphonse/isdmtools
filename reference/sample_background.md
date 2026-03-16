@@ -87,7 +87,7 @@ Other BackgroundPoints methods:
 if (FALSE) { # \dontrun{
 library(terra)
 set.seed(123)
-r  <- rast(nrows = 100, ncols = 100, xmin = 0, xmax = 10, ymin = 0, ymax = 10)
+r <- rast(nrows = 100, ncols = 100, xmin = 0, xmax = 10, ymin = 0, ymax = 10)
 terra::values(r) <- runif(ncell(r))
 pts <- spatSample(r, size = 100, xy = TRUE, values = FALSE)
 
@@ -98,7 +98,7 @@ plot(bg_sample1)
 print(bg_sample1)
 
 # Requesting points more than available non-NA cells
-bg_sample2 <- sample_background(r, points = pts, n = 10000, xy =TRUE, cells = FALSE)
+bg_sample2 <- sample_background(r, points = pts, n = 10000, xy = TRUE, cells = FALSE)
 dim(bg_sample2$bg)
 plot(bg_sample2)
 } # }

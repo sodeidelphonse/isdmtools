@@ -7,7 +7,7 @@ library(terra)
 library(fmesher)
 library(ggplot2)
 library(inlabru)
-#library(INLA)  # required
+# library(INLA)  # required
 ```
 
 ## Introduction
@@ -51,16 +51,16 @@ for the joint analysis of both data.
 # Simulate a list of presence-only and count data
 set.seed(42)
 presence_data <- data.frame(
-  x = runif(100, 0, 4), 
-  y = runif(100, 6, 13), 
+  x = runif(100, 0, 4),
+  y = runif(100, 6, 13),
   site = rbinom(100, 1, 0.6)
-) %>% st_as_sf(coords = c("x", "y"), crs = 4326)
+) |> st_as_sf(coords = c("x", "y"), crs = 4326)
 
 count_data <- data.frame(
-  x = runif(50, 0, 4), 
-  y = runif(50, 6, 13), 
+  x = runif(50, 0, 4),
+  y = runif(50, 6, 13),
   count = rpois(50, 5)
-) %>% st_as_sf(coords = c("x", "y"), crs = 4326)
+) |> st_as_sf(coords = c("x", "y"), crs = 4326)
 
 datasets_list <- list(Presence = presence_data, Count = count_data)
 ```
@@ -74,9 +74,10 @@ the model fitting processes.
 ``` r
 # Define the study region (e.g. Benin's boundary rectangle)
 ben_coords <- matrix(c(0, 6, 4, 6, 4, 13, 0, 13, 0, 6), ncol = 2, byrow = TRUE)
-ben_sf <- st_sf(data.frame(name = "Region"), 
-                          st_sfc(st_polygon(list(ben_coords)), crs = "epsg:4326")
-                )
+ben_sf <- st_sf(
+  data.frame(name = "Region"),
+  st_sfc(st_polygon(list(ben_coords)), crs = "epsg:4326")
+)
 ```
 
 Now, we can partition the datasets using the clustering blocking scheme
@@ -94,7 +95,7 @@ folds <- create_folds(datasets_list, ben_sf, cv_method = "cluster")
 
 # Extract the train/test for the third Fold
 train_data <- extract_fold(folds, fold = 3)$train
-test_data  <- extract_fold(folds, fold = 3)$test
+test_data <- extract_fold(folds, fold = 3)$test
 ```
 
 ## Fitting an integrated model with `inlabru`
@@ -134,18 +135,19 @@ model. First, we set up the mesh to be used for approximating the latent
 field as well as for the integration points in the LGCP likelihood.
 
 ``` r
-# Create a "mesh" for the latent field 
+# Create a "mesh" for the latent field
 mesh <- fmesher::fm_mesh_2d(
-     boundary = ben_sf,
-     max.edge = c(0.2, 0.5),
-     offset = c(1e-3, 0.6),
-     cutoff = 0.10,
-     crs = "epsg:4326"
+  boundary = ben_sf,
+  max.edge = c(0.2, 0.5),
+  offset = c(1e-3, 0.6),
+  cutoff = 0.10,
+  crs = "epsg:4326"
 )
 
 # Visualise the whole data points with the mesh
-ggplot() + inlabru::gg(mesh) + 
-  gg(folds$data_all, aes(color = datasetName)) 
+ggplot() +
+  inlabru::gg(mesh) +
+  gg(folds$data_all, aes(color = datasetName))
 ```
 
 ![](isdm-workflow_files/figure-html/mesh-code-1.png)
@@ -160,38 +162,40 @@ type and fuse them using a joint likelihood estimation with INLA and
 SPDE techniques (Simpson et al. 2016).
 
 ``` r
-# Set the PC-prior for the SPDE model. We estimate a longer range value as no spatial 
+# Set the PC-prior for the SPDE model. We estimate a longer range value as no spatial
 # autocorrelation was defined in the data generation process:
 pcmatern <- INLA::inla.spde2.pcmatern(mesh,
-                                      prior.range = c(1, 0.1), # Prob(spatial range < 1) = 0.1
-                                      prior.sigma = c(1, 0.1)  # Prob(sigma > 1) = 0.1
-                                      )
-   
+  prior.range = c(1, 0.1), # Prob(spatial range < 1) = 0.1
+  prior.sigma = c(1, 0.1) # Prob(sigma > 1) = 0.1
+)
+
 # The shared spatial latent component is denoted by 'spde'
 jcmp <- ~ -1 + Presence_intercept(1) + Count_intercept(1) +
-                  spde(geometry, model = pcmatern)
-   
+  spde(geometry, model = pcmatern)
+
 # Count observation model
 obs_model_count <- inlabru::bru_obs(
-     formula = count ~  + Count_intercept + spde,
-     family = "poisson",
-     data = train_data$Count
- )
-   
+  formula = count ~ +Count_intercept + spde,
+  family = "poisson",
+  data = train_data$Count
+)
+
 # Presence-only observation model (LGCP)
 obs_model_pres <- inlabru::bru_obs(
-     formula = geometry ~ Presence_intercept + spde,
-     family = "cp",
-     data = train_data$Presence,
-     domain = list(geometry = mesh),
-     samplers = list(geometry = ben_sf)
+  formula = geometry ~ Presence_intercept + spde,
+  family = "cp",
+  data = train_data$Presence,
+  domain = list(geometry = mesh),
+  samplers = list(geometry = ben_sf)
 )
-   
+
 # Model fit
 jfit <- inlabru::bru(jcmp, obs_model_count, obs_model_pres,
-                        options = list(control.inla = list(int.strategy = "eb"),
-                                       bru_max_iter = 20)
-                    )
+  options = list(
+    control.inla = list(int.strategy = "eb"),
+    bru_max_iter = 20
+  )
+)
 ```
 
 We can collect model results after the process of model fitting. As
@@ -200,38 +204,40 @@ because there is no strong spatial autocorrelation in the simulated
 data.
 
 ``` r
- jfit$summary.fixed
- #>                     mean        sd      0.025quant  0.5quant   0.975quant  mode      kld
- #> Count_intercept    -0.2497590 0.3086958 -0.8547916 -0.2497590  0.3552737  -0.2497590  0
- #> Presence_intercept  0.9269141 0.2836352  0.3709992  0.9269141  1.4828289   0.9269141  0
- #>  
- jfit$summary.hyperpar
- #>                mean        sd      0.025quant  0.5quant   0.975quant  mode
- #> Range for spde 3.535334 2.5240208  0.9513318   2.8572241  10.2509603  1.9527898
- #> Stdev for spde 0.512346 0.1926203  0.2183487   0.4842595  0.9647017   0.4317979
+jfit$summary.fixed
+#>                     mean        sd      0.025quant  0.5quant   0.975quant  mode      kld
+#> Count_intercept    -0.2497590 0.3086958 -0.8547916 -0.2497590  0.3552737  -0.2497590  0
+#> Presence_intercept  0.9269141 0.2836352  0.3709992  0.9269141  1.4828289   0.9269141  0
+#>
+jfit$summary.hyperpar
+#>                mean        sd      0.025quant  0.5quant   0.975quant  mode
+#> Range for spde 3.535334 2.5240208  0.9513318   2.8572241  10.2509603  1.9527898
+#> Stdev for spde 0.512346 0.1926203  0.2183487   0.4842595  0.9647017   0.4317979
 ```
 
 ### Step 3: Model prediction
 
 ``` r
 # Define the prediction grids and projection system
-grids      <- fmesher::fm_pixels(mesh, mask = ben_sf)
+grids <- fmesher::fm_pixels(mesh, mask = ben_sf)
 projection <- "+proj=longlat +ellps=WGS84 +datum=WGS84"
 ```
 
 ``` r
 # Model predictions with 500 posterior samples
-jpred <- predict(jfit, 
-                 newdata = grids, 
-                 formula = ~ spde + Presence_intercept,
-                 n.samples = 500, 
-                 seed = 24)
+jpred <- predict(jfit,
+  newdata = grids,
+  formula = ~ spde + Presence_intercept,
+  n.samples = 500,
+  seed = 24
+)
 
-jpred_count <- predict(jfit, 
-                       newdata = grids, 
-                       formula = ~ spde + Count_intercept ,
-                       n.samples = 500, 
-                       seed = 24)
+jpred_count <- predict(jfit,
+  newdata = grids,
+  formula = ~ spde + Count_intercept,
+  n.samples = 500,
+  seed = 24
+)
 ```
 
 ## Suitability analysis and model evaluation with `isdmtools`
@@ -244,26 +250,26 @@ with the evaluation of models and the visualisation of results.
 
 ``` r
 # Probability of presence
-jpred   <- format_predictions(jpred) 
-jt_prob <- suitability_index(jpred, 
-                            post_stat = c("q0.025", "mean", "q0.975"), 
-                            output_format = "prob",
-                            response_type = "joint.po",
-                            projection = projection,
-                            scale_independent = TRUE
-                            )
+jpred <- format_predictions(jpred)
+jt_prob <- suitability_index(jpred,
+  post_stat = c("q0.025", "mean", "q0.975"),
+  output_format = "prob",
+  response_type = "joint.po",
+  projection = projection,
+  scale_independent = TRUE
+)
 plot(jt_prob)
 ```
 
 ``` r
 # Expected counts
 jpred_count <- format_predictions(jpred_count)
-jt_count <- suitability_index(jpred_count, 
-                              post_stat = c("q0.025", "mean", "q0.975"), 
-                              output_format = "response",
-                              response_type = "count",
-                              projection = projection
-                              )
+jt_count <- suitability_index(jpred_count,
+  post_stat = c("q0.025", "mean", "q0.975"),
+  output_format = "response",
+  response_type = "count",
+  projection = projection
+)
 plot(jt_count)
 ```
 
@@ -279,23 +285,25 @@ threshold method (which is “best”), and the best method (which is
 the threshold that maximises both sensitivity and specificity.
 
 ``` r
- xy_observed <- rbind(st_coordinates(datasets_list$Presence)[, c("X","Y")], 
-              st_coordinates(datasets_list$Count)[datasets_list$Count$count > 0, c("X","Y")])
-   
- metrics <- c("auc", "tss", "accuracy", "rmse", "mae")
- eval_metrics <- compute_metrics(test_data, 
-                                prob_raster = jt_prob$mean, 
-                                expected_response = jt_count$mean,
-                                xy_excluded = xy_observed, 
-                                metrics = metrics,
-                                overall_roc_metrics = c("auc", "tss", "accuracy"),
-                                response_counts = "count"
-                                )
+xy_observed <- rbind(
+  st_coordinates(datasets_list$Presence)[, c("X", "Y")],
+  st_coordinates(datasets_list$Count)[datasets_list$Count$count > 0, c("X", "Y")]
+)
+
+metrics <- c("auc", "tss", "accuracy", "rmse", "mae")
+eval_metrics <- compute_metrics(test_data,
+  prob_raster = jt_prob$mean,
+  expected_response = jt_count$mean,
+  xy_excluded = xy_observed,
+  metrics = metrics,
+  overall_roc_metrics = c("auc", "tss", "accuracy"),
+  response_counts = "count"
+)
 print(eval_metrics)
 
 #> ISDM Model Evaluation Results
 #> ----------------------------------------------
-#> Datasets Evaluated: Presence, Count 
+#> Datasets Evaluated: Presence, Count
 
 #> Overall Performance:
 #>  TOT ROC SCORE     : 0.8048
@@ -313,7 +321,7 @@ summary(eval_metrics)
 #> ==============================================
 #>        ISDM EVALUATION SUMMARY REPORT
 #> ==============================================
-#> Generated on: 2026-01-19 04:41:02 
+#> Generated on: 2026-01-19 04:41:02
 
 #> --- Model Evaluation Settings ---
 #> Random Seed         : 25
@@ -332,8 +340,8 @@ summary(eval_metrics)
 #> MAE           N/A 1.752
 
 #> --- Composite Scores (Weighted) ---
-#>     AUC      TSS ACCURACY     RMSE      MAE 
-#>    0.852    0.775    0.788    2.119    1.752 
+#>     AUC      TSS ACCURACY     RMSE      MAE
+#>    0.852    0.775    0.788    2.119    1.752
 
 #> --- Overall Performance ---
 #>  TOT ROC SCORE     : 0.8048
@@ -366,14 +374,14 @@ in this object can be visualised using the
 helper which return a ggplot object that can be customised by the user.
 
 ``` r
-map <- generate_maps(jt_prob, 
-                   var_names = c("q0.025", "mean", "q0.975"), 
-                   base_map = ben_sf,
-                   legend_title = "suitability",  
-                   panel_labels = c("(a) q2.5%", "(b) Mean", "(c) q97.5%"),
-                   xaxis_breaks = seq(0, 4, 1),
-                   yaxis_breaks = seq(6, 13, 2)
-                   )
+map <- generate_maps(jt_prob,
+  var_names = c("q0.025", "mean", "q0.975"),
+  base_map = ben_sf,
+  legend_title = "suitability",
+  panel_labels = c("(a) q2.5%", "(b) Mean", "(c) q97.5%"),
+  xaxis_breaks = seq(0, 4, 1),
+  yaxis_breaks = seq(6, 13, 2)
+)
 map
 ```
 
