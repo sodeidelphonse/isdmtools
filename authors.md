@@ -3,6 +3,8 @@
 ## Authors
 
 - **Akoeugnigan Idelphonse SODE**. Author, maintainer.
+  [](https://orcid.org/0000-0002-8556-239X)  
+  SODE A. Idelphonse - continued development of the main code
 
 - **Adandé Belarmain Fandohan**. Contributor.
 

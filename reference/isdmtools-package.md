@@ -28,6 +28,8 @@ For a complete guide on the workflow, see the package vignettes:
 ## Author
 
 **Maintainer**: Akoeugnigan Idelphonse SODE <sdidelphonse@gmail.com>
+([ORCID](https://orcid.org/0000-0002-8556-239X)) (SODE A. Idelphonse -
+continued development of the main code)
 
 Other contributors:
 
