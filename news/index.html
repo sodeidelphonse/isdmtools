@@ -51,19 +51,22 @@
 <h2 class="pkg-version" data-toc-text="0.3.0" id="isdmtools-030">isdmtools 0.3.0<a class="anchor" aria-label="anchor" href="#isdmtools-030"></a></h2>
 <div class="section level3">
 <h3 id="continuous-integration--deployment-0-3-0">Continuous Integration &amp; Deployment<a class="anchor" aria-label="anchor" href="#continuous-integration--deployment-0-3-0"></a></h3>
-<ul><li>GitHub Actions Integration: Established a suite of automated workflows including R-CMD-check for cross-platform stability and Codecov for monitoring unit test coverage.</li>
+<ul><li>GitHub Actions Integration: Established a suite of automated workflows including R-CMD-check for cross-platform stability and <code>Codecov</code>for monitoring unit test coverage.</li>
 <li>Automated Documentation: Implemented an automated pkgdown deployment pipeline to ensure the package website and vignettes are updated upon every push to the main branch.</li>
+<li>Website Launch: Official <code>pkgdown</code> site deployment with a custom navigation bar and categorised tutorials.</li>
+<li>Code styling: Configure the <code>lintr</code> workflow for the automated detection of syntax errors and code styling issues.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="new-features-0-3-0">New Features<a class="anchor" aria-label="anchor" href="#new-features-0-3-0"></a></h3>
 <ul><li>Tutorials: Added a “Get Started” guide and an advanced “ISDM Evaluation Workflow” vignette with conditional evaluation for external dependencies.</li>
 <li>New S3 Class Architecture: Introduced <code>GeoDiagnostic</code>, <code>EnvDiagnostic</code>, and <code>FoldsSummary</code> classes to structure the spatial folds’ diagnostics results.</li>
-<li>Documentation Refactor: Implemented a grouped reference system to consolidate S3 methods, significantly improving the package Reference index.</li>
+<li>Documentation Refactor: Implemented a grouped reference system to consolidate S3 methods for improving the package Reference index.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="improvements-0-3-0">Improvements<a class="anchor" aria-label="anchor" href="#improvements-0-3-0"></a></h3>
-<ul><li>Codecov coverage: Set up additional units tests to boost their coverage.</li>
-<li>Website Launch: Official <code>pkgdown</code> site deployment with a custom navigation bar and categorised tutorials.</li>
+<ul><li>R Compatibility: Full support for the native pipe <code>|&gt;</code> across the package.</li>
+<li>System Dependencies: Fixed the <code>units</code> and <code>sf</code> installation issues by adding <code>libudunits2-dev</code> to the environment.</li>
+<li>Codecov coverage: Set up additional units tests to boost the Codecov test coverage.</li>
 <li>BugFixes: Refactoring <code>ISDMmetrics</code> methods to handle efficiently datasets’ names with underscores to avoid names collision during string splitting.</li>
 <li>Blocks Diagnostics: Refined <code><a href="../reference/check_folds.html">check_folds()</a></code> and <code><a href="../reference/check_env_balance.html">check_env_balance()</a></code> constructors for evaluating spatial independence and environmental balance of spatial folds.</li>
 </ul></div>
@@ -90,7 +93,7 @@
 <li><p>Added relevant tests for <code>DataFolds</code> and <code>BackgroundPoints</code> classes and their constructors/methods.</p></li>
 </ul></div>
 <div class="section level3">
-<h3 id="enhanced-features-0-2-0">Enhanced Features<a class="anchor" aria-label="anchor" href="#enhanced-features-0-2-0"></a></h3>
+<h3 id="improvements-0-2-0">Improvements<a class="anchor" aria-label="anchor" href="#improvements-0-2-0"></a></h3>
 <ul><li>Refactoring: Remove unnecessary dependencies (<code>reshape2</code>, <code>purrr</code> and <code>ggspatial</code>) and ensure consistent argument naming (snake_case).</li>
 <li>Unified CV Constructor: <code><a href="../reference/create_folds.html">create_folds()</a></code> now acts as a high-level bridge between <code>blockCV</code> and <code>spatialsample</code>.</li>
 <li>Standardized S3 Outputs: The <code>DataFolds</code> object now standardizes internal indexing across different blocking engines, ensuring “folds_ids” are consistent regardless of the underlying package used.</li>
@@ -107,7 +110,7 @@
 <li>Updated internal logic to use <code>.data</code> pronouns to resolve global variable notes.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="enhanced-features-0-1-0-9000">Enhanced Features<a class="anchor" aria-label="anchor" href="#enhanced-features-0-1-0-9000"></a></h3>
+<h3 id="improvements-0-1-0-9000">Improvements<a class="anchor" aria-label="anchor" href="#improvements-0-1-0-9000"></a></h3>
 <ul><li>Implemented S3 methods for <code>ISDMmetrics</code>: <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code>, <code><a href="https://rspatial.github.io/terra/reference/summary.html" class="external-link">summary()</a></code>, <code><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot()</a></code>, <code><a href="https://rspatial.github.io/terra/reference/as.data.frame.html" class="external-link">as.data.frame()</a></code>, and <code>[</code>.</li>
 <li>Added <code>ISDMmetrics</code> S3 class to handle outputs from <code><a href="../reference/compute_metrics.html">compute_metrics()</a></code>.</li>
 <li>Implemented <code>get_background</code> helper function for selected background points.</li>

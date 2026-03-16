@@ -115,7 +115,7 @@ set.seed(42)
 presence_data <- data.frame(
   x = runif(100, 0, 4),
   y = runif(100, 6, 13),
-) %>%
+) |>
   st_as_sf(coords = c("x", "y"), crs = 4326)
 
 # Count data (e.g. species count from a structured design)
@@ -123,7 +123,7 @@ count_data <- data.frame(
   x = runif(50, 0, 4),
   y = runif(50, 6, 13),
   count = rpois(50, 5)
-) %>%
+) |>
   st_as_sf(coords = c("x", "y"), crs = 4326)
 
 # Create a list of datasets

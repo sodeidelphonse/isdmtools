@@ -5,11 +5,15 @@
 ### Continuous Integration & Deployment
 
 - GitHub Actions Integration: Established a suite of automated workflows
-  including R-CMD-check for cross-platform stability and Codecov for
+  including R-CMD-check for cross-platform stability and `Codecov`for
   monitoring unit test coverage.
 - Automated Documentation: Implemented an automated pkgdown deployment
   pipeline to ensure the package website and vignettes are updated upon
   every push to the main branch.
+- Website Launch: Official `pkgdown` site deployment with a custom
+  navigation bar and categorised tutorials.
+- Code styling: Configure the `lintr` workflow for the automated
+  detection of syntax errors and code styling issues.
 
 ### New Features
 
@@ -20,15 +24,16 @@
   `EnvDiagnostic`, and `FoldsSummary` classes to structure the spatial
   folds’ diagnostics results.
 - Documentation Refactor: Implemented a grouped reference system to
-  consolidate S3 methods, significantly improving the package Reference
-  index.
+  consolidate S3 methods for improving the package Reference index.
 
 ### Improvements
 
-- Codecov coverage: Set up additional units tests to boost their
-  coverage.
-- Website Launch: Official `pkgdown` site deployment with a custom
-  navigation bar and categorised tutorials.
+- R Compatibility: Full support for the native pipe `|>` across the
+  package.
+- System Dependencies: Fixed the `units` and `sf` installation issues by
+  adding `libudunits2-dev` to the environment.
+- Codecov coverage: Set up additional units tests to boost the Codecov
+  test coverage.
 - BugFixes: Refactoring `ISDMmetrics` methods to handle efficiently
   datasets’ names with underscores to avoid names collision during
   string splitting.
@@ -76,7 +81,7 @@
 - Added relevant tests for `DataFolds` and `BackgroundPoints` classes
   and their constructors/methods.
 
-### Enhanced Features
+### Improvements
 
 - Refactoring: Remove unnecessary dependencies (`reshape2`, `purrr` and
   `ggspatial`) and ensure consistent argument naming (snake_case).
@@ -102,7 +107,7 @@
 - Updated internal logic to use `.data` pronouns to resolve global
   variable notes.
 
-### Enhanced Features
+### Improvements
 
 - Implemented S3 methods for `ISDMmetrics`:
   [`print()`](https://rdrr.io/r/base/print.html),
