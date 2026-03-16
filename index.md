@@ -1,5 +1,17 @@
 # isdmtools
 
+## Table of contents
+
+- [Overview](#overview)
+- [Installation](#installation)
+- [Core Features](#core-features)
+- [Usage Example](#usage-example)
+- [Contributing](#contributing)
+- [Citation](#citation)
+- [License](#license)
+
+## Overview
+
 `isdmtools` is an R package that streamlines the preparation,
 visualization, and evaluation of multisource geospatial data for
 biodiversity modeling. Specifically engineered for *Integrated Species
@@ -9,7 +21,7 @@ presence-absence data. It ensures robust, reproducible workflows through
 dedicated tools for block cross-validation, folds diagnostics and
 standardized model evaluation.
 
-# Installation
+## Installation
 
 ### How to install the package?
 
@@ -40,7 +52,7 @@ install.packages("renv")
 renv::restore()
 ```
 
-# Key Features
+## Core Features
 
 The package provides a set of core functions and classes to handle
 common tasks of data preparation, visualization and model evaluation:
@@ -93,7 +105,7 @@ available classes to provide a concise summary and a clear visualization
 of spatial data partition outputs, and evaluation metrics. Other methods
 are discussed in the package vignettes.
 
-# How does it work?
+## Usage Example
 
 The core workflow of `isdmtools` involves creating a `DataFolds` object
 and then extracting specific folds for a modeling pipeline.
@@ -159,13 +171,13 @@ For a detailed introduction to the package, please see the [Get
 started](https://sodeidelphonse.github.io/isdmtools/articles/isdmtools.md)
 guide.
 
-# Contributing
+## Contributing
 
 We welcome contributions! If you encounter an issue or have a feature
 request, please open an issue on the GitHub repository
 [here](https://github.com/sodeidelphonse/isdmtools/issues).
 
-# Citation
+## Citation
 
 To cite this package in your research work, run the following command in
 your R session to generate the plain text and `BiTex` entry of the
@@ -174,3 +186,8 @@ citation:
 ``` r
 citation("isdmtools")
 ```
+
+## License
+
+The `isdmtools` package is released under the [MIT
+License](https://sodeidelphonse.github.io/isdmtools/LICENSE).

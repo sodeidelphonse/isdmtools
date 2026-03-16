@@ -70,11 +70,27 @@
 </h1></div>
 <!-- badges: start -->
 
+<div class="section level2">
+<h2 id="table-of-contents">Table of contents<a class="anchor" aria-label="anchor" href="#table-of-contents"></a>
+</h2>
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#installation">Installation</a></li>
+<li><a href="#core-features">Core Features</a></li>
+<li><a href="#usage-example">Usage Example</a></li>
+<li><a href="#contributing">Contributing</a></li>
+<li><a href="#citation">Citation</a></li>
+<li><a href="#license">License</a></li>
+</ul>
+</div>
+<div class="section level2">
+<h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
+</h2>
 <p><code>isdmtools</code> is an R package that streamlines the preparation, visualization, and evaluation of multisource geospatial data for biodiversity modeling. Specifically engineered for <em>Integrated Species Distribution Models (ISDMs)</em> within a Bayesian framework, the package provides a unified suite for managing presence-only, count, and presence-absence data. It ensures robust, reproducible workflows through dedicated tools for block cross-validation, folds diagnostics and standardized model evaluation.</p>
 </div>
-<div class="section level1">
-<h1 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
-</h1>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
 <div class="section level3">
 <h3 id="how-to-install-the-package">How to install the package?<a class="anchor" aria-label="anchor" href="#how-to-install-the-package"></a>
 </h3>
@@ -99,9 +115,9 @@
 <code class="sourceCode R"><span><span class="fu">renv</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/renv/reference/restore.html" class="external-link">restore</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
-<div class="section level1">
-<h1 id="key-features">Key Features<a class="anchor" aria-label="anchor" href="#key-features"></a>
-</h1>
+<div class="section level2">
+<h2 id="core-features">Core Features<a class="anchor" aria-label="anchor" href="#core-features"></a>
+</h2>
 <p>The package provides a set of core functions and classes to handle common tasks of data preparation, visualization and model evaluation:</p>
 <p><strong>Data Preparation</strong>: Create a <code>DataFolds</code> object that bind multiple <code>sf</code> datasets and generate spatially-separated cross-validation folds using the constructor function <code><a href="reference/create_folds.html">create_folds()</a></code>. This ensures the resulting models are robust to spatial autocorrelation. The key methods <code><a href="reference/check_folds.html">check_folds()</a></code> and <code><a href="reference/check_env_balance.html">check_env_balance()</a></code> operate on <code>DataFolds</code> to efficiently check the independence and environmental balance of created folds, respectively.</p>
 <p><strong>Suitability Analysis</strong>: Standardize model predictions for consistent mapping and compute a final habitat suitability index. The <code><a href="reference/suitability_index.html">suitability_index()</a></code> function transforms raw integrated model predictions into a suitability score using the inverse of the complementary log-log transform (<code>cloglog</code>).</p>
@@ -109,9 +125,9 @@
 <p><strong>Mapping &amp; Visualization</strong>: Visualize model predictions and final habitat suitability maps. The plotting method <code><a href="reference/generate_maps.html">generate_maps()</a></code> is designed to provide a clear and informative map by visualizing multiple variables of model predictions (e.g. mean, and quantiles), providing an easy way to interpret models’ results. Users can customize the final <code>ggplot2</code> object if needed.</p>
 <p><strong>Other Methods</strong>: The package includes <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code>, <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> and <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> methods for the available classes to provide a concise summary and a clear visualization of spatial data partition outputs, and evaluation metrics. Other methods are discussed in the package vignettes.</p>
 </div>
-<div class="section level1">
-<h1 id="how-does-it-work">How does it work?<a class="anchor" aria-label="anchor" href="#how-does-it-work"></a>
-</h1>
+<div class="section level2">
+<h2 id="usage-example">Usage Example<a class="anchor" aria-label="anchor" href="#usage-example"></a>
+</h2>
 <p>The core workflow of <code>isdmtools</code> involves creating a <code>DataFolds</code> object and then extracting specific folds for a modeling pipeline.</p>
 <div class="section level3">
 <h3 id="data-preparation">Data preparation<a class="anchor" aria-label="anchor" href="#data-preparation"></a>
@@ -168,19 +184,24 @@
 <p>For a detailed introduction to the package, please see the <a href="articles/isdmtools.html">Get started</a> guide.</p>
 </div>
 </div>
-<div class="section level1">
-<h1 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
-</h1>
+<div class="section level2">
+<h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
+</h2>
 <p>We welcome contributions! If you encounter an issue or have a feature request, please open an issue on the GitHub repository <a href="https://github.com/sodeidelphonse/isdmtools/issues" class="external-link">here</a>.</p>
 </div>
-<div class="section level1">
-<h1 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
-</h1>
+<div class="section level2">
+<h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
+</h2>
 <p>To cite this package in your research work, run the following command in your R session to generate the plain text and <code>BiTex</code> entry of the citation:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/citation.html" class="external-link">citation</a></span><span class="op">(</span><span class="st">"isdmtools"</span><span class="op">)</span></span></code></pre></div>
 </div>
-
+<div class="section level2">
+<h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
+</h2>
+<p>The <code>isdmtools</code> package is released under the <a href="LICENSE">MIT License</a>.</p>
+</div>
+</div>
   </main><aside class="col-md-3"><div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
