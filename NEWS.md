@@ -3,8 +3,8 @@
 ## Continuous Integration & Deployment 
 - GitHub Actions Integration: Established a suite of automated workflows including R-CMD-check for cross-platform stability and `Codecov`for monitoring unit test coverage.
 - Automated Documentation: Implemented an automated pkgdown deployment pipeline to ensure the package website and vignettes are updated upon every push to the main branch.
-- Website Launch: Official `pkgdown` site deployment with a custom navigation bar and categorised tutorials.
-- Code styling: Configure the `lintr` workflow for the automated detection of syntax errors and code styling issues.
+- Website Launch: Deployed an official `pkgdown` site with a custom navigation bar and categorised tutorials.
+- Code styling: Established the `lintr` workflow for the automated detection of syntax errors and code styling issues.
 
 ## New Features
 - Tutorials: Added a "Get Started" guide and an advanced "ISDM Evaluation Workflow" vignette with conditional evaluation for external dependencies.
@@ -13,7 +13,6 @@
 
 ## Improvements
 - R Compatibility: Full support for the native pipe `|>` across the package.
-- System Dependencies: Fixed the `units` and `sf` installation issues by adding `libudunits2-dev` to the environment.
 - Codecov coverage: Set up additional units tests to boost the Codecov test coverage.
 - BugFixes: Refactoring `ISDMmetrics` methods to handle efficiently datasets' names with underscores to avoid names collision during string splitting.
 - Blocks Diagnostics: Refined `check_folds()` and `check_env_balance()` constructors for evaluating spatial independence and environmental balance of spatial folds.
