@@ -15,7 +15,7 @@
 ## Citation
 
 Source:
-[`inst/CITATION`](https://github.com/sodeidelphonse/isdmtools/blob/v0.3.0/inst/CITATION)
+[`inst/CITATION`](https://github.com/sodeidelphonse/isdmtools/blob/main/inst/CITATION)
 
 Sode A. I., Fandohan A. B., Krainski E. T., Assogbadjo A. E., Glèlè
 Kakaï R. (2025). Integrating Presence-only and Abundance Data to Predict

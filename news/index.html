@@ -44,7 +44,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/sodeidelphonse/isdmtools/blob/v0.3.0/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/sodeidelphonse/isdmtools/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
     <div class="section level2">
@@ -53,8 +53,8 @@
 <h3 id="continuous-integration--deployment-0-3-0">Continuous Integration &amp; Deployment<a class="anchor" aria-label="anchor" href="#continuous-integration--deployment-0-3-0"></a></h3>
 <ul><li>GitHub Actions Integration: Established a suite of automated workflows including R-CMD-check for cross-platform stability and <code>Codecov</code>for monitoring unit test coverage.</li>
 <li>Automated Documentation: Implemented an automated pkgdown deployment pipeline to ensure the package website and vignettes are updated upon every push to the main branch.</li>
-<li>Website Launch: Official <code>pkgdown</code> site deployment with a custom navigation bar and categorised tutorials.</li>
-<li>Code styling: Configure the <code>lintr</code> workflow for the automated detection of syntax errors and code styling issues.</li>
+<li>Website Launch: Deployed an official <code>pkgdown</code> site with a custom navigation bar and categorised tutorials.</li>
+<li>Code styling: Established the <code>lintr</code> workflow for the automated detection of syntax errors and code styling issues.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="new-features-0-3-0">New Features<a class="anchor" aria-label="anchor" href="#new-features-0-3-0"></a></h3>
@@ -65,7 +65,6 @@
 <div class="section level3">
 <h3 id="improvements-0-3-0">Improvements<a class="anchor" aria-label="anchor" href="#improvements-0-3-0"></a></h3>
 <ul><li>R Compatibility: Full support for the native pipe <code>|&gt;</code> across the package.</li>
-<li>System Dependencies: Fixed the <code>units</code> and <code>sf</code> installation issues by adding <code>libudunits2-dev</code> to the environment.</li>
 <li>Codecov coverage: Set up additional units tests to boost the Codecov test coverage.</li>
 <li>BugFixes: Refactoring <code>ISDMmetrics</code> methods to handle efficiently datasets’ names with underscores to avoid names collision during string splitting.</li>
 <li>Blocks Diagnostics: Refined <code><a href="../reference/check_folds.html">check_folds()</a></code> and <code><a href="../reference/check_env_balance.html">check_env_balance()</a></code> constructors for evaluating spatial independence and environmental balance of spatial folds.</li>

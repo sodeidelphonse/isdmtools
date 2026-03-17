@@ -10,9 +10,9 @@
 - Automated Documentation: Implemented an automated pkgdown deployment
   pipeline to ensure the package website and vignettes are updated upon
   every push to the main branch.
-- Website Launch: Official `pkgdown` site deployment with a custom
+- Website Launch: Deployed an official `pkgdown` site with a custom
   navigation bar and categorised tutorials.
-- Code styling: Configure the `lintr` workflow for the automated
+- Code styling: Established the `lintr` workflow for the automated
   detection of syntax errors and code styling issues.
 
 ### New Features
@@ -30,8 +30,6 @@
 
 - R Compatibility: Full support for the native pipe `|>` across the
   package.
-- System Dependencies: Fixed the `units` and `sf` installation issues by
-  adding `libudunits2-dev` to the environment.
 - Codecov coverage: Set up additional units tests to boost the Codecov
   test coverage.
 - BugFixes: Refactoring `ISDMmetrics` methods to handle efficiently
