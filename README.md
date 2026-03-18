@@ -19,8 +19,9 @@
 
 ## Overview
 `isdmtools` is an R package that streamlines the preparation, visualization, and evaluation of multisource geospatial data for biodiversity modeling.
-Specifically engineered for *Integrated Species Distribution Models (ISDMs)* within a Bayesian framework, the package provides a unified suite for managing presence-only, count, and presence-absence data. 
-It ensures robust, reproducible workflows through dedicated tools for block cross-validation, folds diagnostics and standardized model evaluation. 
+Specifically engineered for *Integrated Species Distribution Models (ISDMs)* with a particular focus on the Bayesian framework, 
+the package provides a unified suite of tools for managing presence-only, count, and presence-absence data. 
+It ensures robust, reproducible workflows through dedicated tools for block cross-validation, suitability analysis and standardized model evaluation. 
 
 ## Installation
 
@@ -28,11 +29,12 @@ It ensures robust, reproducible workflows through dedicated tools for block cros
 You can install the development version of `isdmtools` directly from GitHub using `devtools`.
 
 ```R
-install.packages("devtools") 
-devtools::install_github("sodeidelphonse/isdmtools")
+install.packages("remotes") 
+remotes::install_github("sodeidelphonse/isdmtools")
 ```
-### How can contributors manage the package dependencies?
-This project uses `renv` to manage package dependencies and ensure reproducibility. To install all the necessary packages for this project, simply follow these steps:
+### How can contributors handle the dependencies?
+This project uses `renv` to manage package dependencies and ensure reproducibility. 
+To install all the necessary packages for this project, simply follow these steps:
 
 - Make sure you have the `renv` package installed:
 
@@ -49,18 +51,25 @@ renv::restore()
 ## Core Features
 The package provides a set of core functions and classes to handle common tasks of data preparation, visualization and model evaluation:
 
-**Data Preparation**: Create a `DataFolds` object that bind multiple `sf` datasets and generate spatially-separated cross-validation folds using the constructor function `create_folds()`. This ensures the resulting models are robust to spatial autocorrelation. 
+**Data Preparation**: Create a `DataFolds` object that bind multiple `sf` datasets and generate spatially-separated cross-validation folds using the constructor function `create_folds()`. 
+This ensures the resulting models are robust to spatial autocorrelation. 
 The key methods `check_folds()` and `check_env_balance()` operate on `DataFolds` to efficiently check the independence and environmental balance of created folds, respectively. 
 
-**Suitability Analysis**: Standardize model predictions for consistent mapping and compute a final habitat suitability index. The `suitability_index()` function transforms raw integrated model predictions into a suitability score using the inverse of the complementary log-log transform (`cloglog`).
+**Suitability Analysis**: Standardize model predictions for consistent mapping and compute a final habitat suitability index. 
+The `suitability_index()` function transforms raw integrated model predictions into a suitability score using the inverse of the complementary log-log transform (`cloglog`).
 
-**Model Evaluation**: Compute comprehensive evaluation metrics, including ROC-based and continuous-outcome metrics for each dataset using the `compute_metrics()` constructor. The package also handles *dataset-weighted composite scores*, providing a holistic view of model performance. 
-Note that the `sample_background()` constructor is called internally to sample pseudo-absences for presence-only data. However, users have the option of extracting the `BackgroundPoints` object with the `get_background()` helper in order to print and visualise the generated pseudo-absences.
+**Model Evaluation**: Compute comprehensive evaluation metrics, including ROC-based and continuous-outcome metrics for each dataset using the `compute_metrics()` constructor. 
+The package also handles *dataset-weighted composite scores*, providing a holistic view of model performance. 
+Note that the `sample_background()` constructor is called internally to sample pseudo-absences for presence-only data. 
+However, users have the option of extracting the `BackgroundPoints` object with the `get_background()` helper in order to print and visualise the generated pseudo-absences.
 
-**Mapping & Visualization**: Visualize model predictions and final habitat suitability maps. The plotting method `generate_maps()` is designed to provide a clear and informative map by visualizing multiple variables of model predictions (e.g. mean, and quantiles), providing an easy way to interpret models' results. 
+**Mapping & Visualization**: Visualize model predictions and final habitat suitability maps. 
+The plotting method `generate_maps()` is designed to provide a clear and informative map by visualizing multiple variables of model predictions (e.g. mean, and quantiles), providing an easy way to interpret models' results. 
 Users can customize the final `ggplot2` object if needed.
 
-**Other Methods**: The package includes `summary()`, `print()` and `plot()` methods for the available classes to provide a concise summary and a clear visualization of spatial data partition outputs, and evaluation metrics. Other methods are discussed in the package vignettes.
+**Other Methods**: The package includes the `summary()`, `print()` and `plot()` methods for the available data structures. 
+These provide a concise summary and clear visualisation of spatial data partition, folds' diagnostics and models' evaluation. 
+Other methods are discussed in the package vignettes.
 
 ## Usage Example
 The core workflow of `isdmtools` involves creating a `DataFolds` object and then extracting specific folds for a modeling pipeline.

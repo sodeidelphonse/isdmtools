@@ -16,7 +16,7 @@ Authors@R:
              role = "ctb"))
 Date: 2025-09-08
 Maintainer: <sdidelphonse@gmail.com>
-Description: A suite of tools for preparing spatial folds for block cross-validation, evaluating integrated models built from multisource spatial datasets and manipulating and visualising outputs. 
+Description: A suite of tools for preparing spatial folds for block cross-validation, evaluating integrated models built from multisource spatial datasets and analysing outputs. 
     These tools are designed to assist with building and analyzing Integrated Species Distribution Models (ISDMs) with a particular focus on the Bayesian modelling framework.
 URL: https://sodeidelphonse.github.io/isdmtools/, https://github.com/sodeidelphonse/isdmtools
 BugReports: https://github.com/sodeidelphonse/isdmtools/issues

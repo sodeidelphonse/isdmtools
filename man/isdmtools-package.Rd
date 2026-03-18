@@ -7,9 +7,10 @@
 \title{A Toolkit for Integrated Species Distribution Models in R}
 \description{
 \code{isdmtools} provides a set of tools for preparing, analyzing and visualizing spatial data for integrated species distribution models (ISDMs).
-It is designed to help users prepare multisource spatial point datasets for block cross-validation, with a focus on Bayesian inference.
-It analyses the habitat suitability from joint model predictions and maps the results. The package also provides a holistic view of model
-performance by computing a comprehensive evaluation metrics, including ROC-based and continuous-outcome weighted composite scores.
+It been developed to assist users in preparing multisource spatial point datasets for spatial block cross-validation, analysing the
+habitat suitability from the joint model predictions, with a focus on Bayesian inference and visualising the results.
+The package also provides a holistic view of model performance by computing a comprehensive evaluation metrics, including
+ROC-based and continuous-outcome weighted composite scores.
 }
 \seealso{
 Useful links:
