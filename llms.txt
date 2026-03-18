@@ -15,11 +15,12 @@
 `isdmtools` is an R package that streamlines the preparation,
 visualization, and evaluation of multisource geospatial data for
 biodiversity modeling. Specifically engineered for *Integrated Species
-Distribution Models (ISDMs)* within a Bayesian framework, the package
-provides a unified suite for managing presence-only, count, and
-presence-absence data. It ensures robust, reproducible workflows through
-dedicated tools for block cross-validation, folds diagnostics and
-standardized model evaluation.
+Distribution Models (ISDMs)* with a particular focus on the Bayesian
+framework, the package provides a unified suite of tools for managing
+presence-only, count, and presence-absence data. It ensures robust,
+reproducible workflows through dedicated tools for block
+cross-validation, suitability analysis and standardized model
+evaluation.
 
 ## Installation
 
@@ -29,11 +30,11 @@ You can install the development version of `isdmtools` directly from
 GitHub using `devtools`.
 
 ``` r
-install.packages("devtools") 
-devtools::install_github("sodeidelphonse/isdmtools")
+install.packages("remotes") 
+remotes::install_github("sodeidelphonse/isdmtools")
 ```
 
-### How can contributors manage the package dependencies?
+### How can contributors handle the dependencies?
 
 This project uses `renv` to manage package dependencies and ensure
 reproducibility. To install all the necessary packages for this project,
@@ -97,13 +98,13 @@ multiple variables of model predictions (e.g. mean, and quantiles),
 providing an easy way to interpret models’ results. Users can customize
 the final `ggplot2` object if needed.
 
-**Other Methods**: The package includes
+**Other Methods**: The package includes the
 [`summary()`](https://rdrr.io/r/base/summary.html),
 [`print()`](https://rdrr.io/r/base/print.html) and
 [`plot()`](https://rdrr.io/r/graphics/plot.default.html) methods for the
-available classes to provide a concise summary and a clear visualization
-of spatial data partition outputs, and evaluation metrics. Other methods
-are discussed in the package vignettes.
+available data structures. These provide a concise summary and clear
+visualisation of spatial data partition, folds’ diagnostics and models’
+evaluation. Other methods are discussed in the package vignettes.
 
 ## Usage Example
 
