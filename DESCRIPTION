@@ -1,7 +1,7 @@
 Package: isdmtools
 Type: Package
 Title: Toolkit for Evaluating and Analysing Integrated Species Distribution Models in R
-Version: 0.3.0
+Version: 0.4.0
 Authors@R: 
     c(person(given = "Akoeugnigan Idelphonse", family = "SODE",
              email = "sdidelphonse@gmail.com",
@@ -42,6 +42,7 @@ Suggests:
     fmesher (>= 0.6.1),
     ggspatial (>= 1.1.10),
     spatialsample,
+    DHARMa,
     knitr,
     rmarkdown
 Config/testthat/edition: 3

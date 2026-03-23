@@ -38,6 +38,9 @@ reference:
   - suitability_index
   - format_predictions
   - generate_maps
+  - simulate_replicates
+  - compute_ppc_stats
+  - ppc_stats-methods
 
 - title: Utilities & Helpers
   desc: Data cleaning and numerical calculation
@@ -45,8 +48,10 @@ reference:
   - calc_niche_overlap
   - fill_na_near
   - solve_practical_range
+  - std_matern_corr
+  - plot.std_matern_corr
 
-- title: "Included Datasets"
+- title: "Datasets"
   contents:
   - benin_shape
 

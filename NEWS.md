@@ -1,7 +1,23 @@
+# isdmtools 0.4.0
+
+## New Features: 
+- `compute_ppc_stats()`: A wrapper to calculate Pearson Chi-squared statistics and Bayesian $p$-values to assess model fit and overdispersion.
+- Added S3 methods for `print.ppc_stats` and `plot.ppc_stats` for immediate visual and console-based model diagnostics.
+- `simulate_replicates()`: A new vectorized simulation engine to generate $y_{rep}$ data from posterior samples. 
+Supports `poisson`, `nbinomial`, and `quasi-poisson` families.
+- Posterior Predictive Checks (PPC): Introduced a robust Bayesian diagnostic suite for count data models.
+- `std_matern_corr`: A wrapper to standardise Matern covariance parameters across estimation engine and compute the pairwise correlation from LGCP models.
+It is associated with the S3 method `plot.std_matern_corr` for quick plot of results.
+
+## Improvements 
+- `format_predictions()`: Updated to ensure extracted coordinates are consistently lowercase for internal processing while preserving existing X/Y data columns.
+- Moved `solve_practical_range()` from `utils.R` and optimized `uniroot` calls by removing the redundant `sigma2` argument.
+- Added internal utility functions `matern_cov()` and `get_variance()` to standardize spatial covariance across engines and variance calculations for Poisson extensions.
+
 # isdmtools 0.3.0
 
 ## Continuous Integration & Deployment 
-- GitHub Actions Integration: Established a suite of automated workflows including R-CMD-check for cross-platform stability and `Codecov`for monitoring unit test coverage.
+- GitHub Actions Integration: Established a suite of automated workflows including R-CMD-check for cross-platform stability and `Codecov` for monitoring unit tests coverage.
 - Automated Documentation: Implemented an automated pkgdown deployment pipeline to ensure the package website and vignettes are updated upon every push to the main branch.
 - Website Launch: Deployed an official `pkgdown` site with a custom navigation bar and categorised tutorials.
 - Code styling: Established the `lintr` workflow for the automated detection of syntax errors and code styling issues.
@@ -46,7 +62,7 @@ Points falling within spatial buffers are now correctly identified as NA and exc
 ## Refactoring & Testing Framework
 * Integrated unit testing framework using `testthat`.
 * Standardized coordinate column names to lowercase `x` and `y` across all functions.
-* Updated internal logic to use `.data` pronouns to resolve global variable notes.
+* Updated internal logic to use `.data` pronoun to resolve global variable notes.
 
 ## Improvements
 * Implemented S3 methods for `ISDMmetrics`: `print()`, `summary()`, `plot()`, `as.data.frame()`, and `[`.

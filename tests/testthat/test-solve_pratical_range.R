@@ -1,4 +1,3 @@
-
 test_that("solve_practical_range harmonizes different engine conventions correctly", {
   # Identity: INLA's internal range is defined at approx 0.139.
   # Using this threshold should return the input value nearly exactly.

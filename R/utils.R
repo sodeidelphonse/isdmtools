@@ -1,4 +1,3 @@
-
 #' Calculate Niche Overlap (Schoener's D)
 #'
 #' @description Computes the overlap between two distributions.
@@ -62,9 +61,10 @@ calc_niche_overlap <- function(x, y, n = 512) {
 matern_cov <- function(r, sigma2, rho, nu = 1, nugget = 0, ...) {
   kappa <- sqrt(8 * nu) / rho
   spat_cov <- ifelse(r > 0,
-                     sigma2 * (2^(1 - nu) / gamma(nu)) *
-                       (kappa * r)^nu * besselK(kappa * r, nu),
-                     sigma2)
+    sigma2 * (2^(1 - nu) / gamma(nu)) *
+      (kappa * r)^nu * besselK(kappa * r, nu),
+    sigma2
+  )
 
   # Add the nugget effect only at distance zero
   res <- ifelse(r == 0, spat_cov + nugget, spat_cov)
@@ -79,10 +79,11 @@ matern_cov <- function(r, sigma2, rho, nu = 1, nugget = 0, ...) {
 #' @noRd
 get_variance <- function(mu, family, dispersion = 1) {
   switch(family,
-         "poisson" = mu,
-         "nbinomial" = mu + (mu^2 / dispersion),
-         "quasi-poisson" = dispersion * mu,
-         stop("Unsupported family"))
+    "poisson" = mu,
+    "nbinomial" = mu + (mu^2 / dispersion),
+    "quasi-poisson" = dispersion * mu,
+    stop("Unsupported family")
+  )
 }
 
 

@@ -29,7 +29,7 @@ geographic units as the input model parameter.
 }
 \description{
 Harmonizes spatial range parameters from different R packages (\code{INLA},
-\code{geoR}, \code{spatstat}) into a standardized "Practical Range." This is
+\code{geoR}, \code{spatstat}) into a standardized "Practical Range". This is
 the distance at which the spatial correlation drops to a specific threshold
 (default is 0.10).
 }
