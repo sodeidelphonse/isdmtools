@@ -271,6 +271,13 @@ Habitat suitability analysis & mapping
   : Obtain a formatted output from spatial predictions.
 - [`generate_maps()`](https://sodeidelphonse.github.io/isdmtools/reference/generate_maps.md)
   : Generate Multi-panel Maps from Spatial Model Predictions
+- [`simulate_replicates()`](https://sodeidelphonse.github.io/isdmtools/reference/simulate_replicates.md)
+  : Replicate response data from the posterior predictive distribution.
+- [`compute_ppc_stats()`](https://sodeidelphonse.github.io/isdmtools/reference/compute_ppc_stats.md)
+  : Compute Posterior Predictive Check (PPC) Statistics
+- [`print(`*`<ppc_stats>`*`)`](https://sodeidelphonse.github.io/isdmtools/reference/ppc_stats-methods.md)
+  [`plot(`*`<ppc_stats>`*`)`](https://sodeidelphonse.github.io/isdmtools/reference/ppc_stats-methods.md)
+  : Posterior Predictive Check (PPC) Statistics
 
 ## Utilities & Helpers
 
@@ -282,8 +289,13 @@ Data cleaning and numerical calculation
   : Fill NA cells with the nearest cells values
 - [`solve_practical_range()`](https://sodeidelphonse.github.io/isdmtools/reference/solve_practical_range.md)
   : Solve the practical range of a Matérn covariance function
+- [`std_matern_corr()`](https://sodeidelphonse.github.io/isdmtools/reference/std_matern_corr.md)
+  : Standardise Matern covariance parameters and compute the pairwise
+  correlation from LGCP models
+- [`plot(`*`<std_matern_corr>`*`)`](https://sodeidelphonse.github.io/isdmtools/reference/plot.std_matern_corr.md)
+  : Plot standardized Matern correlation or covariance
 
-## Included Datasets
+## Datasets
 
 - [`benin_shape`](https://sodeidelphonse.github.io/isdmtools/reference/benin_shape.md)
   : Shapefile of Benin Republic

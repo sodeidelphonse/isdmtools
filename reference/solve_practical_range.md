@@ -1,7 +1,7 @@
 # Solve the practical range of a Matérn covariance function
 
 Harmonizes spatial range parameters from different R packages (`INLA`,
-`geoR`, `spatstat`) into a standardized "Practical Range." This is the
+`geoR`, `spatstat`) into a standardized "Practical Range". This is the
 distance at which the spatial correlation drops to a specific threshold
 (default is 0.10).
 
@@ -11,9 +11,8 @@ distance at which the spatial correlation drops to a specific threshold
 solve_practical_range(
   param_val,
   nu,
-  sigma_sq = 1,
   thresh = 0.1,
-  package = c("inla", "geor", "spatstat")
+  engine = c("inla", "geor", "spatstat")
 )
 ```
 
@@ -30,16 +29,11 @@ solve_practical_range(
   models in INLA (where alpha = 2), the default is `nu = 1`. For an
   exponential covariance, use `nu = 0.5`.
 
-- sigma_sq:
-
-  Numeric. The partial sill (or marginal variance). Defaults to 1 for
-  correlation focus.
-
 - thresh:
 
   Numeric. The target correlation threshold. Defaults to 0.1 (10%).
 
-- package:
+- engine:
 
   Character. One of `"inla"`, `"geor"`, or `"spatstat"`.
 
@@ -84,14 +78,20 @@ used for the exploratory analysis.
   Society: Series B (Statistical Methodology)* (2011) 73:423–498.
   [doi:10.1111/j.1467-9868.2011.00777.x](https://doi.org/10.1111/j.1467-9868.2011.00777.x)
 
+## See also
+
+Other Matern covariance helpers:
+[`plot.std_matern_corr()`](https://sodeidelphonse.github.io/isdmtools/reference/plot.std_matern_corr.md),
+[`std_matern_corr()`](https://sodeidelphonse.github.io/isdmtools/reference/std_matern_corr.md)
+
 ## Examples
 
 ``` r
 # Estimated phi = 10 km with exponential covariance in `geoR`
-solve_practical_range(param_val = 10, nu = 0.5, thresh = 0.1, package = "geor")
+solve_practical_range(param_val = 10, nu = 0.5, thresh = 0.1, engine = "geor")
 #> [1] 23.02585
 
-# Estimated alpha = 10 km with Matérn covariance in `spatstat`
-solve_practical_range(param_val = 13.10, nu = 1.5, thresh = 0.1, package = "spatstat")
+# Estimated alpha = 13.10 km with Matérn covariance in `spatstat`
+solve_practical_range(param_val = 13.10, nu = 1.5, thresh = 0.1, engine = "spatstat")
 #> [1] 29.41908
 ```

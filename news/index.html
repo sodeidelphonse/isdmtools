@@ -13,7 +13,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">isdmtools</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,14 +44,35 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/sodeidelphonse/isdmtools/blob/v0.3.0/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/sodeidelphonse/isdmtools/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.4.0" id="isdmtools-040">isdmtools 0.4.0<a class="anchor" aria-label="anchor" href="#isdmtools-040"></a></h2>
+<div class="section level3">
+<h3 id="new-features-0-4-0">New Features:<a class="anchor" aria-label="anchor" href="#new-features-0-4-0"></a></h3>
+<ul><li>
+<code><a href="../reference/compute_ppc_stats.html">compute_ppc_stats()</a></code>: A wrapper to calculate Pearson Chi-squared statistics and Bayesian <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-values to assess model fit and overdispersion.</li>
+<li>Added S3 methods for <code>print.ppc_stats</code> and <code>plot.ppc_stats</code> for immediate visual and console-based model diagnostics.</li>
+<li>
+<code><a href="../reference/simulate_replicates.html">simulate_replicates()</a></code>: A new vectorized simulation engine to generate <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>y</mi><mrow><mi>r</mi><mi>e</mi><mi>p</mi></mrow></msub><annotation encoding="application/x-tex">y_{rep}</annotation></semantics></math> data from posterior samples. Supports <code>poisson</code>, <code>nbinomial</code>, and <code>quasi-poisson</code> families.</li>
+<li>Posterior Predictive Checks (PPC): Introduced a robust Bayesian diagnostic suite for count data models.</li>
+<li>
+<code>std_matern_corr</code>: A wrapper to standardise Matern covariance parameters across estimation engine and compute the pairwise correlation from LGCP models. It is associated with the S3 method <code>plot.std_matern_corr</code> for quick plot of results.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="improvements-0-4-0">Improvements<a class="anchor" aria-label="anchor" href="#improvements-0-4-0"></a></h3>
+<ul><li>
+<code><a href="../reference/format_predictions.html">format_predictions()</a></code>: Updated to ensure extracted coordinates are consistently lowercase for internal processing while preserving existing X/Y data columns.</li>
+<li>Moved <code><a href="../reference/solve_practical_range.html">solve_practical_range()</a></code> from <code>utils.R</code> and optimized <code>uniroot</code> calls by removing the redundant <code>sigma2</code> argument.</li>
+<li>Added internal utility functions <code>matern_cov()</code> and <code>get_variance()</code> to standardize spatial covariance across engines and variance calculations for Poisson extensions.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.3.0" id="isdmtools-030">isdmtools 0.3.0<a class="anchor" aria-label="anchor" href="#isdmtools-030"></a></h2>
 <div class="section level3">
 <h3 id="continuous-integration--deployment-0-3-0">Continuous Integration &amp; Deployment<a class="anchor" aria-label="anchor" href="#continuous-integration--deployment-0-3-0"></a></h3>
-<ul><li>GitHub Actions Integration: Established a suite of automated workflows including R-CMD-check for cross-platform stability and <code>Codecov</code>for monitoring unit test coverage.</li>
+<ul><li>GitHub Actions Integration: Established a suite of automated workflows including R-CMD-check for cross-platform stability and <code>Codecov</code> for monitoring unit tests coverage.</li>
 <li>Automated Documentation: Implemented an automated pkgdown deployment pipeline to ensure the package website and vignettes are updated upon every push to the main branch.</li>
 <li>Website Launch: Deployed an official <code>pkgdown</code> site with a custom navigation bar and categorised tutorials.</li>
 <li>Code styling: Established the <code>lintr</code> workflow for the automated detection of syntax errors and code styling issues.</li>
@@ -106,7 +127,7 @@
 <h3 id="refactoring--testing-framework-0-1-0-9000">Refactoring &amp; Testing Framework<a class="anchor" aria-label="anchor" href="#refactoring--testing-framework-0-1-0-9000"></a></h3>
 <ul><li>Integrated unit testing framework using <code>testthat</code>.</li>
 <li>Standardized coordinate column names to lowercase <code>x</code> and <code>y</code> across all functions.</li>
-<li>Updated internal logic to use <code>.data</code> pronouns to resolve global variable notes.</li>
+<li>Updated internal logic to use <code>.data</code> pronoun to resolve global variable notes.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="improvements-0-1-0-9000">Improvements<a class="anchor" aria-label="anchor" href="#improvements-0-1-0-9000"></a></h3>
