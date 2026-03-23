@@ -275,18 +275,20 @@ format_predictions <- function(prediction_data, base_map = NULL) {
     }
   } else {
     if (inherits(data_to_prepare, "sf")) {
-      coords <- sf::st_coordinates(data_to_prepare)
+      coords <- as.data.frame(sf::st_coordinates(data_to_prepare))
+      names(coords)[1:2] <- c("x", "y")
 
-      df <- as.data.frame(data_to_prepare)
-      geom_column <- attr(data_to_prepare, "sf_column")
-      df[[geom_column]] <- NULL
-      df <- df[, !(names(df) %in% c("x", "y", "X", "Y")), drop = FALSE]
+      df <- sf::st_drop_geometry(data_to_prepare)
+      df <- df[, !(names(df) %in% c("x", "y")), drop = FALSE]
 
-      return(cbind(df, x = coords[, "X"], y = coords[, "Y"]))
+      return(cbind(df, coords[, 1:2]))
     } else {
       df <- as.data.frame(data_to_prepare)
-      names(df)[names(df) == "X"] <- "x"
-      names(df)[names(df) == "Y"] <- "y"
+
+      # Rename X/Y to x/y only if lower case variables are not available
+      nms <- names(df)
+      if (!"x" %in% nms && "X" %in% nms) names(df)[nms == "X"] <- "x"
+      if (!"y" %in% nms && "Y" %in% nms) names(df)[nms == "Y"] <- "y"
 
       if (!all(c("x", "y") %in% names(df))) {
         stop("Input data lacks 'x' and 'y' coordinate columns for plotting.", call. = FALSE)
