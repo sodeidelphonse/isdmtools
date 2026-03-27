@@ -80,24 +80,12 @@ ppc_results <- compute_ppc_stats(
   family = "poisson"
 )
 
-#--- View the summary (triggers the `print.ppc_stats` method)
+#--- View the summary
 print(ppc_results)
 
-#--- Visualize the fit (triggers the `plot.ppc_stats` method)
+#--- Visualize the fit
 plot(ppc_results)
 
-#--- Example with Negative Binomial and DHARMa integration
-if (requireNamespace("DHARMa", quietly = TRUE)) {
-  # Generate replicates of response for DHARMa
-  nb_sims <- simulate_replicates(mu_samples, family = "nbinomial", dispersion = 2)
-
-  res_dharma <- createDHARMa(
-    simulatedResponse = nb_sims,
-    observedResponse = y_obs,
-    fittedPredictedResponse = rowMeans(mu_samples)
-  )
-  plot(res_dharma)
-}
 }
 }
 \seealso{
