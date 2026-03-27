@@ -55,10 +55,16 @@ The \code{scaling} factor is determined by the \code{response_type} and the \cod
 \item For PO models (single or part of a joint model), \code{eta} is always a log-rate, and the \code{scaling} is set to the cell area.
 It is ignored if \code{scale_independent} is set to TRUE.
 \item For Count or PA models, if \code{has_offset = TRUE}, \code{eta} is a log-rate, and \code{scaling} is the cell area.
-\item In all other cases (\code{has_offset = FALSE}), \code{eta} is treated as a log of the expected count (count) or cloglog of probability (PA), and \code{scaling} is set to \code{1}.
+\item In all other cases (\code{has_offset = FALSE}), \code{eta} is treated as a log of the expected count (count data) or
+cloglog of probability (PA), and \code{scaling} is set to \code{1}.
 }
 If the raster is in a geographic coordinate system (longlat), the area is calculated in \eqn{km^2} using \link[terra]{cellSize}.
 For projected systems, the area is the product of the resolutions (e.g., \eqn{km^2} if units are in km).
+
+To ensure the habitat suitability index remains comparable across different spatial resolutions, we implemented a \emph{scale-independent} transformation.
+While the probability of presence is inherently tied to the area of the sampling unit ($A_i$), setting $A_i = 1$ allows for the derivation
+of a \emph{Standardized Presence Probability}. This measure reflects the likelihood of occurrence within a unit area,
+isolating the environmental signal from the geometric artifacts of the prediction grid."
 }
 \examples{
 \dontrun{

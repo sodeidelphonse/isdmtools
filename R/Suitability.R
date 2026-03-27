@@ -35,10 +35,16 @@
 #'   \item For PO models (single or part of a joint model), `eta` is always a log-rate, and the `scaling` is set to the cell area.
 #'   It is ignored if `scale_independent` is set to TRUE.
 #'   \item For Count or PA models, if `has_offset = TRUE`, `eta` is a log-rate, and `scaling` is the cell area.
-#'   \item In all other cases (`has_offset = FALSE`), `eta` is treated as a log of the expected count (count) or cloglog of probability (PA), and `scaling` is set to `1`.
+#'   \item In all other cases (`has_offset = FALSE`), `eta` is treated as a log of the expected count (count data) or
+#'   cloglog of probability (PA), and `scaling` is set to `1`.
 #' }
 #' If the raster is in a geographic coordinate system (longlat), the area is calculated in \eqn{km^2} using \link[terra]{cellSize}.
 #' For projected systems, the area is the product of the resolutions (e.g., \eqn{km^2} if units are in km).
+#'
+#' To ensure the habitat suitability index remains comparable across different spatial resolutions, we implemented a *scale-independent* transformation.
+#' While the probability of presence is inherently tied to the area of the sampling unit ($A_i$), setting $A_i = 1$ allows for the derivation
+#' of a *Standardized Presence Probability*. This measure reflects the likelihood of occurrence within a unit area,
+#' isolating the environmental signal from the geometric artifacts of the prediction grid."
 #'
 #' @export
 #' @family prediction analyses
@@ -170,13 +176,15 @@ inv_cloglog <- function(eta, scaling = 1) {
 #--- Convert spatial predictions into a formatted output ---------------------
 
 #' @title Obtain a formatted output from spatial predictions.
+#'
 #' @description Function to transform a prediction data from various spatial models (e.g., `inlabru`, `PointedSDMs` or `GLMs` tools)
 #' into an sf object if it is from points predictions (e.g., \link[fmesher]{fm_vertices}) or a data.frame with
-#' the corresponding locations if it is from pixel grids (see \link[fmesher]{fm_pixels}). Spatial prediction data can also be obtained across a given region
-#' using \code{expand.grid(x, y)} function, where 'x' and 'y' are geographical coordinates of the grids locations.
+#' the corresponding locations if it is from pixel grids (see \link[fmesher]{fm_pixels}).
+#' Spatial prediction data can also be obtained across a given region using \code{expand.grid(x, y)}
+#' function, where 'x' and 'y' are geographical coordinates of the grids locations.
 #'
 #' @param prediction_data A model prediction which may be either an `sf` or a `data.frame` object or a raw prediction from the `inlabru-like` models.
-#' The prediction can be on the response or linear predictor scale, depending on whether the output is for a model evaluation or visualization.
+#' The prediction can be on the response or linear predictor scale, depending on whether the output is for a model evaluation or visualization of the prediction.
 #' @param base_map An `sf` polygon having the same `crs` with the spatial locations used for predictions.
 #'
 #' @return A `data.frame` for grid-based predictions or `sf` object for point-based predictions.

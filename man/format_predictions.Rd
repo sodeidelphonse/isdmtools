@@ -8,7 +8,7 @@ format_predictions(prediction_data, base_map = NULL)
 }
 \arguments{
 \item{prediction_data}{A model prediction which may be either an \code{sf} or a \code{data.frame} object or a raw prediction from the \code{inlabru-like} models.
-The prediction can be on the response or linear predictor scale, depending on whether the output is for a model evaluation or visualization.}
+The prediction can be on the response or linear predictor scale, depending on whether the output is for a model evaluation or visualization of the prediction.}
 
 \item{base_map}{An \code{sf} polygon having the same \code{crs} with the spatial locations used for predictions.}
 }
@@ -18,8 +18,9 @@ A \code{data.frame} for grid-based predictions or \code{sf} object for point-bas
 \description{
 Function to transform a prediction data from various spatial models (e.g., \code{inlabru}, \code{PointedSDMs} or \code{GLMs} tools)
 into an sf object if it is from points predictions (e.g., \link[fmesher]{fm_vertices}) or a data.frame with
-the corresponding locations if it is from pixel grids (see \link[fmesher]{fm_pixels}). Spatial prediction data can also be obtained across a given region
-using \code{expand.grid(x, y)} function, where 'x' and 'y' are geographical coordinates of the grids locations.
+the corresponding locations if it is from pixel grids (see \link[fmesher]{fm_pixels}).
+Spatial prediction data can also be obtained across a given region using \code{expand.grid(x, y)}
+function, where 'x' and 'y' are geographical coordinates of the grids locations.
 }
 \examples{
 \dontrun{
