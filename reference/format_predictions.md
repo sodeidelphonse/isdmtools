@@ -24,7 +24,8 @@ format_predictions(prediction_data, base_map = NULL)
   A model prediction which may be either an `sf` or a `data.frame`
   object or a raw prediction from the `inlabru-like` models. The
   prediction can be on the response or linear predictor scale, depending
-  on whether the output is for a model evaluation or visualization.
+  on whether the output is for a model evaluation or visualization of
+  the prediction.
 
 - base_map:
 

@@ -100,7 +100,7 @@ The `scaling` factor is determined by the `response_type` and the
   and `scaling` is the cell area.
 
 - In all other cases (`has_offset = FALSE`), `eta` is treated as a log
-  of the expected count (count) or cloglog of probability (PA), and
+  of the expected count (count data) or cloglog of probability (PA), and
   `scaling` is set to `1`.
 
 If the raster is in a geographic coordinate system (longlat), the area
@@ -108,6 +108,15 @@ is calculated in \\km^2\\ using
 [cellSize](https://rspatial.github.io/terra/reference/cellSize.html).
 For projected systems, the area is the product of the resolutions (e.g.,
 \\km^2\\ if units are in km).
+
+To ensure the habitat suitability index remains comparable across
+different spatial resolutions, we implemented a *scale-independent*
+transformation. While the probability of presence is inherently tied to
+the area of the sampling unit (\$A_i\$), setting \$A_i = 1\$ allows for
+the derivation of a *Standardized Presence Probability*. This measure
+reflects the likelihood of occurrence within a unit area, isolating the
+environmental signal from the geometric artifacts of the prediction
+grid."
 
 ## References
 

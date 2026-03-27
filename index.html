@@ -91,29 +91,10 @@
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<div class="section level3">
-<h3 id="how-to-install-the-package">How to install the package?<a class="anchor" aria-label="anchor" href="#how-to-install-the-package"></a>
-</h3>
 <p>You can install the development version of <code>isdmtools</code> directly from GitHub using <code>devtools</code>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span> </span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"sodeidelphonse/isdmtools"</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="how-can-contributors-handle-the-dependencies">How can contributors handle the dependencies?<a class="anchor" aria-label="anchor" href="#how-can-contributors-handle-the-dependencies"></a>
-</h3>
-<p>This project uses <code>renv</code> to manage package dependencies and ensure reproducibility. To install all the necessary packages for this project, simply follow these steps:</p>
-<ul>
-<li>Make sure you have the <code>renv</code> package installed:</li>
-</ul>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"renv"</span><span class="op">)</span></span></code></pre></div>
-<ul>
-<li>With the project directory as your working directory, use <code>renv</code> to install all packages listed in the <code>renv.lock</code> file:</li>
-</ul>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">renv</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/renv/reference/restore.html" class="external-link">restore</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-</div>
 </div>
 <div class="section level2">
 <h2 id="core-features">Core Features<a class="anchor" aria-label="anchor" href="#core-features"></a>
@@ -133,7 +114,7 @@
 <h3 id="data-preparation">Data preparation<a class="anchor" aria-label="anchor" href="#data-preparation"></a>
 </h3>
 <p>First, let’s load the package and create some dummy data.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://sodeidelphonse.github.io/isdmtools/">isdmtools</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
@@ -164,23 +145,28 @@
 <h3 id="spatial-partitioning">Spatial partitioning<a class="anchor" aria-label="anchor" href="#spatial-partitioning"></a>
 </h3>
 <p>We can now create spatial folds using the default blocking engine.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create the DataFolds object</span></span>
 <span><span class="va">my_folds</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/create_folds.html">create_folds</a></span><span class="op">(</span><span class="va">datasets_list</span>, k <span class="op">=</span> <span class="fl">5</span>, seed <span class="op">=</span> <span class="fl">23</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">my_folds</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Visualize the folds</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">my_folds</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Extract a specific fold (e.g., Fold 3) for modeling and evaluation</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">my_folds</span><span class="op">)</span></span></code></pre></div>
+<div class="float">
+<img src="reference/figures/readme_blockCV_map.png" alt="The figure above shows the block cross-validation folds."><div class="figcaption">The figure above shows the block cross-validation folds.</div>
+</div>
+</div>
+<div class="section level3">
+<h3 id="extract-specific-folds-for-a-an-integrated-modelling-workflow">Extract specific folds for a an integrated modelling workflow<a class="anchor" aria-label="anchor" href="#extract-specific-folds-for-a-an-integrated-modelling-workflow"></a>
+</h3>
+<p>One can extract a specific fold to evaluate the integrated model and keep the remaining folds for its training.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Extract a specific fold (e.g., Fold 3) for modeling and evaluation</span></span>
 <span><span class="va">splits_fold_3</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/DataFolds-methods.html">extract_fold</a></span><span class="op">(</span><span class="va">my_folds</span>, fold <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># You can access both 'train' and 'test' sets and their corresponding datasets</span></span>
 <span> <span class="va">train_data</span> <span class="op">&lt;-</span> <span class="va">splits_fold_3</span><span class="op">$</span><span class="va">train</span></span>
 <span> <span class="va">test_data</span> <span class="op">&lt;-</span> <span class="va">splits_fold_3</span><span class="op">$</span><span class="va">test</span></span></code></pre></div>
-<div class="float">
-<img src="reference/figures/readme_blockCV_map.png" alt="The figure above shows the block cross-validation folds."><div class="figcaption">The figure above shows the block cross-validation folds.</div>
-</div>
 <p>For a detailed introduction to the package, please see the <a href="articles/isdmtools.html">Get started</a> guide.</p>
 </div>
 </div>
@@ -188,13 +174,24 @@
 <h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
 </h2>
 <p>We welcome contributions! If you encounter an issue or have a feature request, please open an issue on the GitHub repository <a href="https://github.com/sodeidelphonse/isdmtools/issues" class="external-link">here</a>.</p>
+<p>This project uses <code>renv</code> to manage package dependencies and ensure reproducibility. A contributor who wants to install all the necessary packages for this project can simply follow these steps:</p>
+<ul>
+<li>Make sure you have the <code>renv</code> package installed:</li>
+</ul>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"renv"</span><span class="op">)</span></span></code></pre></div>
+<ul>
+<li>With the project directory as your working directory, use <code>renv</code> to install all packages listed in the <code>renv.lock</code> file:</li>
+</ul>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">renv</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/renv/reference/restore.html" class="external-link">restore</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>Please note that the <code>isdmtools</code> project is released with a <a href="https://www.contributor-covenant.org/version/2/1/code_of_conduct/code_of_conduct.md" class="external-link">Contributor Code of Conduct</a>. By contributing to this project, you agree to abide by its terms.</p>
 </div>
 <div class="section level2">
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
 <p>To cite this package in your research work, run the following command in your R session to generate the plain text and <code>BiTex</code> entry of the citation:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/citation.html" class="external-link">citation</a></span><span class="op">(</span><span class="st">"isdmtools"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">

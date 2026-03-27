@@ -48,7 +48,7 @@ Negative Binomial, and Quasi-Poisson families."><!-- Global site tag (gtag.js) -
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Replicate response data from the posterior predictive distribution.</h1>
-      <small class="dont-index">Source: <a href="https://github.com/sodeidelphonse/isdmtools/blob/v0.4.0/R/prediction_diagnostics.R" class="external-link"><code>R/prediction_diagnostics.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/sodeidelphonse/isdmtools/blob/main/R/prediction_diagnostics.R" class="external-link"><code>R/prediction_diagnostics.R</code></a></small>
       <div class="d-none name"><code>simulate_replicates.Rd</code></div>
     </div>
 
@@ -141,7 +141,7 @@ Negative Binomial, and Quasi-Poisson families.</p>
 <span class="r-in"><span>  <span class="co"># Plot residuals</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="fu">plotQQunif</span><span class="op">(</span><span class="va">res_dharma</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="co">#    testDispersion(res_dharma)</span></span></span>
+<span class="r-in"><span>  <span class="fu">testDispersion</span><span class="op">(</span><span class="va">res_dharma</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>

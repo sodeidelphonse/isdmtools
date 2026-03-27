@@ -87,7 +87,7 @@ if (requireNamespace("DHARMa", quietly = TRUE)) {
   # Plot residuals
   par(mfrow = c(1, 2))
   plotQQunif(res_dharma)
-  #    testDispersion(res_dharma)
+  testDispersion(res_dharma)
 }
 } # }
 ```

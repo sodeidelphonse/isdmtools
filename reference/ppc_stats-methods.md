@@ -3,8 +3,8 @@
 - `plot`: Visualizes the distribution of replicated T-statistics against
   the observed T-statistic using ggplot2.
 
-- `print`: Display the Bayesian p-value and the related status of the
-  model fit to the data.
+- `print`: Display the Bayesian p-value and the dispersion status for
+  the model fitted to the data.
 
 ## Usage
 

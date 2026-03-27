@@ -44,7 +44,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/sodeidelphonse/isdmtools/blob/v0.4.0/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/sodeidelphonse/isdmtools/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
     <div class="section level2">
@@ -58,13 +58,15 @@
 <code><a href="../reference/simulate_replicates.html">simulate_replicates()</a></code>: A new vectorized simulation engine to generate <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>y</mi><mrow><mi>r</mi><mi>e</mi><mi>p</mi></mrow></msub><annotation encoding="application/x-tex">y_{rep}</annotation></semantics></math> data from posterior samples. Supports <code>poisson</code>, <code>nbinomial</code>, and <code>quasi-poisson</code> families.</li>
 <li>Posterior Predictive Checks (PPC): Introduced a robust Bayesian diagnostic suite for count data models.</li>
 <li>
-<code>std_matern_corr</code>: A wrapper to standardise Matern covariance parameters across estimation engine and compute the pairwise correlation from LGCP models. It is associated with the S3 method <code>plot.std_matern_corr</code> for quick plot of results.</li>
+<code>plot.std_matern_corr</code>: An S3 method for quick plot of the standardised outputs and pairwise correlation function.</li>
+<li>
+<code>std_matern_corr</code>: A wrapper to standardise Matern covariance parameters across estimation engine and compute the pairwise correlation from LGCP models.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="improvements-0-4-0">Improvements<a class="anchor" aria-label="anchor" href="#improvements-0-4-0"></a></h3>
 <ul><li>
 <code><a href="../reference/format_predictions.html">format_predictions()</a></code>: Updated to ensure extracted coordinates are consistently lowercase for internal processing while preserving existing X/Y data columns.</li>
-<li>Moved <code><a href="../reference/solve_practical_range.html">solve_practical_range()</a></code> from <code>utils.R</code> and optimized <code>uniroot</code> calls by removing the redundant <code>sigma2</code> argument.</li>
+<li>Moved <code><a href="../reference/solve_practical_range.html">solve_practical_range()</a></code> from <code>utils.R</code> to <code>matern_helpers.R</code> and optimized <code>uniroot</code> calls by removing the redundant <code>sigma2</code> argument.</li>
 <li>Added internal utility functions <code>matern_cov()</code> and <code>get_variance()</code> to standardize spatial covariance across engines and variance calculations for Poisson extensions.</li>
 </ul></div>
 </div>

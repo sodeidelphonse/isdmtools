@@ -48,7 +48,7 @@ It also calculates the intensity(rate) or expected count for the count data, dep
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Compute a unified suitability index from integrated spatial model predictions.</h1>
-      <small class="dont-index">Source: <a href="https://github.com/sodeidelphonse/isdmtools/blob/v0.4.0/R/Suitability.R" class="external-link"><code>R/Suitability.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/sodeidelphonse/isdmtools/blob/main/R/suitability.R" class="external-link"><code>R/suitability.R</code></a></small>
       <div class="d-none name"><code>suitability_index.Rd</code></div>
     </div>
 
@@ -125,9 +125,14 @@ via the inverse complementary log-log link as follows: \(p(presence) = 1 - exp(-
 <p>The <code>scaling</code> factor is determined by the <code>response_type</code> and the <code>has_offset</code> arguments:</p><ul><li><p>For PO models (single or part of a joint model), <code>eta</code> is always a log-rate, and the <code>scaling</code> is set to the cell area.
 It is ignored if <code>scale_independent</code> is set to TRUE.</p></li>
 <li><p>For Count or PA models, if <code>has_offset = TRUE</code>, <code>eta</code> is a log-rate, and <code>scaling</code> is the cell area.</p></li>
-<li><p>In all other cases (<code>has_offset = FALSE</code>), <code>eta</code> is treated as a log of the expected count (count) or cloglog of probability (PA), and <code>scaling</code> is set to <code>1</code>.</p></li>
+<li><p>In all other cases (<code>has_offset = FALSE</code>), <code>eta</code> is treated as a log of the expected count (count data) or
+cloglog of probability (PA), and <code>scaling</code> is set to <code>1</code>.</p></li>
 </ul><p>If the raster is in a geographic coordinate system (longlat), the area is calculated in \(km^2\) using <a href="https://rspatial.github.io/terra/reference/cellSize.html" class="external-link">cellSize</a>.
 For projected systems, the area is the product of the resolutions (e.g., \(km^2\) if units are in km).</p>
+<p>To ensure the habitat suitability index remains comparable across different spatial resolutions, we implemented a <em>scale-independent</em> transformation.
+While the probability of presence is inherently tied to the area of the sampling unit ($A_i$), setting $A_i = 1$ allows for the derivation
+of a <em>Standardized Presence Probability</em>. This measure reflects the likelihood of occurrence within a unit area,
+isolating the environmental signal from the geometric artifacts of the prediction grid."</p>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
