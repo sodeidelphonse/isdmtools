@@ -49,34 +49,36 @@ Other PPC diagnostics:
 ``` r
 if (FALSE) { # \dontrun{
 #--- Create a toy matrix of posterior samples for expected counts (mu)
-# 5 sites (rows) and 3 posterior draws (columns)
-mu_samples <- matrix(c(
-  1.2, 1.5, 1.1,
-  5.0, 4.8, 5.2,
-  0.5, 0.2, 0.4,
-  12.1, 11.5, 13,
-  2.5, 2.2, 2.8
-), nrow = 5, ncol = 3, byrow = TRUE)
+# 10 sites (rows) and 100 posterior draws (columns)
+set.seed(123)
+n_sites <- 10
+n_draws <- 100
+
+# Generating mu based on a hypothetical spatial trend
+mu_base <- c(1.2, 5.0, 0.5, 12.1, 2.5, 3.1, 0.8, 7.4, 1.1, 4.2)
+mu_samples <- matrix(
+  rlnorm(n_sites * n_draws, meanlog = log(mu_base), sdlog = 0.1),
+  nrow = n_sites, ncol = n_draws
+)
 
 #--- Generate Poisson replicates
-# Returns a 5x3 matrix of random integer counts
+# Returns a 10x100 matrix of random integer counts
 sim_pois <- simulate_replicates(mu_samples, family = "poisson")
 print(sim_pois)
 
 #--- Generate Negative Binomial replicates with high variance
-# Requires a dispersion (size) parameter
+# Dispersion (size) = 1.5 indicates moderate overdispersion
 sim_nb <- simulate_replicates(mu_samples,
-  family = "nbinomial",
-  dispersion = 0.8
-)
+                              family = "nbinomial",
+                              dispersion = 1.5)
 print(sim_nb)
 
 #--- Integration with DHARMa (if installed)
 if (requireNamespace("DHARMa", quietly = TRUE)) {
-  # Define a mock observed response
-  y_obs <- c(1, 5, 0, 12, 3)
+  # Observed response (10 observations)
+  y_obs <- rpois(n_sites, mu_base)
 
-  # Create DHARMa object
+  # Create DHARMa object using the 50 replicates
   res_dharma <- DHARMa::createDHARMa(
     simulatedResponse = sim_pois,
     observedResponse = y_obs,
@@ -84,10 +86,10 @@ if (requireNamespace("DHARMa", quietly = TRUE)) {
     integerResponse = TRUE
   )
 
-  # Plot residuals
+  # Plot residuals and test dispersion
   par(mfrow = c(1, 2))
   plotQQunif(res_dharma)
   testDispersion(res_dharma)
-}
+ }
 } # }
 ```

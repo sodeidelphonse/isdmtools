@@ -91,20 +91,26 @@
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>You can install the development version of <code>isdmtools</code> directly from GitHub using <code>devtools</code>.</p>
+<p>You can install the development version of <code>isdmtools</code> directly from GitHub using <code>remotes</code> package.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span> </span>
+<code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://remotes.r-lib.org" class="external-link">"remotes"</a></span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span> </span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"sodeidelphonse/isdmtools"</span><span class="op">)</span></span></code></pre></div>
+<p>Alternatively, if you are on Windows and don’t have <code>Rtools</code> installed due to restricted internet access, you can download the binary (e.g., v0.4.0) from our <a href="https://github.com/sodeidelphonse/isdmtools/releases" class="external-link">GitHub Releases</a> and install it as follows:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"C:/path/to/your/download/isdmtools_0.4.0.zip"</span>, repos <span class="op">=</span> <span class="cn">NULL</span>, type <span class="op">=</span> <span class="st">"win.binary"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="core-features">Core Features<a class="anchor" aria-label="anchor" href="#core-features"></a>
 </h2>
 <p>The package provides a set of core functions and classes to handle common tasks of data preparation, visualization and model evaluation:</p>
-<p><strong>Data Preparation</strong>: Create a <code>DataFolds</code> object that bind multiple <code>sf</code> datasets and generate spatially-separated cross-validation folds using the constructor function <code><a href="reference/create_folds.html">create_folds()</a></code>. This ensures the resulting models are robust to spatial autocorrelation. The key methods <code><a href="reference/check_folds.html">check_folds()</a></code> and <code><a href="reference/check_env_balance.html">check_env_balance()</a></code> operate on <code>DataFolds</code> to efficiently check the independence and environmental balance of created folds, respectively.</p>
-<p><strong>Suitability Analysis</strong>: Standardize model predictions for consistent mapping and compute a final habitat suitability index. The <code><a href="reference/suitability_index.html">suitability_index()</a></code> function transforms raw integrated model predictions into a suitability score using the inverse of the complementary log-log transform (<code>cloglog</code>).</p>
-<p><strong>Model Evaluation</strong>: Compute comprehensive evaluation metrics, including ROC-based and continuous-outcome metrics for each dataset using the <code><a href="reference/compute_metrics.html">compute_metrics()</a></code> constructor. The package also handles <em>dataset-weighted composite scores</em>, providing a holistic view of model performance. Note that the <code><a href="reference/sample_background.html">sample_background()</a></code> constructor is called internally to sample pseudo-absences for presence-only data. However, users have the option of extracting the <code>BackgroundPoints</code> object with the <code><a href="reference/ISDMmetrics-methods.html">get_background()</a></code> helper in order to print and visualise the generated pseudo-absences.</p>
-<p><strong>Mapping &amp; Visualization</strong>: Visualize model predictions and final habitat suitability maps. The plotting method <code><a href="reference/generate_maps.html">generate_maps()</a></code> is designed to provide a clear and informative map by visualizing multiple variables of model predictions (e.g. mean, and quantiles), providing an easy way to interpret models’ results. Users can customize the final <code>ggplot2</code> object if needed.</p>
-<p><strong>Other Methods</strong>: The package includes the <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code>, <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> and <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> methods for the available data structures. These provide a concise summary and clear visualisation of spatial data partition, folds’ diagnostics and models’ evaluation. Other methods are discussed in the package vignettes.</p>
+<ul>
+<li><p><strong>Resampling and Folds Diagnostics</strong>: Create a <code>DataFolds</code> object that bind multiple <code>sf</code> datasets and generate spatially-separated cross-validation folds using <code><a href="reference/create_folds.html">create_folds()</a></code> constructor. This ensures the resulting models are robust to spatial autocorrelation. The key methods <code><a href="reference/check_folds.html">check_folds()</a></code> and <code><a href="reference/check_env_balance.html">check_env_balance()</a></code> operate on <code>DataFolds</code> to efficiently check the independence and environmental balance of created folds, respectively.</p></li>
+<li><p><strong>Suitability Analysis</strong>: Standardize model predictions for consistent mapping and compute a final habitat suitability index. The <code><a href="reference/suitability_index.html">suitability_index()</a></code> function transforms raw integrated model predictions into a suitability score using the inverse of the complementary log-log transform (<code>cloglog</code>).</p></li>
+<li><p><strong>Model Evaluation</strong>: Compute comprehensive evaluation metrics, including ROC-based and continuous-outcome metrics for each dataset using the <code><a href="reference/compute_metrics.html">compute_metrics()</a></code> constructor. The package also handles <em>dataset-weighted composite scores</em>, providing a holistic view of model performance. Note that <code><a href="reference/sample_background.html">sample_background()</a></code> is called internally to sample pseudo-absences for presence-only data. However, users can extract the <code>BackgroundPoints</code> object with the <code><a href="reference/ISDMmetrics-methods.html">get_background()</a></code> helper in order to visualize the generated pseudo-absences.</p></li>
+<li><p><strong>Mapping &amp; Visualization</strong>: Visualize model predictions and final habitat suitability maps. The plotting method <code><a href="reference/generate_maps.html">generate_maps()</a></code> is designed to receive a formatted object from <code><a href="reference/format_predictions.html">format_predictions()</a></code> to provide a clear and informative map. It visualizes multiple variables of model predictions (e.g. mean, SD, and quantiles), providing an easy way to interpret models’ results. Users can customize the final <code>ggplot2</code> object if needed.</p></li>
+<li><p><strong>Statistical Validation</strong>: <code><a href="reference/simulate_replicates.html">simulate_replicates()</a></code> generate replicates of data (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>y</mi><mrow><mi>r</mi><mi>e</mi><mi>p</mi></mrow></msub><annotation encoding="application/x-tex">y_{rep}</annotation></semantics></math>) from the posterior samples of the fitted model. <code><a href="reference/compute_ppc_stats.html">compute_ppc_stats()</a></code> calculates Pearson Chi-squared statistics and Bayesian <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-values from the replicated data to assess model fit.</p></li>
+<li><p><strong>Other Methods</strong>: The package includes the <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code>, <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> and <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> methods for most of the available data structures. These provide a concise summary and clear visualisation of spatial data partition, folds’ diagnostics, and models’ evaluation and validation. Other methods are discussed in the package vignettes.</p></li>
+</ul>
 </div>
 <div class="section level2">
 <h2 id="usage-example">Usage Example<a class="anchor" aria-label="anchor" href="#usage-example"></a>
@@ -114,7 +120,7 @@
 <h3 id="data-preparation">Data preparation<a class="anchor" aria-label="anchor" href="#data-preparation"></a>
 </h3>
 <p>First, let’s load the package and create some dummy data.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://sodeidelphonse.github.io/isdmtools/">isdmtools</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
@@ -145,7 +151,7 @@
 <h3 id="spatial-partitioning">Spatial partitioning<a class="anchor" aria-label="anchor" href="#spatial-partitioning"></a>
 </h3>
 <p>We can now create spatial folds using the default blocking engine.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create the DataFolds object</span></span>
 <span><span class="va">my_folds</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/create_folds.html">create_folds</a></span><span class="op">(</span><span class="va">datasets_list</span>, k <span class="op">=</span> <span class="fl">5</span>, seed <span class="op">=</span> <span class="fl">23</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">my_folds</span><span class="op">)</span></span>
@@ -157,16 +163,26 @@
 </div>
 </div>
 <div class="section level3">
-<h3 id="extract-specific-folds-for-a-an-integrated-modelling-workflow">Extract specific folds for a an integrated modelling workflow<a class="anchor" aria-label="anchor" href="#extract-specific-folds-for-a-an-integrated-modelling-workflow"></a>
+<h3 id="extract-folds-for-an-integrated-modeling-workflow">Extract folds for an integrated modeling workflow<a class="anchor" aria-label="anchor" href="#extract-folds-for-an-integrated-modeling-workflow"></a>
 </h3>
 <p>One can extract a specific fold to evaluate the integrated model and keep the remaining folds for its training.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Extract a specific fold (e.g., Fold 3) for modeling and evaluation</span></span>
-<span><span class="va">splits_fold_3</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/DataFolds-methods.html">extract_fold</a></span><span class="op">(</span><span class="va">my_folds</span>, fold <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Extract the fold 3 for model evaluation</span></span>
+<span><span class="va">splits_fold_3</span> <span class="op">&lt;-</span> <span class="fu">extaract_fold</span><span class="op">(</span><span class="va">my_folds</span>, fold <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># You can access both 'train' and 'test' sets and their corresponding datasets</span></span>
 <span> <span class="va">train_data</span> <span class="op">&lt;-</span> <span class="va">splits_fold_3</span><span class="op">$</span><span class="va">train</span></span>
 <span> <span class="va">test_data</span> <span class="op">&lt;-</span> <span class="va">splits_fold_3</span><span class="op">$</span><span class="va">test</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="folds-diagnostics">Folds diagnostics<a class="anchor" aria-label="anchor" href="#folds-diagnostics"></a>
+</h3>
+<p>You can check spatial independence of folds using <code>check_folds</code>.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Check spatial independence of folds using the default range rho (N/A)</span></span>
+<span><span class="va">geo_diag</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/check_folds.html">check_folds</a></span><span class="op">(</span><span class="va">folds</span>, plot <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">geo_diag</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">geo_diag</span><span class="op">)</span></span></code></pre></div>
 <p>For a detailed introduction to the package, please see the <a href="articles/isdmtools.html">Get started</a> guide.</p>
 </div>
 </div>
@@ -178,12 +194,12 @@
 <ul>
 <li>Make sure you have the <code>renv</code> package installed:</li>
 </ul>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"renv"</span><span class="op">)</span></span></code></pre></div>
 <ul>
 <li>With the project directory as your working directory, use <code>renv</code> to install all packages listed in the <code>renv.lock</code> file:</li>
 </ul>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">renv</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/renv/reference/restore.html" class="external-link">restore</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>Please note that the <code>isdmtools</code> project is released with a <a href="https://www.contributor-covenant.org/version/2/1/code_of_conduct/code_of_conduct.md" class="external-link">Contributor Code of Conduct</a>. By contributing to this project, you agree to abide by its terms.</p>
 </div>
@@ -191,7 +207,7 @@
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
 <p>To cite this package in your research work, run the following command in your R session to generate the plain text and <code>BiTex</code> entry of the citation:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/citation.html" class="external-link">citation</a></span><span class="op">(</span><span class="st">"isdmtools"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
@@ -241,6 +257,8 @@
 <li><a href="https://www.repostatus.org/#active" class="external-link"><img src="https://www.repostatus.org/badges/latest/active.svg" alt="Project status: active"></a></li>
 <li><a href="https://lifecycle.r-lib.org/articles/stages.html#maturing" class="external-link"><img src="https://img.shields.io/badge/lifecycle-maturing-blue.svg" alt="Lifecycle: maturing"></a></li>
 <li><a href="https://app.codecov.io/gh/sodeidelphonse/isdmtools" class="external-link"><img src="https://codecov.io/gh/sodeidelphonse/isdmtools/graph/badge.svg" alt="Codecov test"></a></li>
+<li><a href="https://github.com/sodeidelphonse/isdmtools/releases" class="external-link"><img src="https://img.shields.io/github/downloads/sodeidelphonse/isdmtools/total.svg" alt="Downloads"></a></li>
+<li><a href="https://github.com/sodeidelphonse/isdmtools/stargazers" class="external-link"><img src="https://img.shields.io/github/stars/sodeidelphonse/isdmtools.svg?style=social" alt="GitHub stars"></a></li>
 <li><a href="https://opensource.org/licenses/MIT" class="external-link"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a></li>
 </ul>
 </div>

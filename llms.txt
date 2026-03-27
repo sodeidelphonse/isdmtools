@@ -25,11 +25,21 @@ evaluation.
 ## Installation
 
 You can install the development version of `isdmtools` directly from
-GitHub using `devtools`.
+GitHub using `remotes` package.
 
 ``` r
-install.packages("remotes") 
+if (!require("remotes")) install.packages("remotes") 
 remotes::install_github("sodeidelphonse/isdmtools")
+```
+
+Alternatively, if you are on Windows and don’t have `Rtools` installed
+due to restricted internet access, you can download the binary (e.g.,
+v0.4.0) from our [GitHub
+Releases](https://github.com/sodeidelphonse/isdmtools/releases) and
+install it as follows:
+
+``` r
+install.packages("C:/path/to/your/download/isdmtools_0.4.0.zip", repos = NULL, type = "win.binary")
 ```
 
 ## Core Features
@@ -37,53 +47,63 @@ remotes::install_github("sodeidelphonse/isdmtools")
 The package provides a set of core functions and classes to handle
 common tasks of data preparation, visualization and model evaluation:
 
-**Data Preparation**: Create a `DataFolds` object that bind multiple
-`sf` datasets and generate spatially-separated cross-validation folds
-using the constructor function
-[`create_folds()`](https://sodeidelphonse.github.io/isdmtools/reference/create_folds.md).
-This ensures the resulting models are robust to spatial autocorrelation.
-The key methods
-[`check_folds()`](https://sodeidelphonse.github.io/isdmtools/reference/check_folds.md)
-and
-[`check_env_balance()`](https://sodeidelphonse.github.io/isdmtools/reference/check_env_balance.md)
-operate on `DataFolds` to efficiently check the independence and
-environmental balance of created folds, respectively.
+- **Resampling and Folds Diagnostics**: Create a `DataFolds` object that
+  bind multiple `sf` datasets and generate spatially-separated
+  cross-validation folds using
+  [`create_folds()`](https://sodeidelphonse.github.io/isdmtools/reference/create_folds.md)
+  constructor. This ensures the resulting models are robust to spatial
+  autocorrelation. The key methods
+  [`check_folds()`](https://sodeidelphonse.github.io/isdmtools/reference/check_folds.md)
+  and
+  [`check_env_balance()`](https://sodeidelphonse.github.io/isdmtools/reference/check_env_balance.md)
+  operate on `DataFolds` to efficiently check the independence and
+  environmental balance of created folds, respectively.
 
-**Suitability Analysis**: Standardize model predictions for consistent
-mapping and compute a final habitat suitability index. The
-[`suitability_index()`](https://sodeidelphonse.github.io/isdmtools/reference/suitability_index.md)
-function transforms raw integrated model predictions into a suitability
-score using the inverse of the complementary log-log transform
-(`cloglog`).
+- **Suitability Analysis**: Standardize model predictions for consistent
+  mapping and compute a final habitat suitability index. The
+  [`suitability_index()`](https://sodeidelphonse.github.io/isdmtools/reference/suitability_index.md)
+  function transforms raw integrated model predictions into a
+  suitability score using the inverse of the complementary log-log
+  transform (`cloglog`).
 
-**Model Evaluation**: Compute comprehensive evaluation metrics,
-including ROC-based and continuous-outcome metrics for each dataset
-using the
-[`compute_metrics()`](https://sodeidelphonse.github.io/isdmtools/reference/compute_metrics.md)
-constructor. The package also handles *dataset-weighted composite
-scores*, providing a holistic view of model performance. Note that the
-[`sample_background()`](https://sodeidelphonse.github.io/isdmtools/reference/sample_background.md)
-constructor is called internally to sample pseudo-absences for
-presence-only data. However, users have the option of extracting the
-`BackgroundPoints` object with the
-[`get_background()`](https://sodeidelphonse.github.io/isdmtools/reference/ISDMmetrics-methods.md)
-helper in order to print and visualise the generated pseudo-absences.
+- **Model Evaluation**: Compute comprehensive evaluation metrics,
+  including ROC-based and continuous-outcome metrics for each dataset
+  using the
+  [`compute_metrics()`](https://sodeidelphonse.github.io/isdmtools/reference/compute_metrics.md)
+  constructor. The package also handles *dataset-weighted composite
+  scores*, providing a holistic view of model performance. Note that
+  [`sample_background()`](https://sodeidelphonse.github.io/isdmtools/reference/sample_background.md)
+  is called internally to sample pseudo-absences for presence-only data.
+  However, users can extract the `BackgroundPoints` object with the
+  [`get_background()`](https://sodeidelphonse.github.io/isdmtools/reference/ISDMmetrics-methods.md)
+  helper in order to visualize the generated pseudo-absences.
 
-**Mapping & Visualization**: Visualize model predictions and final
-habitat suitability maps. The plotting method
-[`generate_maps()`](https://sodeidelphonse.github.io/isdmtools/reference/generate_maps.md)
-is designed to provide a clear and informative map by visualizing
-multiple variables of model predictions (e.g. mean, and quantiles),
-providing an easy way to interpret models’ results. Users can customize
-the final `ggplot2` object if needed.
+- **Mapping & Visualization**: Visualize model predictions and final
+  habitat suitability maps. The plotting method
+  [`generate_maps()`](https://sodeidelphonse.github.io/isdmtools/reference/generate_maps.md)
+  is designed to receive a formatted object from
+  [`format_predictions()`](https://sodeidelphonse.github.io/isdmtools/reference/format_predictions.md)
+  to provide a clear and informative map. It visualizes multiple
+  variables of model predictions (e.g. mean, SD, and quantiles),
+  providing an easy way to interpret models’ results. Users can
+  customize the final `ggplot2` object if needed.
 
-**Other Methods**: The package includes the
-[`summary()`](https://rdrr.io/r/base/summary.html),
-[`print()`](https://rdrr.io/r/base/print.html) and
-[`plot()`](https://rdrr.io/r/graphics/plot.default.html) methods for the
-available data structures. These provide a concise summary and clear
-visualisation of spatial data partition, folds’ diagnostics and models’
-evaluation. Other methods are discussed in the package vignettes.
+- **Statistical Validation**:
+  [`simulate_replicates()`](https://sodeidelphonse.github.io/isdmtools/reference/simulate_replicates.md)
+  generate replicates of data ($y_{rep}$) from the posterior samples of
+  the fitted model.
+  [`compute_ppc_stats()`](https://sodeidelphonse.github.io/isdmtools/reference/compute_ppc_stats.md)
+  calculates Pearson Chi-squared statistics and Bayesian $p$-values from
+  the replicated data to assess model fit.
+
+- **Other Methods**: The package includes the
+  [`summary()`](https://rdrr.io/r/base/summary.html),
+  [`print()`](https://rdrr.io/r/base/print.html) and
+  [`plot()`](https://rdrr.io/r/graphics/plot.default.html) methods for
+  most of the available data structures. These provide a concise summary
+  and clear visualisation of spatial data partition, folds’ diagnostics,
+  and models’ evaluation and validation. Other methods are discussed in
+  the package vignettes.
 
 ## Usage Example
 
@@ -140,18 +160,29 @@ folds.](reference/figures/readme_blockCV_map.png)
 
 The figure above shows the block cross-validation folds.
 
-### Extract specific folds for a an integrated modelling workflow
+### Extract folds for an integrated modeling workflow
 
 One can extract a specific fold to evaluate the integrated model and
 keep the remaining folds for its training.
 
 ``` r
-# Extract a specific fold (e.g., Fold 3) for modeling and evaluation
-splits_fold_3 <- extract_fold(my_folds, fold = 3)
+# Extract the fold 3 for model evaluation
+splits_fold_3 <- extaract_fold(my_folds, fold = 3)
 
 # You can access both 'train' and 'test' sets and their corresponding datasets
  train_data <- splits_fold_3$train
  test_data <- splits_fold_3$test
+```
+
+### Folds diagnostics
+
+You can check spatial independence of folds using `check_folds`.
+
+``` r
+# Check spatial independence of folds using the default range rho (N/A)
+geo_diag <- check_folds(folds, plot = TRUE)
+print(geo_diag)
+plot(geo_diag)
 ```
 
 For a detailed introduction to the package, please see the [Get

@@ -50,7 +50,7 @@ predictive distribution."><!-- Global site tag (gtag.js) - Google Analytics --><
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Compute Posterior Predictive Check (PPC) Statistics</h1>
-      <small class="dont-index">Source: <a href="https://github.com/sodeidelphonse/isdmtools/blob/v0.4.0/R/prediction_diagnostics.R" class="external-link"><code>R/prediction_diagnostics.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/sodeidelphonse/isdmtools/blob/main/R/prediction_diagnostics.R" class="external-link"><code>R/prediction_diagnostics.R</code></a></small>
       <div class="d-none name"><code>compute_ppc_stats.Rd</code></div>
     </div>
 
@@ -156,24 +156,12 @@ than the \(T_{rep}\) distribution (\(p \approx 0\)).</p></li>
 <span class="r-in"><span>  family <span class="op">=</span> <span class="st">"poisson"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#--- View the summary (triggers the `print.ppc_stats` method)</span></span></span>
+<span class="r-in"><span><span class="co">#--- View the summary</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">ppc_results</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#--- Visualize the fit (triggers the `plot.ppc_stats` method)</span></span></span>
+<span class="r-in"><span><span class="co">#--- Visualize the fit</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">ppc_results</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#--- Example with Negative Binomial and DHARMa integration</span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"DHARMa"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>  <span class="co"># Generate replicates of response for DHARMa</span></span></span>
-<span class="r-in"><span>  <span class="va">nb_sims</span> <span class="op">&lt;-</span> <span class="fu"><a href="simulate_replicates.html">simulate_replicates</a></span><span class="op">(</span><span class="va">mu_samples</span>, family <span class="op">=</span> <span class="st">"nbinomial"</span>, dispersion <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="va">res_dharma</span> <span class="op">&lt;-</span> <span class="fu">createDHARMa</span><span class="op">(</span></span></span>
-<span class="r-in"><span>    simulatedResponse <span class="op">=</span> <span class="va">nb_sims</span>,</span></span>
-<span class="r-in"><span>    observedResponse <span class="op">=</span> <span class="va">y_obs</span>,</span></span>
-<span class="r-in"><span>    fittedPredictedResponse <span class="op">=</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/rowSums.html" class="external-link">rowMeans</a></span><span class="op">(</span><span class="va">mu_samples</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">res_dharma</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>

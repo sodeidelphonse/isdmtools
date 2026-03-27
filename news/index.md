@@ -6,7 +6,7 @@
 
 - [`compute_ppc_stats()`](https://sodeidelphonse.github.io/isdmtools/reference/compute_ppc_stats.md):
   A wrapper to calculate Pearson Chi-squared statistics and Bayesian
-  $p$-values to assess model fit and overdispersion.
+  $p$-values to assess model fit.
 - Added S3 methods for `print.ppc_stats` and `plot.ppc_stats` for
   immediate visual and console-based model diagnostics.
 - [`simulate_replicates()`](https://sodeidelphonse.github.io/isdmtools/reference/simulate_replicates.md):
