@@ -25,8 +25,8 @@
 \itemize{
 \item \code{plot}: Visualizes the distribution of replicated T-statistics against
 the observed T-statistic using ggplot2.
-\item \code{print}: Display the Bayesian p-value and the related status of the
-model fit to the data.
+\item \code{print}: Display the Bayesian p-value and the dispersion status for the
+model fitted to the data.
 }
 }
 \seealso{
