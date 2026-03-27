@@ -62,7 +62,7 @@ If the raster is in a geographic coordinate system (longlat), the area is calcul
 For projected systems, the area is the product of the resolutions (e.g., \eqn{km^2} if units are in km).
 
 To ensure the habitat suitability index remains comparable across different spatial resolutions, we implemented a \emph{scale-independent} transformation.
-While the probability of presence is inherently tied to the area of the sampling unit ($A_i$), setting $A_i = 1$ allows for the derivation
+While the probability of presence is inherently tied to the area of the sampling unit (\eqn{A_i}), setting \eqn{A_i = 1} allows for the derivation
 of a \emph{Standardized Presence Probability}. This measure reflects the likelihood of occurrence within a unit area,
 isolating the environmental signal from the geometric artifacts of the prediction grid."
 }
