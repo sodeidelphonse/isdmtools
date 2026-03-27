@@ -25,27 +25,11 @@ It ensures robust, reproducible workflows through dedicated tools for block cros
 
 ## Installation
 
-### How to install the package?
 You can install the development version of `isdmtools` directly from GitHub using `devtools`.
 
 ```R
 install.packages("remotes") 
 remotes::install_github("sodeidelphonse/isdmtools")
-```
-### How can contributors handle the dependencies?
-This project uses `renv` to manage package dependencies and ensure reproducibility. 
-To install all the necessary packages for this project, simply follow these steps:
-
-- Make sure you have the `renv` package installed:
-
-```R
-install.packages("renv")
-```
-
-- With the project directory as your working directory, use `renv` to install all packages listed in the `renv.lock` file:
-
-```R
-renv::restore()
 ```
 
 ## Core Features
@@ -114,7 +98,12 @@ print(my_folds)
 
 # Visualize the folds
 plot(my_folds)
+```
+![The figure above shows the block cross-validation folds.](man/figures/readme_blockCV_map.png)
 
+### Extract specific folds for a an integrated modelling workflow
+One can extract a specific fold to evaluate the integrated model and keep the remaining folds for its training.
+```r
 # Extract a specific fold (e.g., Fold 3) for modeling and evaluation
 splits_fold_3 <- extract_fold(my_folds, fold = 3)
 
@@ -122,12 +111,25 @@ splits_fold_3 <- extract_fold(my_folds, fold = 3)
  train_data <- splits_fold_3$train
  test_data <- splits_fold_3$test
 ```
-![The figure above shows the block cross-validation folds.](man/figures/readme_blockCV_map.png)
 
 For a detailed introduction to the package, please see the [Get started](articles/isdmtools.html) guide.
 
 ## Contributing
 We welcome contributions! If you encounter an issue or have a feature request, please open an issue on the GitHub repository [here](https://github.com/sodeidelphonse/isdmtools/issues).
+
+This project uses `renv` to manage package dependencies and ensure reproducibility. 
+A contributor who wants to install all the necessary packages for this project can simply follow these steps:
+
+- Make sure you have the `renv` package installed:
+
+```R
+install.packages("renv")
+```
+- With the project directory as your working directory, use `renv` to install all packages listed in the `renv.lock` file:
+
+```R
+renv::restore()
+```
 
 Please note that the `isdmtools` project is released with a [Contributor Code of Conduct](https://www.contributor-covenant.org/version/2/1/code_of_conduct/code_of_conduct.md). 
 By contributing to this project, you agree to abide by its terms.
