@@ -1,7 +1,7 @@
 # isdmtools 0.4.0
 
 ## New Features: 
-- `compute_ppc_stats()`: A wrapper to calculate Pearson Chi-squared statistics and Bayesian $p$-values to assess model fit and overdispersion.
+- `compute_ppc_stats()`: A wrapper to calculate Pearson Chi-squared statistics and Bayesian $p$-values to assess model fit.
 - Added S3 methods for `print.ppc_stats` and `plot.ppc_stats` for immediate visual and console-based model diagnostics.
 - `simulate_replicates()`: A new vectorized simulation engine to generate $y_{rep}$ data from posterior samples. 
 Supports `poisson`, `nbinomial`, and `quasi-poisson` families.
