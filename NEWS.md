@@ -6,12 +6,12 @@
 - `simulate_replicates()`: A new vectorized simulation engine to generate $y_{rep}$ data from posterior samples. 
 Supports `poisson`, `nbinomial`, and `quasi-poisson` families.
 - Posterior Predictive Checks (PPC): Introduced a robust Bayesian diagnostic suite for count data models.
+- `plot.std_matern_corr`: An S3 method for quick plot of the standardised outputs and pairwise correlation function.
 - `std_matern_corr`: A wrapper to standardise Matern covariance parameters across estimation engine and compute the pairwise correlation from LGCP models.
-It is associated with the S3 method `plot.std_matern_corr` for quick plot of results.
 
 ## Improvements 
 - `format_predictions()`: Updated to ensure extracted coordinates are consistently lowercase for internal processing while preserving existing X/Y data columns.
-- Moved `solve_practical_range()` from `utils.R` and optimized `uniroot` calls by removing the redundant `sigma2` argument.
+- Moved `solve_practical_range()` from `utils.R` to `matern_helpers.R` and optimized `uniroot` calls by removing the redundant `sigma2` argument.
 - Added internal utility functions `matern_cov()` and `get_variance()` to standardize spatial covariance across engines and variance calculations for Poisson extensions.
 
 # isdmtools 0.3.0
