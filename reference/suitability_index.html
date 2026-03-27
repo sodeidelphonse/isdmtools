@@ -130,7 +130,7 @@ cloglog of probability (PA), and <code>scaling</code> is set to <code>1</code>.<
 </ul><p>If the raster is in a geographic coordinate system (longlat), the area is calculated in \(km^2\) using <a href="https://rspatial.github.io/terra/reference/cellSize.html" class="external-link">cellSize</a>.
 For projected systems, the area is the product of the resolutions (e.g., \(km^2\) if units are in km).</p>
 <p>To ensure the habitat suitability index remains comparable across different spatial resolutions, we implemented a <em>scale-independent</em> transformation.
-While the probability of presence is inherently tied to the area of the sampling unit ($A_i$), setting $A_i = 1$ allows for the derivation
+While the probability of presence is inherently tied to the area of the sampling unit (\(A_i\)), setting \(A_i = 1\) allows for the derivation
 of a <em>Standardized Presence Probability</em>. This measure reflects the likelihood of occurrence within a unit area,
 isolating the environmental signal from the geometric artifacts of the prediction grid."</p>
     </div>
