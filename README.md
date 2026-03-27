@@ -5,6 +5,8 @@
 [![Project status: active](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![Lifecycle: maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://lifecycle.r-lib.org/articles/stages.html#maturing) 
 [![Codecov test](https://codecov.io/gh/sodeidelphonse/isdmtools/graph/badge.svg)](https://app.codecov.io/gh/sodeidelphonse/isdmtools)
+[![Downloads](https://img.shields.io/github/downloads/sodeidelphonse/isdmtools/total.svg)](https://github.com/sodeidelphonse/isdmtools/releases)
+[![GitHub stars](https://img.shields.io/github/stars/sodeidelphonse/isdmtools.svg?style=social)](https://github.com/sodeidelphonse/isdmtools/stargazers)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 <!-- badges: end -->
 
@@ -25,34 +27,43 @@ It ensures robust, reproducible workflows through dedicated tools for block cros
 
 ## Installation
 
-You can install the development version of `isdmtools` directly from GitHub using `devtools`.
+You can install the development version of `isdmtools` directly from GitHub using `remotes` package.
 
 ```R
-install.packages("remotes") 
+if (!require("remotes")) install.packages("remotes") 
 remotes::install_github("sodeidelphonse/isdmtools")
+```
+Alternatively, if you are on Windows and don't have `Rtools` installed due to restricted internet access, 
+you can download the binary (e.g., v0.4.0) from our [GitHub Releases](https://github.com/sodeidelphonse/isdmtools/releases) and install it as follows:
+
+```R
+install.packages("C:/path/to/your/download/isdmtools_0.4.0.zip", repos = NULL, type = "win.binary")
 ```
 
 ## Core Features
 The package provides a set of core functions and classes to handle common tasks of data preparation, visualization and model evaluation:
 
-**Data Preparation**: Create a `DataFolds` object that bind multiple `sf` datasets and generate spatially-separated cross-validation folds using the constructor function `create_folds()`. 
+- **Resampling and Folds Diagnostics**: Create a `DataFolds` object that bind multiple `sf` datasets and generate spatially-separated cross-validation folds using `create_folds()` constructor. 
 This ensures the resulting models are robust to spatial autocorrelation. 
 The key methods `check_folds()` and `check_env_balance()` operate on `DataFolds` to efficiently check the independence and environmental balance of created folds, respectively. 
 
-**Suitability Analysis**: Standardize model predictions for consistent mapping and compute a final habitat suitability index. 
+- **Suitability Analysis**: Standardize model predictions for consistent mapping and compute a final habitat suitability index. 
 The `suitability_index()` function transforms raw integrated model predictions into a suitability score using the inverse of the complementary log-log transform (`cloglog`).
 
-**Model Evaluation**: Compute comprehensive evaluation metrics, including ROC-based and continuous-outcome metrics for each dataset using the `compute_metrics()` constructor. 
-The package also handles *dataset-weighted composite scores*, providing a holistic view of model performance. 
-Note that the `sample_background()` constructor is called internally to sample pseudo-absences for presence-only data. 
-However, users have the option of extracting the `BackgroundPoints` object with the `get_background()` helper in order to print and visualise the generated pseudo-absences.
+- **Model Evaluation**: Compute comprehensive evaluation metrics, including ROC-based and continuous-outcome metrics for each dataset using the `compute_metrics()` constructor. 
+The package also handles *dataset-weighted composite scores*, providing a holistic view of model performance. Note that `sample_background()` is called internally to sample pseudo-absences for presence-only data. 
+However, users can extract the `BackgroundPoints` object with the `get_background()` helper in order to visualize the generated pseudo-absences.
 
-**Mapping & Visualization**: Visualize model predictions and final habitat suitability maps. 
-The plotting method `generate_maps()` is designed to provide a clear and informative map by visualizing multiple variables of model predictions (e.g. mean, and quantiles), providing an easy way to interpret models' results. 
+- **Mapping & Visualization**: Visualize model predictions and final habitat suitability maps. 
+The plotting method `generate_maps()` is designed to receive a formatted object from `format_predictions()` to provide a clear and informative map. 
+It visualizes multiple variables of model predictions (e.g. mean, SD, and quantiles), providing an easy way to interpret models' results. 
 Users can customize the final `ggplot2` object if needed.
 
-**Other Methods**: The package includes the `summary()`, `print()` and `plot()` methods for the available data structures. 
-These provide a concise summary and clear visualisation of spatial data partition, folds' diagnostics and models' evaluation. 
+- **Statistical Validation**: `simulate_replicates()` generate replicates of data ($y_{rep}$) from the posterior samples of the fitted model.
+`compute_ppc_stats()` calculates Pearson Chi-squared statistics and Bayesian $p$-values from the replicated data to assess model fit.
+
+- **Other Methods**: The package includes the `summary()`, `print()` and `plot()` methods for most of the available data structures. 
+These provide a concise summary and clear visualisation of spatial data partition, folds' diagnostics, and models' evaluation and validation. 
 Other methods are discussed in the package vignettes.
 
 ## Usage Example
@@ -101,15 +112,24 @@ plot(my_folds)
 ```
 ![The figure above shows the block cross-validation folds.](man/figures/readme_blockCV_map.png)
 
-### Extract specific folds for a an integrated modelling workflow
+### Extract folds for an integrated modeling workflow
 One can extract a specific fold to evaluate the integrated model and keep the remaining folds for its training.
 ```r
-# Extract a specific fold (e.g., Fold 3) for modeling and evaluation
-splits_fold_3 <- extract_fold(my_folds, fold = 3)
+# Extract the fold 3 for model evaluation
+splits_fold_3 <- extaract_fold(my_folds, fold = 3)
 
 # You can access both 'train' and 'test' sets and their corresponding datasets
  train_data <- splits_fold_3$train
  test_data <- splits_fold_3$test
+```
+
+### Folds diagnostics
+You can check spatial independence of folds using `check_folds`.
+```r
+# Check spatial independence of folds using the default range rho (N/A)
+geo_diag <- check_folds(folds, plot = TRUE)
+print(geo_diag)
+plot(geo_diag)
 ```
 
 For a detailed introduction to the package, please see the [Get started](articles/isdmtools.html) guide.
