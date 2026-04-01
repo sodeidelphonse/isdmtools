@@ -2,12 +2,12 @@
 
 ## New Features: 
 - `compute_ppc_stats()`: A wrapper to calculate Pearson Chi-squared statistics and Bayesian $p$-values to assess model fit.
-- Added S3 methods for `print.ppc_stats` and `plot.ppc_stats` for immediate visual and console-based model diagnostics.
+- Added S3 methods: `print.ppc_stats` and `plot.ppc_stats` for immediate visual and console-based model diagnostics.
 - `simulate_replicates()`: A new vectorized simulation engine to generate $y_{rep}$ data from posterior samples. 
 Supports `poisson`, `nbinomial`, and `quasi-poisson` families.
 - Posterior Predictive Checks (PPC): Introduced a robust Bayesian diagnostic suite for count data models.
-- `plot.std_matern_corr`: An S3 method for quick plot of the standardised outputs and pairwise correlation function.
-- `std_matern_corr`: A wrapper to standardise Matern covariance parameters across estimation engine and compute the pairwise correlation from LGCP models.
+- `plot.std_matern_corr`: An S3 method for quick plot of the standardized outputs and pairwise correlation function.
+- `std_matern_corr`: A wrapper to standardize Matern covariance parameters across estimation engine and compute the pairwise correlation from LGCP models.
 
 ## Improvements 
 - `format_predictions()`: Updated to ensure extracted coordinates are consistently lowercase for internal processing while preserving existing X/Y data columns.
