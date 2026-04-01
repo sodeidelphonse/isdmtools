@@ -30,8 +30,8 @@ set.seed(42)
 
 # Simulate the prediction data
 grid_df <- expand.grid(x = 0:50, y = 0:50)
-grid_df <- grid_df \%>\%
-  mutate(mu = (x + y) / 10 + rnorm(nrow(grid_df))) \%>\%
+grid_df <- grid_df |>
+  mutate(mu = (x + y) / 10 + rnorm(nrow(grid_df))) |>
   mutate(sd = runif(nrow(grid_df), 0.5, 1.5))
 head(grid_df)
 
@@ -57,7 +57,7 @@ if (require("fmesher", quietly = TRUE)) {
 
   # An inlabru-like prediction at mesh vertices (extended areas are imputed)
   sampled_vals <- terra::extract(grid_r, vt)
-  sim_field <- vt \%>\%
+  sim_field <- vt |>
     mutate(
       mean = dplyr::coalesce(sampled_vals$mu, mean(grid_df$mu, na.rm = TRUE)),
       sd = dplyr::coalesce(sampled_vals$sd, mean(grid_df$sd, na.rm = TRUE)),

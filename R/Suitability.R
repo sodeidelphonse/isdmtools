@@ -100,8 +100,10 @@ suitability_index <- function(x,
   response_type <- match.arg(response_type)
 
   if (is.data.frame(x)) {
-    names(x)[names(x) == "X"] <- "x"
-    names(x)[names(x) == "Y"] <- "y"
+    # Rename X/Y to x/y only if lowercase variables are not available
+    nms <- names(x)
+    if (!"x" %in% nms && "X" %in% nms) names(x)[nms == "X"] <- "x"
+    if (!"y" %in% nms && "Y" %in% nms) names(x)[nms == "Y"] <- "y"
 
     if (!all(c("x", "y") %in% names(x))) {
       stop("'x' must contain 'x' and 'y' coordinates when it is a data.frame.", call. = FALSE)
@@ -199,8 +201,8 @@ inv_cloglog <- function(eta, scaling = 1) {
 #'
 #' # Simulate the prediction data
 #' grid_df <- expand.grid(x = 0:50, y = 0:50)
-#' grid_df <- grid_df %>%
-#'   mutate(mu = (x + y) / 10 + rnorm(nrow(grid_df))) %>%
+#' grid_df <- grid_df |>
+#'   mutate(mu = (x + y) / 10 + rnorm(nrow(grid_df))) |>
 #'   mutate(sd = runif(nrow(grid_df), 0.5, 1.5))
 #' head(grid_df)
 #'
@@ -226,7 +228,7 @@ inv_cloglog <- function(eta, scaling = 1) {
 #'
 #'   # An inlabru-like prediction at mesh vertices (extended areas are imputed)
 #'   sampled_vals <- terra::extract(grid_r, vt)
-#'   sim_field <- vt %>%
+#'   sim_field <- vt |>
 #'     mutate(
 #'       mean = dplyr::coalesce(sampled_vals$mu, mean(grid_df$mu, na.rm = TRUE)),
 #'       sd = dplyr::coalesce(sampled_vals$sd, mean(grid_df$sd, na.rm = TRUE)),
@@ -293,7 +295,7 @@ format_predictions <- function(prediction_data, base_map = NULL) {
     } else {
       df <- as.data.frame(data_to_prepare)
 
-      # Rename X/Y to x/y only if lower case variables are not available
+      # Rename X/Y to x/y only if lowercase variables are not available
       nms <- names(df)
       if (!"x" %in% nms && "X" %in% nms) names(df)[nms == "X"] <- "x"
       if (!"y" %in% nms && "Y" %in% nms) names(df)[nms == "Y"] <- "y"
