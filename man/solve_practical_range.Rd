@@ -64,6 +64,7 @@ solve_practical_range(param_val = 13.10, nu = 1.5, thresh = 0.1, engine = "spats
 \item Diggle PJ, Ribeiro PJ. Model-based Geostatistics. 1st ed. New York, NY: Springer. (2007). \doi{10.1007/978-0-387-48536-2}
 \item Lindgren F, Rue H, Lindström J. An explicit link between Gaussian fields and Gaussian Markov random fields: the stochastic partial differential equation approach.
 \emph{Journal of the Royal Statistical Society: Series B (Statistical Methodology)} (2011) 73:423–498. \doi{10.1111/j.1467-9868.2011.00777.x}
+\item Sode AI, Fandohan AB, Krainski ET, Assogbadjo E, Glèlè Kakaï R. Integrating Presence-only and Abundance Data to Predict Baobab (\emph{Adansonia digitata L.}) Distribution: A Bayesian Data Fusion Framework". \doi{10.21203/rs.3.rs-7871875/v1}
 }
 }
 \seealso{

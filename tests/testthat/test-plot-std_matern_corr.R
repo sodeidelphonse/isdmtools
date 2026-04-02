@@ -1,7 +1,7 @@
 test_that("plot.std_matern_corr returns a ggplot object", {
   mock_res <- list(
     dist_vals = seq(0, 10, length.out = 50),
-    cov = exp(-seq(0, 10, length.out = 50)), # simple declining
+    cov = exp(-seq(0, 10, length.out = 50)),  # simple declining
     pair_cor = exp(exp(-seq(0, 10, length.out = 50))),
     pair_cor_sc = seq(1, 0, length.out = 50), # Mock min-max
     sigma2 = 1,
@@ -10,7 +10,7 @@ test_that("plot.std_matern_corr returns a ggplot object", {
   )
   class(mock_res) <- c("std_matern_corr", "list")
 
-  # Test of the default plot (pair_cor)
+  # Test of the default plot (pair.cor)
   p1 <- plot(mock_res)
   expect_s3_class(p1, "ggplot")
   expect_equal(p1$labels$y, expression(g(r) == exp(C(r))))
@@ -37,7 +37,7 @@ test_that("plot.std_matern_corr handles variofit objects correctly", {
   class(mock_vario) <- c("std_matern_corr", "list")
 
   # Even if g(r) is requested, the covariance is plotted
-  p_vario <- plot(mock_vario, type = "pair_cor")
+  p_vario <- plot(mock_vario, type = "pair.cor")
 
   expect_s3_class(p_vario, "ggplot")
   expect_match(p_vario$labels$title, "Matern Covariance")

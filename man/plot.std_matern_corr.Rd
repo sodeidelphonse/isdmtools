@@ -2,14 +2,14 @@
 % Please edit documentation in R/matern_helpers.R
 \name{plot.std_matern_corr}
 \alias{plot.std_matern_corr}
-\title{Plot standardized Matern correlation or covariance}
+\title{Plot standardized pairwise correlation or covariance for Matern family}
 \usage{
-\method{plot}{std_matern_corr}(x, type = c("pair_cor", "covariance"), scaled = FALSE, ...)
+\method{plot}{std_matern_corr}(x, type = c("pair.cor", "covariance"), scaled = FALSE, ...)
 }
 \arguments{
 \item{x}{An object of class \code{std_matern_corr}.}
 
-\item{type}{Character string. Either \code{"pair_cor"} (default for LGCP) or
+\item{type}{Character string. Either \code{"pair.cor"} (default for LGCP) or
 \code{"covariance"}.}
 
 \item{scaled}{Logical. If \code{TRUE}, uses the min-max scaled PCF (\code{pair_cor_sc})
@@ -23,12 +23,12 @@ A \code{ggplot} object.
 \description{
 Visualization method for \code{std_matern_corr} objects using \code{ggplot2}.
 It can display the Pairwise Correlation Function (PCF) for LGCP models or the
-standard Matern covariance.
+standard Matern covariance function.
 }
 \examples{
 \dontrun{
 # Assuming 'cov_lgcp' is an object returned by std_matern_corr()
-plot(cov_lgcp, type = "pair_cor", scaled = TRUE)
+plot(cov_lgcp, type = "pair.cor", scaled = TRUE)
 
 # To modify the plot
 library(ggplot2)

@@ -76,6 +76,7 @@
 #' \item Diggle PJ, Ribeiro PJ. Model-based Geostatistics. 1st ed. New York, NY: Springer. (2007). \doi{10.1007/978-0-387-48536-2}
 #' \item Lindgren F, Rue H, Lindström J. An explicit link between Gaussian fields and Gaussian Markov random fields: the stochastic partial differential equation approach.
 #' _Journal of the Royal Statistical Society: Series B (Statistical Methodology)_ (2011) 73:423–498. \doi{10.1111/j.1467-9868.2011.00777.x}
+#' \item Sode AI, Fandohan AB, Krainski ET, et al. Integrating Presence-only and Abundance Data to Predict Baobab (*Adansonia digitata L.*) Distribution: A Bayesian Data Fusion Framework". \doi{10.21203/rs.3.rs-7871875/v1}
 #' }
 std_matern_corr <- function(model, engine = c("kppm", "inla", "variofit"), r, nu = 1, ...) {
   engine <- match.arg(engine)
@@ -135,14 +136,14 @@ std_matern_corr <- function(model, engine = c("kppm", "inla", "variofit"), r, nu
 }
 
 
-#' Plot standardized Matern correlation or covariance
+#' @title Plot standardized pairwise correlation or covariance for Matern family
 #'
 #' @description Visualization method for \code{std_matern_corr} objects using \code{ggplot2}.
 #' It can display the Pairwise Correlation Function (PCF) for LGCP models or the
-#' standard Matern covariance.
+#' standard Matern covariance function.
 #'
 #' @param x An object of class \code{std_matern_corr}.
-#' @param type Character string. Either \code{"pair_cor"} (default for LGCP) or
+#' @param type Character string. Either \code{"pair.cor"} (default for LGCP) or
 #' \code{"covariance"}.
 #' @param scaled Logical. If \code{TRUE}, uses the min-max scaled PCF (\code{pair_cor_sc})
 #' or the standardized covariance (\eqn{C(r)/\sigma^2}). Default is \code{FALSE}.
@@ -155,14 +156,14 @@ std_matern_corr <- function(model, engine = c("kppm", "inla", "variofit"), r, nu
 #' @examples
 #' \dontrun{
 #' # Assuming 'cov_lgcp' is an object returned by std_matern_corr()
-#' plot(cov_lgcp, type = "pair_cor", scaled = TRUE)
+#' plot(cov_lgcp, type = "pair.cor", scaled = TRUE)
 #'
 #' # To modify the plot
 #' library(ggplot2)
 #' p <- plot(cov_lgcp, type = "covariance")
 #' p + theme_bw() + ggtitle("Spatial Decay")
 #' }
-plot.std_matern_corr <- function(x, type = c("pair_cor", "covariance"), scaled = FALSE, ...) {
+plot.std_matern_corr <- function(x, type = c("pair.cor", "covariance"), scaled = FALSE, ...) {
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     stop("Package 'ggplot2' is required for this plotting method.")
   }
@@ -170,7 +171,7 @@ plot.std_matern_corr <- function(x, type = c("pair_cor", "covariance"), scaled =
   type <- match.arg(type)
 
   if (x$engine == "variofit") type <- "covariance"
-  if (type == "pair_cor") {
+  if (type == "pair.cor") {
     y_vals <- if (scaled) x$pair_cor_sc else x$pair_cor
     y_label <- if (scaled) "g(r) [Min-Max scaled]" else expression(g(r) == exp(C(r)))
     title_suffix <- "Pairwise Correlation (g(r))"
@@ -249,6 +250,7 @@ plot.std_matern_corr <- function(x, type = c("pair_cor", "covariance"), scaled =
 #' \item Diggle PJ, Ribeiro PJ. Model-based Geostatistics. 1st ed. New York, NY: Springer. (2007). \doi{10.1007/978-0-387-48536-2}
 #' \item Lindgren F, Rue H, Lindström J. An explicit link between Gaussian fields and Gaussian Markov random fields: the stochastic partial differential equation approach.
 #' _Journal of the Royal Statistical Society: Series B (Statistical Methodology)_ (2011) 73:423–498. \doi{10.1111/j.1467-9868.2011.00777.x}
+#' \item Sode AI, Fandohan AB, Krainski ET, Assogbadjo E, Glèlè Kakaï R. Integrating Presence-only and Abundance Data to Predict Baobab (*Adansonia digitata L.*) Distribution: A Bayesian Data Fusion Framework". \doi{10.21203/rs.3.rs-7871875/v1}
 #' }
 solve_practical_range <- function(param_val,
                                   nu,
