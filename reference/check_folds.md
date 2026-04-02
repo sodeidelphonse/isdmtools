@@ -29,7 +29,7 @@ check_folds(object, rho = NULL, plot = TRUE, ...)
 
   Numeric. Optional. The practical range (km) estimated from the
   exploratory analysis or the posterior practical range from a Bayesian
-  analysis. the one estimated from the integrated model (e.g., the
+  analysis, the one estimated from the integrated model (e.g., the
   Matérn range parameter).
 
 - plot:
@@ -52,7 +52,7 @@ folds compared to the practical range (\\\rho\\):
   but correlation remains above 0.1.
 
 - **Independent**: Gap \\\ge \rho\\. Spatial correlation is below 0.1 at
-  the boundary; satisfying standard requirements for spatial
+  the boundary, satisfying standard requirements for spatial
   independence for most blocked cross-validation applications (Roberts
   et al. 2017).
 
@@ -66,8 +66,8 @@ derived using an interpolation method. Note that several packages are
 available to estimate the range from the observed spatial data and
 different parameterisations are used. We provide the helper function
 [`solve_practical_range`](https://sodeidelphonse.github.io/isdmtools/reference/solve_practical_range.md)
-to allow to derive a unified practical range for Matérn covariance
-fitted to the data in INLA, geoR or spatstat packages.
+to allow derive a unified practical range for Matérn covariance fitted
+to the data with INLA, geoR or spatstat package.
 
 ## References
 

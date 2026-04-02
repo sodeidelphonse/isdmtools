@@ -24,19 +24,19 @@ evaluation.
 
 ## Installation
 
-1.  You can install the latest development version of `isdmtools`
-    directly from GitHub using the `remotes` package.
+- You can install the latest development version of `isdmtools` directly
+  from GitHub using the `remotes` package.
 
 ``` r
 if (!require("remotes")) install.packages("remotes") 
 remotes::install_github("sodeidelphonse/isdmtools")
 ```
 
-2.  Alternatively, if you are on Windows operating system and don’t have
-    `Rtools` installed due to restricted internet access, you can
-    download the binary build from our latest [GitHub
-    Releases](https://github.com/sodeidelphonse/isdmtools/releases) and
-    then install it with:
+- Alternatively, if you are on Windows operating system and don’t have
+  `Rtools` installed due to restricted internet access, you can download
+  the binary build from our latest [GitHub
+  Releases](https://github.com/sodeidelphonse/isdmtools/releases) and
+  then install it with:
 
 ``` r
 install.packages("C:/path/to/your/download/isdmtools_<version>.zip", repos = NULL, type = "win.binary")
@@ -46,11 +46,10 @@ where `<version>` is the version number (e.g., v0.4.0) of the release
 you downloaded and `{C:/path/to/your/download/}` is the path to the
 binary `".zip"` file.
 
-3.  For MacOS or other platforms (Linux), you must compile the source
-    code (`"isdmtools_<version>.tar.gz"`) available from our latest
-    [GitHub
-    Releases](https://github.com/sodeidelphonse/isdmtools/releases).
-    Download the desired version and then install it with:
+- For macOS or Linux platforms, you must compile the source code
+  (`"isdmtools_<version>.tar.gz"`) available from our latest [GitHub
+  Releases](https://github.com/sodeidelphonse/isdmtools/releases).
+  Download the desired version and then install it with:
 
 ``` r
 install.packages("/path/to/your/download/isdmtools_<version>.tar.gz", repos = NULL, type = "source")
@@ -95,8 +94,8 @@ common tasks of data preparation, visualization and model evaluation:
   [`get_background()`](https://sodeidelphonse.github.io/isdmtools/reference/ISDMmetrics-methods.md)
   helper in order to visualize the generated pseudo-absences.
 
-- **Mapping & Visualization**: Visualize model predictions and final
-  habitat suitability maps. The plotting method
+- **Mapping**: Visualize model predictions and final habitat suitability
+  maps. The plotting method
   [`generate_maps()`](https://sodeidelphonse.github.io/isdmtools/reference/generate_maps.md)
   is designed to receive a formatted object from
   [`format_predictions()`](https://sodeidelphonse.github.io/isdmtools/reference/format_predictions.md)
