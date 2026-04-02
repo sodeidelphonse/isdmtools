@@ -44,7 +44,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/sodeidelphonse/isdmtools/blob/v0.4.0/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/sodeidelphonse/isdmtools/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
     <div class="section level2">
@@ -53,14 +53,14 @@
 <h3 id="new-features-0-4-0">New Features:<a class="anchor" aria-label="anchor" href="#new-features-0-4-0"></a></h3>
 <ul><li>
 <code><a href="../reference/compute_ppc_stats.html">compute_ppc_stats()</a></code>: A wrapper to calculate Pearson Chi-squared statistics and Bayesian <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-values to assess model fit.</li>
-<li>Added S3 methods for <code>print.ppc_stats</code> and <code>plot.ppc_stats</code> for immediate visual and console-based model diagnostics.</li>
+<li>Added S3 methods: <code>print.ppc_stats</code> and <code>plot.ppc_stats</code> for immediate visual and console-based model diagnostics.</li>
 <li>
 <code><a href="../reference/simulate_replicates.html">simulate_replicates()</a></code>: A new vectorized simulation engine to generate <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>y</mi><mrow><mi>r</mi><mi>e</mi><mi>p</mi></mrow></msub><annotation encoding="application/x-tex">y_{rep}</annotation></semantics></math> data from posterior samples. Supports <code>poisson</code>, <code>nbinomial</code>, and <code>quasi-poisson</code> families.</li>
 <li>Posterior Predictive Checks (PPC): Introduced a robust Bayesian diagnostic suite for count data models.</li>
 <li>
-<code>plot.std_matern_corr</code>: An S3 method for quick plot of the standardised outputs and pairwise correlation function.</li>
+<code>plot.std_matern_corr</code>: An S3 method for quick plot of the standardized outputs and pairwise correlation function.</li>
 <li>
-<code>std_matern_corr</code>: A wrapper to standardise Matern covariance parameters across estimation engine and compute the pairwise correlation from LGCP models.</li>
+<code>std_matern_corr</code>: A wrapper to standardize Matern covariance parameters across estimation engines and compute the pairwise correlation from LGCP models.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="improvements-0-4-0">Improvements<a class="anchor" aria-label="anchor" href="#improvements-0-4-0"></a></h3>
@@ -74,10 +74,10 @@
 <h2 class="pkg-version" data-toc-text="0.3.0" id="isdmtools-030">isdmtools 0.3.0<a class="anchor" aria-label="anchor" href="#isdmtools-030"></a></h2>
 <div class="section level3">
 <h3 id="continuous-integration--deployment-0-3-0">Continuous Integration &amp; Deployment<a class="anchor" aria-label="anchor" href="#continuous-integration--deployment-0-3-0"></a></h3>
-<ul><li>GitHub Actions Integration: Established a suite of automated workflows including R-CMD-check for cross-platform stability and <code>Codecov</code> for monitoring unit tests coverage.</li>
+<ul><li>Code styling: Established the <code>lintr</code> workflow for the automated detection of syntax errors and code styling issues.</li>
+<li>GitHub Actions Integration: Established a suite of automated workflows including R-CMD-check for cross-platform stability and <code>Codecov</code> for monitoring unit tests coverage.</li>
 <li>Automated Documentation: Implemented an automated pkgdown deployment pipeline to ensure the package website and vignettes are updated upon every push to the main branch.</li>
-<li>Website Launch: Deployed an official <code>pkgdown</code> site with a custom navigation bar and categorised tutorials.</li>
-<li>Code styling: Established the <code>lintr</code> workflow for the automated detection of syntax errors and code styling issues.</li>
+<li>Website Launch: Deployed an official <code>pkgdown</code> site with a custom navigation bar and categorized tutorials.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="new-features-0-3-0">New Features<a class="anchor" aria-label="anchor" href="#new-features-0-3-0"></a></h3>
@@ -111,16 +111,16 @@
 <code>"location"</code>: Leave-location-out/Leave-group-out CV, enabling spatiotemporal validation (e.g., by year) and source-specific validation (e.g., by observers, sites or regions).</li>
 </ul></li>
 <li><p>Expanded Cross-Validation Engines: Integrated ‘spatialsample’ as a backend, providing a unified interface for advanced spatial resampling methods.</p></li>
-<li><p>Added <code>summary.DataFolds</code> method for providing clean aggregated statistics on data partition.</p></li>
+<li><p>Added <code>summary.DataFolds</code> method for providing clean aggregated statistics on data partitioning.</p></li>
 <li><p>Added relevant tests for <code>DataFolds</code> and <code>BackgroundPoints</code> classes and their constructors/methods.</p></li>
 </ul></div>
 <div class="section level3">
 <h3 id="improvements-0-2-0">Improvements<a class="anchor" aria-label="anchor" href="#improvements-0-2-0"></a></h3>
 <ul><li>Refactoring: Remove unnecessary dependencies (<code>reshape2</code>, <code>purrr</code> and <code>ggspatial</code>) and ensure consistent argument naming (snake_case).</li>
-<li>Unified CV Constructor: <code><a href="../reference/create_folds.html">create_folds()</a></code> now acts as a high-level bridge between <code>blockCV</code> and <code>spatialsample</code>.</li>
 <li>Standardized S3 Outputs: The <code>DataFolds</code> object now standardizes internal indexing across different blocking engines, ensuring “folds_ids” are consistent regardless of the underlying package used.</li>
 <li>Improved Print Method: The <code>print.DataFolds</code> method now explicitly labels “Excluded” points, providing a clear summary of how many observations were buffered out of the validation process.</li>
 <li>Added robust unit tests for spatial buffer logic and multisource data fusion integrity.</li>
+<li>Unified CV Constructor: <code><a href="../reference/create_folds.html">create_folds()</a></code> now acts as a high-level bridge between <code>blockCV</code> and <code>spatialsample</code>.</li>
 </ul></div>
 </div>
     <div class="section level2">
@@ -128,8 +128,8 @@
 <div class="section level3">
 <h3 id="refactoring--testing-framework-0-1-0-9000">Refactoring &amp; Testing Framework<a class="anchor" aria-label="anchor" href="#refactoring--testing-framework-0-1-0-9000"></a></h3>
 <ul><li>Integrated unit testing framework using <code>testthat</code>.</li>
-<li>Standardized coordinate column names to lowercase <code>x</code> and <code>y</code> across all functions.</li>
-<li>Updated internal logic to use <code>.data</code> pronoun to resolve global variable notes.</li>
+<li>Standardized coordinates column names to lowercase <code>x</code> and <code>y</code> across all functions.</li>
+<li>Updated internal logic to use <code>.data</code> pronoun to resolve global variable notes in R-CMD-check.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="improvements-0-1-0-9000">Improvements<a class="anchor" aria-label="anchor" href="#improvements-0-1-0-9000"></a></h3>

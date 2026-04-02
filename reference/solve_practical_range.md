@@ -78,6 +78,12 @@ used for the exploratory analysis.
   Society: Series B (Statistical Methodology)* (2011) 73:423–498.
   [doi:10.1111/j.1467-9868.2011.00777.x](https://doi.org/10.1111/j.1467-9868.2011.00777.x)
 
+- Sode AI, Fandohan AB, Krainski ET, Assogbadjo E, Glèlè Kakaï R.
+  Integrating Presence-only and Abundance Data to Predict Baobab
+  (*Adansonia digitata L.*) Distribution: A Bayesian Data Fusion
+  Framework".
+  [doi:10.21203/rs.3.rs-7871875/v1](https://doi.org/10.21203/rs.3.rs-7871875/v1)
+
 ## See also
 
 Other Matern covariance helpers:

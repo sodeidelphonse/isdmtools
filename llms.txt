@@ -24,23 +24,40 @@ evaluation.
 
 ## Installation
 
-You can install the development version of `isdmtools` directly from
-GitHub using `remotes` package.
+1.  You can install the latest development version of `isdmtools`
+    directly from GitHub using the `remotes` package.
 
 ``` r
 if (!require("remotes")) install.packages("remotes") 
 remotes::install_github("sodeidelphonse/isdmtools")
 ```
 
-Alternatively, if you are on Windows and don’t have `Rtools` installed
-due to restricted internet access, you can download the binary (e.g.,
-v0.4.0) from our [GitHub
-Releases](https://github.com/sodeidelphonse/isdmtools/releases) and
-install it as follows:
+2.  Alternatively, if you are on Windows operating system and don’t have
+    `Rtools` installed due to restricted internet access, you can
+    download the binary build from our latest [GitHub
+    Releases](https://github.com/sodeidelphonse/isdmtools/releases) and
+    then install it with:
 
 ``` r
-install.packages("C:/path/to/your/download/isdmtools_0.4.0.zip", repos = NULL, type = "win.binary")
+install.packages("C:/path/to/your/download/isdmtools_<version>.zip", repos = NULL, type = "win.binary")
 ```
+
+where `<version>` is the version number (e.g., v0.4.0) of the release
+you downloaded and `{C:/path/to/your/download/}` is the path to the
+binary `".zip"` file.
+
+3.  For MacOS or other platforms (Linux), you must compile the source
+    code (`"isdmtools_<version>.tar.gz"`) available from our latest
+    [GitHub
+    Releases](https://github.com/sodeidelphonse/isdmtools/releases).
+    Download the desired version and then install it with:
+
+``` r
+install.packages("/path/to/your/download/isdmtools_<version>.tar.gz", repos = NULL, type = "source")
+```
+
+where `<version>` is the version number of the release you downloaded
+and `{/path/to/your/download/}` is the path to the `".tar.gz"` file.
 
 ## Core Features
 
@@ -101,7 +118,7 @@ common tasks of data preparation, visualization and model evaluation:
   [`print()`](https://rdrr.io/r/base/print.html) and
   [`plot()`](https://rdrr.io/r/graphics/plot.default.html) methods for
   most of the available data structures. These provide a concise summary
-  and clear visualisation of spatial data partition, folds’ diagnostics,
+  and clear visualization of spatial data partition, folds’ diagnostics,
   and models’ evaluation and validation. Other methods are discussed in
   the package vignettes.
 
@@ -191,31 +208,31 @@ guide.
 
 ## Contributing
 
-We welcome contributions! If you encounter an issue or have a feature
-request, please open an issue on the GitHub repository
-[here](https://github.com/sodeidelphonse/isdmtools/issues).
+- We welcome contributions! If you encounter an issue or have a feature
+  request, please open an issue on the GitHub repository
+  [here](https://github.com/sodeidelphonse/isdmtools/issues).
 
-This project uses `renv` to manage package dependencies and ensure
-reproducibility. A contributor who wants to install all the necessary
-packages for this project can simply follow these steps:
+- This project uses `renv` to manage package dependencies and ensure
+  reproducibility. A contributor who wants to install all the necessary
+  packages for this project can simply follow these steps:
 
-- Make sure you have the `renv` package installed:
+  - Make sure you have the `renv` package installed:
 
-``` r
-install.packages("renv")
-```
+  ``` r
+  install.packages("renv")
+  ```
 
-- With the project directory as your working directory, use `renv` to
-  install all packages listed in the `renv.lock` file:
+  - With the project directory as your working directory, use `renv` to
+    install all packages listed in the `renv.lock` file:
 
-``` r
-renv::restore()
-```
+  ``` r
+  renv::restore()
+  ```
 
-Please note that the `isdmtools` project is released with a [Contributor
-Code of
-Conduct](https://www.contributor-covenant.org/version/2/1/code_of_conduct/code_of_conduct.md).
-By contributing to this project, you agree to abide by its terms.
+- Please note that the `isdmtools` project is released with a
+  [Contributor Code of
+  Conduct](https://www.contributor-covenant.org/version/2/1/code_of_conduct/code_of_conduct.md).
+  By contributing to this project, you agree to abide by its terms.
 
 ## Citation
 
@@ -327,7 +344,8 @@ Data cleaning and numerical calculation
   : Standardise Matern covariance parameters and compute the pairwise
   correlation from LGCP models
 - [`plot(`*`<std_matern_corr>`*`)`](https://sodeidelphonse.github.io/isdmtools/reference/plot.std_matern_corr.md)
-  : Plot standardized Matern correlation or covariance
+  : Plot standardized pairwise correlation or covariance for Matern
+  family
 
 ## Datasets
 

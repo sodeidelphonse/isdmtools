@@ -91,13 +91,24 @@
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>You can install the development version of <code>isdmtools</code> directly from GitHub using <code>remotes</code> package.</p>
+<ol style="list-style-type: decimal">
+<li>You can install the latest development version of <code>isdmtools</code> directly from GitHub using the <code>remotes</code> package.</li>
+</ol>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://remotes.r-lib.org" class="external-link">"remotes"</a></span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span> </span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"sodeidelphonse/isdmtools"</span><span class="op">)</span></span></code></pre></div>
-<p>Alternatively, if you are on Windows and don’t have <code>Rtools</code> installed due to restricted internet access, you can download the binary (e.g., v0.4.0) from our <a href="https://github.com/sodeidelphonse/isdmtools/releases" class="external-link">GitHub Releases</a> and install it as follows:</p>
+<ol start="2" style="list-style-type: decimal">
+<li>Alternatively, if you are on Windows operating system and don’t have <code>Rtools</code> installed due to restricted internet access, you can download the binary build from our latest <a href="https://github.com/sodeidelphonse/isdmtools/releases" class="external-link">GitHub Releases</a> and then install it with:</li>
+</ol>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"C:/path/to/your/download/isdmtools_0.4.0.zip"</span>, repos <span class="op">=</span> <span class="cn">NULL</span>, type <span class="op">=</span> <span class="st">"win.binary"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"C:/path/to/your/download/isdmtools_&lt;version&gt;.zip"</span>, repos <span class="op">=</span> <span class="cn">NULL</span>, type <span class="op">=</span> <span class="st">"win.binary"</span><span class="op">)</span></span></code></pre></div>
+<p>where <code>&lt;version&gt;</code> is the version number (e.g., v0.4.0) of the release you downloaded and <code>{C:/path/to/your/download/}</code> is the path to the binary <code>".zip"</code> file.</p>
+<ol start="3" style="list-style-type: decimal">
+<li>For MacOS or other platforms (Linux), you must compile the source code (<code>"isdmtools_&lt;version&gt;.tar.gz"</code>) available from our latest <a href="https://github.com/sodeidelphonse/isdmtools/releases" class="external-link">GitHub Releases</a>. Download the desired version and then install it with:</li>
+</ol>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"/path/to/your/download/isdmtools_&lt;version&gt;.tar.gz"</span>, repos <span class="op">=</span> <span class="cn">NULL</span>, type <span class="op">=</span> <span class="st">"source"</span><span class="op">)</span></span></code></pre></div>
+<p>where <code>&lt;version&gt;</code> is the version number of the release you downloaded and <code>{/path/to/your/download/}</code> is the path to the <code>".tar.gz"</code> file.</p>
 </div>
 <div class="section level2">
 <h2 id="core-features">Core Features<a class="anchor" aria-label="anchor" href="#core-features"></a>
@@ -109,7 +120,7 @@
 <li><p><strong>Model Evaluation</strong>: Compute comprehensive evaluation metrics, including ROC-based and continuous-outcome metrics for each dataset using the <code><a href="reference/compute_metrics.html">compute_metrics()</a></code> constructor. The package also handles <em>dataset-weighted composite scores</em>, providing a holistic view of model performance. Note that <code><a href="reference/sample_background.html">sample_background()</a></code> is called internally to sample pseudo-absences for presence-only data. However, users can extract the <code>BackgroundPoints</code> object with the <code><a href="reference/ISDMmetrics-methods.html">get_background()</a></code> helper in order to visualize the generated pseudo-absences.</p></li>
 <li><p><strong>Mapping &amp; Visualization</strong>: Visualize model predictions and final habitat suitability maps. The plotting method <code><a href="reference/generate_maps.html">generate_maps()</a></code> is designed to receive a formatted object from <code><a href="reference/format_predictions.html">format_predictions()</a></code> to provide a clear and informative map. It visualizes multiple variables of model predictions (e.g. mean, SD, and quantiles), providing an easy way to interpret models’ results. Users can customize the final <code>ggplot2</code> object if needed.</p></li>
 <li><p><strong>Statistical Validation</strong>: <code><a href="reference/simulate_replicates.html">simulate_replicates()</a></code> generate replicates of data (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>y</mi><mrow><mi>r</mi><mi>e</mi><mi>p</mi></mrow></msub><annotation encoding="application/x-tex">y_{rep}</annotation></semantics></math>) from the posterior samples of the fitted model. <code><a href="reference/compute_ppc_stats.html">compute_ppc_stats()</a></code> calculates Pearson Chi-squared statistics and Bayesian <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-values from the replicated data to assess model fit.</p></li>
-<li><p><strong>Other Methods</strong>: The package includes the <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code>, <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> and <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> methods for most of the available data structures. These provide a concise summary and clear visualisation of spatial data partition, folds’ diagnostics, and models’ evaluation and validation. Other methods are discussed in the package vignettes.</p></li>
+<li><p><strong>Other Methods</strong>: The package includes the <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code>, <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> and <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> methods for most of the available data structures. These provide a concise summary and clear visualization of spatial data partition, folds’ diagnostics, and models’ evaluation and validation. Other methods are discussed in the package vignettes.</p></li>
 </ul>
 </div>
 <div class="section level2">
@@ -120,7 +131,7 @@
 <h3 id="data-preparation">Data preparation<a class="anchor" aria-label="anchor" href="#data-preparation"></a>
 </h3>
 <p>First, let’s load the package and create some dummy data.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://sodeidelphonse.github.io/isdmtools/">isdmtools</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
@@ -151,7 +162,7 @@
 <h3 id="spatial-partitioning">Spatial partitioning<a class="anchor" aria-label="anchor" href="#spatial-partitioning"></a>
 </h3>
 <p>We can now create spatial folds using the default blocking engine.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create the DataFolds object</span></span>
 <span><span class="va">my_folds</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/create_folds.html">create_folds</a></span><span class="op">(</span><span class="va">datasets_list</span>, k <span class="op">=</span> <span class="fl">5</span>, seed <span class="op">=</span> <span class="fl">23</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">my_folds</span><span class="op">)</span></span>
@@ -166,7 +177,7 @@
 <h3 id="extract-folds-for-an-integrated-modeling-workflow">Extract folds for an integrated modeling workflow<a class="anchor" aria-label="anchor" href="#extract-folds-for-an-integrated-modeling-workflow"></a>
 </h3>
 <p>One can extract a specific fold to evaluate the integrated model and keep the remaining folds for its training.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Extract the fold 3 for model evaluation</span></span>
 <span><span class="va">splits_fold_3</span> <span class="op">&lt;-</span> <span class="fu">extaract_fold</span><span class="op">(</span><span class="va">my_folds</span>, fold <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
 <span></span>
@@ -178,7 +189,7 @@
 <h3 id="folds-diagnostics">Folds diagnostics<a class="anchor" aria-label="anchor" href="#folds-diagnostics"></a>
 </h3>
 <p>You can check spatial independence of folds using <code>check_folds</code>.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Check spatial independence of folds using the default range rho (N/A)</span></span>
 <span><span class="va">geo_diag</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/check_folds.html">check_folds</a></span><span class="op">(</span><span class="va">folds</span>, plot <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">geo_diag</span><span class="op">)</span></span>
@@ -189,25 +200,29 @@
 <div class="section level2">
 <h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
 </h2>
-<p>We welcome contributions! If you encounter an issue or have a feature request, please open an issue on the GitHub repository <a href="https://github.com/sodeidelphonse/isdmtools/issues" class="external-link">here</a>.</p>
+<ul>
+<li><p>We welcome contributions! If you encounter an issue or have a feature request, please open an issue on the GitHub repository <a href="https://github.com/sodeidelphonse/isdmtools/issues" class="external-link">here</a>.</p></li>
+<li>
 <p>This project uses <code>renv</code> to manage package dependencies and ensure reproducibility. A contributor who wants to install all the necessary packages for this project can simply follow these steps:</p>
 <ul>
 <li>Make sure you have the <code>renv</code> package installed:</li>
 </ul>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"renv"</span><span class="op">)</span></span></code></pre></div>
 <ul>
 <li>With the project directory as your working directory, use <code>renv</code> to install all packages listed in the <code>renv.lock</code> file:</li>
 </ul>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">renv</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/renv/reference/restore.html" class="external-link">restore</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p>Please note that the <code>isdmtools</code> project is released with a <a href="https://www.contributor-covenant.org/version/2/1/code_of_conduct/code_of_conduct.md" class="external-link">Contributor Code of Conduct</a>. By contributing to this project, you agree to abide by its terms.</p>
+</li>
+<li><p>Please note that the <code>isdmtools</code> project is released with a <a href="https://www.contributor-covenant.org/version/2/1/code_of_conduct/code_of_conduct.md" class="external-link">Contributor Code of Conduct</a>. By contributing to this project, you agree to abide by its terms.</p></li>
+</ul>
 </div>
 <div class="section level2">
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
 <p>To cite this package in your research work, run the following command in your R session to generate the plain text and <code>BiTex</code> entry of the citation:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/citation.html" class="external-link">citation</a></span><span class="op">(</span><span class="st">"isdmtools"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">

@@ -1,14 +1,14 @@
-# Plot standardized Matern correlation or covariance
+# Plot standardized pairwise correlation or covariance for Matern family
 
 Visualization method for `std_matern_corr` objects using `ggplot2`. It
 can display the Pairwise Correlation Function (PCF) for LGCP models or
-the standard Matern covariance.
+the standard Matern covariance function.
 
 ## Usage
 
 ``` r
 # S3 method for class 'std_matern_corr'
-plot(x, type = c("pair_cor", "covariance"), scaled = FALSE, ...)
+plot(x, type = c("pair.cor", "covariance"), scaled = FALSE, ...)
 ```
 
 ## Arguments
@@ -19,7 +19,7 @@ plot(x, type = c("pair_cor", "covariance"), scaled = FALSE, ...)
 
 - type:
 
-  Character string. Either `"pair_cor"` (default for LGCP) or
+  Character string. Either `"pair.cor"` (default for LGCP) or
   `"covariance"`.
 
 - scaled:
@@ -46,7 +46,7 @@ Other Matern covariance helpers:
 ``` r
 if (FALSE) { # \dontrun{
 # Assuming 'cov_lgcp' is an object returned by std_matern_corr()
-plot(cov_lgcp, type = "pair_cor", scaled = TRUE)
+plot(cov_lgcp, type = "pair.cor", scaled = TRUE)
 
 # To modify the plot
 library(ggplot2)

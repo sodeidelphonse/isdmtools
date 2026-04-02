@@ -93,7 +93,8 @@ Data cleaning and numerical calculation
   : Standardise Matern covariance parameters and compute the pairwise
   correlation from LGCP models
 - [`plot(`*`<std_matern_corr>`*`)`](https://sodeidelphonse.github.io/isdmtools/reference/plot.std_matern_corr.md)
-  : Plot standardized Matern correlation or covariance
+  : Plot standardized pairwise correlation or covariance for Matern
+  family
 
 ## Datasets
 

@@ -7,8 +7,8 @@
 - [`compute_ppc_stats()`](https://sodeidelphonse.github.io/isdmtools/reference/compute_ppc_stats.md):
   A wrapper to calculate Pearson Chi-squared statistics and Bayesian
   $p$-values to assess model fit.
-- Added S3 methods for `print.ppc_stats` and `plot.ppc_stats` for
-  immediate visual and console-based model diagnostics.
+- Added S3 methods: `print.ppc_stats` and `plot.ppc_stats` for immediate
+  visual and console-based model diagnostics.
 - [`simulate_replicates()`](https://sodeidelphonse.github.io/isdmtools/reference/simulate_replicates.md):
   A new vectorized simulation engine to generate $y_{rep}$ data from
   posterior samples. Supports `poisson`, `nbinomial`, and
@@ -16,9 +16,9 @@
 - Posterior Predictive Checks (PPC): Introduced a robust Bayesian
   diagnostic suite for count data models.
 - `plot.std_matern_corr`: An S3 method for quick plot of the
-  standardised outputs and pairwise correlation function.
-- `std_matern_corr`: A wrapper to standardise Matern covariance
-  parameters across estimation engine and compute the pairwise
+  standardized outputs and pairwise correlation function.
+- `std_matern_corr`: A wrapper to standardize Matern covariance
+  parameters across estimation engines and compute the pairwise
   correlation from LGCP models.
 
 ### Improvements
@@ -38,6 +38,8 @@
 
 ### Continuous Integration & Deployment
 
+- Code styling: Established the `lintr` workflow for the automated
+  detection of syntax errors and code styling issues.
 - GitHub Actions Integration: Established a suite of automated workflows
   including R-CMD-check for cross-platform stability and `Codecov` for
   monitoring unit tests coverage.
@@ -45,9 +47,7 @@
   pipeline to ensure the package website and vignettes are updated upon
   every push to the main branch.
 - Website Launch: Deployed an official `pkgdown` site with a custom
-  navigation bar and categorised tutorials.
-- Code styling: Established the `lintr` workflow for the automated
-  detection of syntax errors and code styling issues.
+  navigation bar and categorized tutorials.
 
 ### New Features
 
@@ -108,7 +108,7 @@
   methods.
 
 - Added `summary.DataFolds` method for providing clean aggregated
-  statistics on data partition.
+  statistics on data partitioning.
 
 - Added relevant tests for `DataFolds` and `BackgroundPoints` classes
   and their constructors/methods.
@@ -117,9 +117,6 @@
 
 - Refactoring: Remove unnecessary dependencies (`reshape2`, `purrr` and
   `ggspatial`) and ensure consistent argument naming (snake_case).
-- Unified CV Constructor:
-  [`create_folds()`](https://sodeidelphonse.github.io/isdmtools/reference/create_folds.md)
-  now acts as a high-level bridge between `blockCV` and `spatialsample`.
 - Standardized S3 Outputs: The `DataFolds` object now standardizes
   internal indexing across different blocking engines, ensuring
   “folds_ids” are consistent regardless of the underlying package used.
@@ -128,16 +125,19 @@
   observations were buffered out of the validation process.
 - Added robust unit tests for spatial buffer logic and multisource data
   fusion integrity.
+- Unified CV Constructor:
+  [`create_folds()`](https://sodeidelphonse.github.io/isdmtools/reference/create_folds.md)
+  now acts as a high-level bridge between `blockCV` and `spatialsample`.
 
 ## isdmtools 0.1.0.9000
 
 ### Refactoring & Testing Framework
 
 - Integrated unit testing framework using `testthat`.
-- Standardized coordinate column names to lowercase `x` and `y` across
+- Standardized coordinates column names to lowercase `x` and `y` across
   all functions.
 - Updated internal logic to use `.data` pronoun to resolve global
-  variable notes.
+  variable notes in R-CMD-check.
 
 ### Improvements
 
