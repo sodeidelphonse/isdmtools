@@ -140,7 +140,7 @@ check_spatial_geometry <- function(data_all, fold_col = "folds_ids", rho = NULL,
 #'
 #' @param object A \code{DataFolds} object created by \code{create_folds()}.
 #' @param rho Numeric. Optional. The practical range (km) estimated from the exploratory
-#' analysis or the posterior practical range from a Bayesian analysis.
+#' analysis or the posterior practical range from a Bayesian analysis,
 #' the one estimated from the integrated model (e.g., the Matérn range parameter).
 #' @param plot Logical. If \code{TRUE}, returns a diagnostic plot.
 #' @param ... Additional arguments.
@@ -154,7 +154,7 @@ check_spatial_geometry <- function(data_all, fold_col = "folds_ids", rho = NULL,
 #'   \item \strong{Weakly Independent}: 0 < Gap < \eqn{\rho}. A physical gap exists,
 #'   but correlation remains above 0.1.
 #'   \item \strong{Independent}: Gap \eqn{\ge \rho}. Spatial correlation is below 0.1
-#'   at the boundary; satisfying standard requirements for spatial independence
+#'   at the boundary, satisfying standard requirements for spatial independence
 #'   for most blocked cross-validation applications (Roberts et al. 2017).
 #' }
 #'
@@ -162,9 +162,9 @@ check_spatial_geometry <- function(data_all, fold_col = "folds_ids", rho = NULL,
 #' the \pkg{blockCV} package (Valavi et al. 2018) or any other tool. The authors recommended this value (in metres)
 #' as the optimal block size for their spatial blocking scheme. For instance, if a covariance model is fitted
 #' to an experimental variogram, the 10% practical range can be derived using an interpolation method.
-#' Note that several packages are available to estimate the range from the observed spatial data and
-#' different parameterisations are used. We provide the helper function \code{\link{solve_practical_range}} to allow to
-#' derive a unified practical range for Matérn covariance fitted to the data in INLA, geoR or spatstat packages.
+#' Note that several packages are available to estimate the range from the observed spatial data and different
+#' parameterisations are used. We provide the helper function \code{\link{solve_practical_range}} to allow
+#' derive a unified practical range for Matérn covariance fitted to the data with INLA, geoR or spatstat package.
 #'
 #' @return An object of class \code{GeoDiagnostic}.
 #' @export
@@ -536,6 +536,7 @@ check_env_balance.DataFolds <- function(object, covariates,
   })
   stats_df <- dplyr::bind_rows(stats_list)
 
+  # Prepare a data.frame for ggplot
   plot_list <- lapply(cov_names, function(v) {
     data.frame(
       Fold = full_env_data$folds_ids,
@@ -551,6 +552,7 @@ check_env_balance.DataFolds <- function(object, covariates,
     labels = stats_df$label
   )
 
+  # Settings for ggplot
   n_folds <- length(levels(raw_data$folds_ids))
   fold_colors <- .get_isdm_palette(n_folds)
   names(fold_colors) <- levels(raw_data$folds_ids)
