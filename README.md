@@ -28,13 +28,13 @@ It ensures robust, reproducible workflows through dedicated tools for block cros
 
 ## Installation
 
-1. You can install the latest development version of `isdmtools` directly from GitHub using the `remotes` package.
+- You can install the latest development version of `isdmtools` directly from GitHub using the `remotes` package.
 
 ```R
 if (!require("remotes")) install.packages("remotes") 
 remotes::install_github("sodeidelphonse/isdmtools")
 ```
-2. Alternatively, if you are on Windows operating system and don't have `Rtools` installed due to restricted internet access, 
+- Alternatively, if you are on Windows operating system and don't have `Rtools` installed due to restricted internet access, 
 you can download the binary build from our latest [GitHub Releases](https://github.com/sodeidelphonse/isdmtools/releases) and then install it with:
 
 ```R
@@ -42,7 +42,7 @@ install.packages("C:/path/to/your/download/isdmtools_<version>.zip", repos = NUL
 ```
 where `<version>` is the version number (e.g., v0.4.0) of the release you downloaded and `{C:/path/to/your/download/}` is the path to the binary `".zip"` file.
 
-3. For MacOS or other platforms (Linux), you must compile the source code (`"isdmtools_<version>.tar.gz"`) available from our latest [GitHub Releases](https://github.com/sodeidelphonse/isdmtools/releases).
+- For macOS or Linux platforms, you must compile the source code (`"isdmtools_<version>.tar.gz"`) available from our latest [GitHub Releases](https://github.com/sodeidelphonse/isdmtools/releases).
 Download the desired version and then install it with:
 
 ```R
@@ -64,7 +64,7 @@ The `suitability_index()` function transforms raw integrated model predictions i
 The package also handles *dataset-weighted composite scores*, providing a holistic view of model performance. Note that `sample_background()` is called internally to sample pseudo-absences for presence-only data. 
 However, users can extract the `BackgroundPoints` object with the `get_background()` helper in order to visualize the generated pseudo-absences.
 
-- **Mapping & Visualization**: Visualize model predictions and final habitat suitability maps. 
+- **Mapping**: Visualize model predictions and final habitat suitability maps. 
 The plotting method `generate_maps()` is designed to receive a formatted object from `format_predictions()` to provide a clear and informative map. 
 It visualizes multiple variables of model predictions (e.g. mean, SD, and quantiles), providing an easy way to interpret models' results. 
 Users can customize the final `ggplot2` object if needed.
