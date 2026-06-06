@@ -21,10 +21,9 @@
 * [License](#license)
 
 ## Overview
-`isdmtools` is an R package that streamlines the preparation, visualization, and evaluation of multisource geospatial data for biodiversity modeling.
-Specifically engineered for *Integrated Species Distribution Models (ISDMs)* with a particular focus on the Bayesian framework, 
-the package provides a unified suite of tools for managing presence-only, count, and presence-absence data. 
-It ensures robust, reproducible workflows through dedicated tools for block cross-validation, suitability analysis and standardized model evaluation. 
+`isdmtools` is an R package that streamlines the preparation, visualisation, and evaluation of multisource geospatial data for biodiversity modelling.
+Specifically engineered for *Integrated Species Distribution Models (ISDMs)* with a particular focus on the Bayesian framework, the package provides a unified suite of tools for managing presence-only, count, and presence-absence data. 
+It ensures robust, reproducible workflows through dedicated tools for block cross-validation, suitability analysis and standardised model evaluation. 
 
 ## Installation
 
@@ -34,8 +33,7 @@ It ensures robust, reproducible workflows through dedicated tools for block cros
 if (!require("remotes")) install.packages("remotes") 
 remotes::install_github("sodeidelphonse/isdmtools")
 ```
-- Alternatively, if you are on Windows operating system and don't have `Rtools` installed due to restricted internet access, 
-you can download the binary build from our latest [GitHub Releases](https://github.com/sodeidelphonse/isdmtools/releases) and then install it with:
+- Alternatively, if you are on a Windows operating system and don't have `Rtools` installed due to restricted internet access, you can download the binary build from our latest [GitHub Releases](https://github.com/sodeidelphonse/isdmtools/releases) and then install it with:
 
 ```R
 install.packages("C:/path/to/your/download/isdmtools_<version>.zip", repos = NULL, type = "win.binary")
@@ -51,33 +49,30 @@ install.packages("/path/to/your/download/isdmtools_<version>.tar.gz", repos = NU
 where `<version>` is the version number of the release you downloaded and `{/path/to/your/download/}` is the path to the `".tar.gz"` file.
 
 ## Core Features
-The package provides a set of core functions and classes to handle common tasks of data preparation, visualization and model evaluation:
+The package provides a set of core functions and classes to handle common tasks of data preparation, visualisation and model evaluation:
 
-- **Resampling and Folds Diagnostics**: Create a `DataFolds` object that bind multiple `sf` datasets and generate spatially-separated cross-validation folds using `create_folds()` constructor. 
-This ensures the resulting models are robust to spatial autocorrelation. 
-The key methods `check_folds()` and `check_env_balance()` operate on `DataFolds` to efficiently check the independence and environmental balance of created folds, respectively. 
+- **Resampling and Folds Diagnostics**: Create a `DataFolds` object that binds multiple `sf` datasets and generates spatially-separated cross-validation folds using `create_folds()` constructor. 
+This ensures the resulting models are robust to spatial autocorrelation. The key methods `check_folds()` and `check_env_balance()` operate on `DataFolds` to efficiently check the independence and environmental balance of created folds, respectively. 
 
-- **Suitability Analysis**: Standardize model predictions for consistent mapping and compute a final habitat suitability index. 
+- **Suitability Analysis**: Standardise model predictions for consistent mapping and compute a final habitat suitability index. 
 The `suitability_index()` function transforms raw integrated model predictions into a suitability score using the inverse of the complementary log-log transform (`cloglog`).
 
-- **Model Evaluation**: Compute comprehensive evaluation metrics, including ROC-based and continuous-outcome metrics for each dataset using the `compute_metrics()` constructor. 
-The package also handles *dataset-weighted composite scores*, providing a holistic view of model performance. Note that `sample_background()` is called internally to sample pseudo-absences for presence-only data. 
-However, users can extract the `BackgroundPoints` object with the `get_background()` helper in order to visualize the generated pseudo-absences.
+- **Model Evaluation**: Compute comprehensive evaluation metrics, including ROC-based and continuous-outcome metrics for each dataset using the `compute_metrics()` constructor. The package also handles *dataset-weighted composite scores*, providing a holistic view of model performance. 
+Whilst `sample_background()` is called internally to sample pseudo-absences for presence-only data, users can extract the `BackgroundPoints` object with the `get_background()` helper in order to visualise the generated pseudo-absences.
 
-- **Mapping**: Visualize model predictions and final habitat suitability maps. 
+- **Mapping**: Visualise model predictions and final habitat suitability maps. 
 The plotting method `generate_maps()` is designed to receive a formatted object from `format_predictions()` to provide a clear and informative map. 
-It visualizes multiple variables of model predictions (e.g. mean, SD, and quantiles), providing an easy way to interpret models' results. 
-Users can customize the final `ggplot2` object if needed.
+It visualises multiple variables of model predictions (e.g. mean, SD, and quantiles), providing an easy way to interpret models' results. Users can customize the final `ggplot2` object if needed.
 
 - **Statistical Validation**: `simulate_replicates()` generate replicates of data ($y_{rep}$) from the posterior samples of the fitted model.
 `compute_ppc_stats()` calculates Pearson Chi-squared statistics and Bayesian $p$-values from the replicated data to assess model fit.
 
 - **Other Methods**: The package includes the `summary()`, `print()` and `plot()` methods for most of the available data structures. 
-These provide a concise summary and clear visualization of spatial data partition, folds' diagnostics, and models' evaluation and validation. 
+These provide a concise summary and clear visualisation of spatial data partition, folds' diagnostics, and models' evaluation and validation. 
 Other methods are discussed in the package vignettes.
 
 ## Usage Example
-The core workflow of `isdmtools` involves creating a `DataFolds` object and then extracting specific folds for a modeling pipeline.
+The core workflow of `isdmtools` involves creating a `DataFolds` object and then extracting specific folds for a modelling pipeline.
 
 ### Data preparation
 First, let's load the package and create some dummy data.
@@ -117,12 +112,12 @@ We can now create spatial folds using the default blocking engine.
 my_folds <- create_folds(datasets_list, k = 5, seed = 23)
 print(my_folds)
 
-# Visualize the folds
+# Visualise the folds
 plot(my_folds)
 ```
 ![The figure above shows the block cross-validation folds.](man/figures/readme_blockCV_map.png)
 
-### Extract folds for an integrated modeling workflow
+### Extract folds for an integrated modelling workflow
 One can extract a specific fold to evaluate the integrated model and keep the remaining folds for its training.
 ```r
 # Extract the fold 3 for model evaluation
@@ -134,7 +129,7 @@ splits_fold_3 <- extaract_fold(my_folds, fold = 3)
 ```
 
 ### Folds diagnostics
-You can check spatial independence of folds using `check_folds`.
+You can check the spatial independence of folds using `check_folds`.
 ```r
 # Check spatial independence of folds using the default range rho (N/A)
 geo_diag <- check_folds(folds, plot = TRUE)
@@ -165,7 +160,7 @@ A contributor who wants to install all the necessary packages for this project c
 By contributing to this project, you agree to abide by its terms.
 
 ## Citation
-To cite this package in your research work, run the following command in your R session to generate the plain text and `BiTex` entry of the citation:
+To cite this package in your research work, run the following command in your R session to generate the plain text and `BibTex` entry of the citation:
 
 ```R
 citation("isdmtools")
