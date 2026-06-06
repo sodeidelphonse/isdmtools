@@ -7,8 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Get started with isdmtools • isdmtools</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <meta property="og:title" content="Get started with isdmtools">
@@ -73,9 +73,9 @@
                         <h4 data-toc-skip class="author">Akoeugnigan
 Idelphonse SODE</h4>
             
-            <h4 data-toc-skip class="date">Generated on 2026-04-02</h4>
+            <h4 data-toc-skip class="date">Generated on 2026-06-06</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/sodeidelphonse/isdmtools/blob/v0.4.0/vignettes/isdmtools.Rmd" class="external-link"><code>vignettes/isdmtools.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/sodeidelphonse/isdmtools/blob/main/vignettes/isdmtools.Rmd" class="external-link"><code>vignettes/isdmtools.Rmd</code></a></small>
       <div class="d-none name"><code>isdmtools.Rmd</code></div>
     </div>
 
@@ -99,9 +99,10 @@ data” and “being ready for modelling.” The fundamental philosophy of
 <code>isdmtools</code> is to provide a standardised bridge between
 diverse biodiversity spatial data sources and a robust spatial
 cross-validation (CV) strategy for evaluating integrated species
-distribution models (ISDMs). This tutorial will assist you through
-preparing data and generating spatial folds — the essential first steps
-before fitting an Integrated Species Distribution Model (ISDM).</p>
+distribution models (ISDMs).</p>
+<p>This tutorial will assist you through preparing data and generating
+spatial folds — the essential first steps before fitting an Integrated
+Species Distribution Model (ISDM).</p>
 </div>
 <div class="section level2">
 <h2 id="data-preparation">Data Preparation<a class="anchor" aria-label="anchor" href="#data-preparation"></a>
@@ -212,7 +213,7 @@ quality of the spatial folds (or blocks) that were created in the
 previous step. We distinguish between diagnostics in geographical and
 environmental spaces as well as combined analyses. The <em>geographical
 fold diagnostics</em> are performed using the <code><a href="../reference/check_folds.html">check_folds()</a></code>
-method while the <em>environmental fold diagnostic</em> is achieved via
+method whilst the <em>environmental fold diagnostic</em> is achieved via
 the <code><a href="../reference/check_env_balance.html">check_env_balance()</a></code> method. Depending on the spatial
 blocking strategy used for data partitioning, both diagnostic analyses
 can be combined into a unified framework. The following sections
@@ -262,7 +263,7 @@ al. 2018)</span>. Additionally, if the correlation function is part of
 <em>Matérn</em> family, the helper function
 <code><a href="../reference/solve_practical_range.html">solve_practical_range()</a></code> from our <code>isdmtools</code>
 package can be utilised to derive the corresponding <em>practical
-range</em> required for spatial diagnostics (see <span class="citation">Sode et al. (2025)</span> for further details). The
+range</em> required for spatial diagnostics (see <span class="citation">Sode et al. (2026)</span> for further details). The
 same procedure can be applied to a Bayesian analysis to check if the
 <em>posterior practical range</em> estimated aligns with the spatial
 geometry of the specified folds.</p>
@@ -463,26 +464,27 @@ and mapping.</p>
 <div class="section level2">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-mahoney_assessing_2023" class="csl-entry">
 Mahoney, Michael J., Lucas K. Johnson, Julia Silge, Hannah Frick, Max
-Kuhn, and Colin M. Beier. 2023. <span>“Assessing the Performance of
-Spatial Cross-Validation Approaches for Models of Spatially Structured
-Data.”</span> arXiv. <a href="https://doi.org/10.48550/arXiv.2303.07334" class="external-link">https://doi.org/10.48550/arXiv.2303.07334</a>.
+Kuhn, and Colin M. Beier. 2023. <em>Assessing the Performance of Spatial
+Cross-Validation Approaches for Models of Spatially Structured
+Data</em>. arXiv:2303.07334. arXiv. <a href="https://doi.org/10.48550/arXiv.2303.07334" class="external-link">https://doi.org/10.48550/arXiv.2303.07334</a>.
 </div>
-<div id="ref-sode_integrating_2025" class="csl-entry">
+<div id="ref-sode_integrating_2026" class="csl-entry">
 Sode, A. Idelphonse, A. Belarmain Fandohan, Elias T. Krainski, Achille
-E. Assogbadjo, and Romain Glèlè Kakaï. 2025. <span>“Integrating <span class="nocase">Presence-only</span> and <span>Abundance Data</span> to
+E. Assogbadjo, and Romain Glèlè Kakaï. 2026. <span>“Integrating <span class="nocase">Presence-only</span> and <span>Abundance Data</span> to
 <span>Predict Baobab</span> (<span>Adansonia</span> Digitata
 <span>L</span>.) <span>Distribution</span>: <span>A Bayesian Data Fusion
-Framework</span>.”</span> Preprint. <a href="https://doi.org/10.21203/rs.3.rs-7871875/v1" class="external-link">https://doi.org/10.21203/rs.3.rs-7871875/v1</a>.
+Framework</span>.”</span> <em>Enviornmental and Ecological
+Statistics</em>, ahead of print. <a href="https://doi.org/10.1007/s10651-026-00737-2" class="external-link">https://doi.org/10.1007/s10651-026-00737-2</a>.
 </div>
 <div id="ref-valavi_blockcv_2018" class="csl-entry">
 Valavi, Roozbeh, Jane Elith, José J. Lahoz-Monfort, and Gurutzeta
-Guillera-Arroita. 2018. <span>“<span class="nocase">blockCV</span>: An
+Guillera-Arroita. 2018. <em><span class="nocase">blockCV</span>: An
 <span>R</span> Package for Generating Spatially or Environmentally
 Separated Folds for k-Fold Cross-Validation of Species Distribution
-Models.”</span> bioRxiv. <a href="https://doi.org/10.1101/357798" class="external-link">https://doi.org/10.1101/357798</a>.
+Models</em>. bioRxiv. <a href="https://doi.org/10.1101/357798" class="external-link">https://doi.org/10.1101/357798</a>.
 </div>
 </div>
 </div>

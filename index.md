@@ -13,13 +13,13 @@
 ## Overview
 
 `isdmtools` is an R package that streamlines the preparation,
-visualization, and evaluation of multisource geospatial data for
-biodiversity modeling. Specifically engineered for *Integrated Species
+visualisation, and evaluation of multisource geospatial data for
+biodiversity modelling. Specifically engineered for *Integrated Species
 Distribution Models (ISDMs)* with a particular focus on the Bayesian
 framework, the package provides a unified suite of tools for managing
 presence-only, count, and presence-absence data. It ensures robust,
 reproducible workflows through dedicated tools for block
-cross-validation, suitability analysis and standardized model
+cross-validation, suitability analysis and standardised model
 evaluation.
 
 ## Installation
@@ -28,17 +28,19 @@ evaluation.
   from GitHub using the `remotes` package.
 
 ``` r
+
 if (!require("remotes")) install.packages("remotes") 
 remotes::install_github("sodeidelphonse/isdmtools")
 ```
 
-- Alternatively, if you are on Windows operating system and don’t have
+- Alternatively, if you are on a Windows operating system and don’t have
   `Rtools` installed due to restricted internet access, you can download
   the binary build from our latest [GitHub
   Releases](https://github.com/sodeidelphonse/isdmtools/releases) and
   then install it with:
 
 ``` r
+
 install.packages("C:/path/to/your/download/isdmtools_<version>.zip", repos = NULL, type = "win.binary")
 ```
 
@@ -52,6 +54,7 @@ binary `".zip"` file.
   Download the desired version and then install it with:
 
 ``` r
+
 install.packages("/path/to/your/download/isdmtools_<version>.tar.gz", repos = NULL, type = "source")
 ```
 
@@ -61,10 +64,10 @@ and `{/path/to/your/download/}` is the path to the `".tar.gz"` file.
 ## Core Features
 
 The package provides a set of core functions and classes to handle
-common tasks of data preparation, visualization and model evaluation:
+common tasks of data preparation, visualisation and model evaluation:
 
 - **Resampling and Folds Diagnostics**: Create a `DataFolds` object that
-  bind multiple `sf` datasets and generate spatially-separated
+  binds multiple `sf` datasets and generates spatially-separated
   cross-validation folds using
   [`create_folds()`](https://sodeidelphonse.github.io/isdmtools/reference/create_folds.md)
   constructor. This ensures the resulting models are robust to spatial
@@ -75,7 +78,7 @@ common tasks of data preparation, visualization and model evaluation:
   operate on `DataFolds` to efficiently check the independence and
   environmental balance of created folds, respectively.
 
-- **Suitability Analysis**: Standardize model predictions for consistent
+- **Suitability Analysis**: Standardise model predictions for consistent
   mapping and compute a final habitat suitability index. The
   [`suitability_index()`](https://sodeidelphonse.github.io/isdmtools/reference/suitability_index.md)
   function transforms raw integrated model predictions into a
@@ -87,50 +90,51 @@ common tasks of data preparation, visualization and model evaluation:
   using the
   [`compute_metrics()`](https://sodeidelphonse.github.io/isdmtools/reference/compute_metrics.md)
   constructor. The package also handles *dataset-weighted composite
-  scores*, providing a holistic view of model performance. Note that
+  scores*, providing a holistic view of model performance. Whilst
   [`sample_background()`](https://sodeidelphonse.github.io/isdmtools/reference/sample_background.md)
-  is called internally to sample pseudo-absences for presence-only data.
-  However, users can extract the `BackgroundPoints` object with the
+  is called internally to sample pseudo-absences for presence-only data,
+  users can extract the `BackgroundPoints` object with the
   [`get_background()`](https://sodeidelphonse.github.io/isdmtools/reference/ISDMmetrics-methods.md)
-  helper in order to visualize the generated pseudo-absences.
+  helper in order to visualise the generated pseudo-absences.
 
-- **Mapping**: Visualize model predictions and final habitat suitability
+- **Mapping**: Visualise model predictions and final habitat suitability
   maps. The plotting method
   [`generate_maps()`](https://sodeidelphonse.github.io/isdmtools/reference/generate_maps.md)
   is designed to receive a formatted object from
   [`format_predictions()`](https://sodeidelphonse.github.io/isdmtools/reference/format_predictions.md)
-  to provide a clear and informative map. It visualizes multiple
+  to provide a clear and informative map. It visualises multiple
   variables of model predictions (e.g. mean, SD, and quantiles),
   providing an easy way to interpret models’ results. Users can
   customize the final `ggplot2` object if needed.
 
 - **Statistical Validation**:
   [`simulate_replicates()`](https://sodeidelphonse.github.io/isdmtools/reference/simulate_replicates.md)
-  generate replicates of data ($y_{rep}$) from the posterior samples of
-  the fitted model.
+  generate replicates of data ($`y_{rep}`$) from the posterior samples
+  of the fitted model.
   [`compute_ppc_stats()`](https://sodeidelphonse.github.io/isdmtools/reference/compute_ppc_stats.md)
-  calculates Pearson Chi-squared statistics and Bayesian $p$-values from
-  the replicated data to assess model fit.
+  calculates Pearson Chi-squared statistics and Bayesian $`p`$-values
+  from the replicated data to assess model fit.
 
 - **Other Methods**: The package includes the
   [`summary()`](https://rdrr.io/r/base/summary.html),
   [`print()`](https://rdrr.io/r/base/print.html) and
   [`plot()`](https://rdrr.io/r/graphics/plot.default.html) methods for
   most of the available data structures. These provide a concise summary
-  and clear visualization of spatial data partition, folds’ diagnostics,
+  and clear visualisation of spatial data partition, folds’ diagnostics,
   and models’ evaluation and validation. Other methods are discussed in
   the package vignettes.
 
 ## Usage Example
 
 The core workflow of `isdmtools` involves creating a `DataFolds` object
-and then extracting specific folds for a modeling pipeline.
+and then extracting specific folds for a modelling pipeline.
 
 ### Data preparation
 
 First, let’s load the package and create some dummy data.
 
 ``` r
+
 library(isdmtools)
 library(sf)
 library(ggplot2)
@@ -163,11 +167,12 @@ datasets_list <- list(Presence = presence_data, Count = count_data)
 We can now create spatial folds using the default blocking engine.
 
 ``` r
+
 # Create the DataFolds object
 my_folds <- create_folds(datasets_list, k = 5, seed = 23)
 print(my_folds)
 
-# Visualize the folds
+# Visualise the folds
 plot(my_folds)
 ```
 
@@ -176,12 +181,13 @@ folds.](reference/figures/readme_blockCV_map.png)
 
 The figure above shows the block cross-validation folds.
 
-### Extract folds for an integrated modeling workflow
+### Extract folds for an integrated modelling workflow
 
 One can extract a specific fold to evaluate the integrated model and
 keep the remaining folds for its training.
 
 ``` r
+
 # Extract the fold 3 for model evaluation
 splits_fold_3 <- extaract_fold(my_folds, fold = 3)
 
@@ -192,9 +198,10 @@ splits_fold_3 <- extaract_fold(my_folds, fold = 3)
 
 ### Folds diagnostics
 
-You can check spatial independence of folds using `check_folds`.
+You can check the spatial independence of folds using `check_folds`.
 
 ``` r
+
 # Check spatial independence of folds using the default range rho (N/A)
 geo_diag <- check_folds(folds, plot = TRUE)
 print(geo_diag)
@@ -218,6 +225,7 @@ guide.
   - Make sure you have the `renv` package installed:
 
   ``` r
+
   install.packages("renv")
   ```
 
@@ -225,6 +233,7 @@ guide.
     install all packages listed in the `renv.lock` file:
 
   ``` r
+
   renv::restore()
   ```
 
@@ -236,10 +245,11 @@ guide.
 ## Citation
 
 To cite this package in your research work, run the following command in
-your R session to generate the plain text and `BiTex` entry of the
+your R session to generate the plain text and `BibTex` entry of the
 citation:
 
 ``` r
+
 citation("isdmtools")
 ```
 

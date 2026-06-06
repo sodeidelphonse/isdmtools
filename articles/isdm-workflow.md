@@ -1,6 +1,7 @@
 # ISDM Evaluation Workflow
 
 ``` r
+
 library(isdmtools)
 library(sf)
 library(terra)
@@ -29,12 +30,13 @@ As demonstrated in the [Get
 started](https://sodeidelphonse.github.io/isdmtools/articles/isdmtools.md)
 guide, the first output from the `isdmtools` package is a set of clean
 `sf` objects, which makes it easy to integrate with various spatial
-modeling tools using block cross-validation techniques. The extracted
+modelling tools using block cross-validation techniques. The extracted
 training and testing data can be directly fed into your preferred
-integrated modeling tools such as `inlabru`, `PointedSDMs`, or any
-GLMMs/GAMMs tools that can accommodate multisource spatial data. This
-ensures that your model predictions are validated using a robust spatial
-cross-validation approach and comprehensive evaluation metrics.
+integrated modelling tools such as `inlabru`, `PointedSDMs`, or any
+generalised additive mixed model (GAMM) tools that can accommodate
+multisource spatial data. This ensures that your model predictions are
+validated using a robust spatial cross-validation approach and
+comprehensive evaluation metrics.
 
 This vignette shows step by step how the `isdmtools` can be used with
 other predictive modelling tools such as `inlabru` for a complete
@@ -48,6 +50,7 @@ code snippet below. The objective is to implement an integrated model
 for the joint analysis of both data.
 
 ``` r
+
 # Simulate a list of presence-only and count data
 set.seed(42)
 presence_data <- data.frame(
@@ -72,6 +75,7 @@ ensure that it is suitable for the visualisation of spatial folds and
 the model fitting processes.
 
 ``` r
+
 # Define the study region (e.g. Benin's boundary rectangle)
 ben_coords <- matrix(c(0, 6, 4, 6, 4, 13, 0, 13, 0, 6), ncol = 2, byrow = TRUE)
 ben_sf <- st_sf(
@@ -80,10 +84,11 @@ ben_sf <- st_sf(
 )
 ```
 
-Now, we can partition the datasets using the clustering blocking scheme
+Now, we can partition the datasets using the ‘cluster’ blocking scheme
 for blocked cross-validation.
 
 ``` r
+
 # Create spatial folds
 folds <- create_folds(datasets_list, ben_sf, cv_method = "cluster")
 #>   train test
@@ -100,33 +105,34 @@ test_data <- extract_fold(folds, fold = 3)$test
 
 ## Fitting an integrated model with `inlabru`
 
-The `inlabru` package (Bachl et al. 2019) is a wrapper for `R-INLA`
-(Rue, Martino, and Chopin 2009) which is designed for Bayesian Latent
-Gaussian Modelling using Integrated Laplace Nested Approximations (INLA)
-and Extensions. Let us develop a Bayesian spatial model with the
-resampled data above for cross-validation.
+The `inlabru` package (Bachl et al. 2019) is a wrapper for `R-INLA` (Rue
+et al. 2009) which is designed for Bayesian Latent Gaussian Modelling
+using Integrated Laplace Nested Approximations (INLA) and Extensions.
+Let us develop a Bayesian spatial model with the resampled data above
+for cross-validation.
 
 ### Step 1: Model definition
 
 We assume the following basic joint model with a shared latent signal
-$\xi(.)$ represented by a Gaussian random field with a *Matern*
+$`\xi(.)`$ represented by a Gaussian random field with a *Matern*
 correlation function:
 
-$$\begin{array}{rlrlr}
- & {Y_{\text{count},i}|\xi(.)} & & {\sim \text{Pois}\left( \mu_{i} \right),} & {i = 1,\ldots,n} \\
- & {\log\left( \mu_{i} \right)} & & {= \beta_{0,\text{count}} + \xi\left( \mathbf{s}_{i} \right)} & \\
- & {X_{\text{presence}}|\xi(.)} & & {\sim \text{IPP}\left( \lambda(\mathbf{s}) \right),} & \\
- & {\log\left( \lambda(\mathbf{s}) \right)} & & {= \beta_{0,\text{presence}} + \xi(\mathbf{s}),} & \\
- & & & & 
-\end{array}$$ where $IPP$ means a *Inhomogeneous Poisson Process* and
-$\mathbf{s}$ the vector of a location coordinates. The IPP model
+``` math
+\begin{aligned} 
+ &Y_{\text{count},i}|\xi(.) &&\sim \text{Pois} \left(\mu_i \right), & i = 1,\ldots,n\\
+ &\log(\mu_i) &&= \beta_{0,\text{count}} + \xi(\mathbf{s}_i) \\[2mm]
+ &X_{\text{presence}}|\xi(.) &&\sim \text{IPP} (\lambda(\mathbf{s})),\\
+ &\log (\lambda(\mathbf{s})) &&= \beta_{0,\text{presence}} + \xi(\mathbf{s}),\\
+\end{aligned}
+```
+where $`\mathrm{IPP}`$ means a *Inhomogeneous Poisson Process* and
+$`\mathbf{s}`$ the vector of a location coordinates. The IPP model
 presented here is known in spatial statistics as a log-Gaussian Cox
-process model - LGCP (see, Møller, Syversveen, and Waagepetersen
-(1998)). Although the large-scale component which includes the
-data-specific intercept can also incorporate environmental covariates,
-we assume that the basic joint model above is valid for the data.
-Alternative specifications of data fusion model have been discussed in
-Sode et al. (2025).
+process model - LGCP (see, Møller et al. (1998)). Although the
+large-scale component which includes the data-specific intercept can
+also incorporate environmental covariates, we assume that the basic
+joint model above is valid for the data. Alternative specifications of
+data fusion model have been discussed in Sode et al. (2026).
 
 ### Step 2: Model implementation
 
@@ -135,6 +141,7 @@ model. First, we set up the mesh to be used for approximating the latent
 field as well as for the integration points in the LGCP likelihood.
 
 ``` r
+
 # Create a "mesh" for the latent field
 mesh <- fmesher::fm_mesh_2d(
   boundary = ben_sf,
@@ -162,6 +169,7 @@ type and fuse them using a joint likelihood estimation with INLA and
 SPDE techniques (Simpson et al. 2016).
 
 ``` r
+
 # Set the PC-prior for the SPDE model. We estimate a longer range value as no spatial
 # autocorrelation was defined in the data generation process:
 pcmatern <- INLA::inla.spde2.pcmatern(mesh,
@@ -204,6 +212,7 @@ because there is no strong spatial autocorrelation in the simulated
 data.
 
 ``` r
+
 jfit$summary.fixed
 #>                     mean        sd      0.025quant  0.5quant   0.975quant  mode      kld
 #> Count_intercept    -0.2497590 0.3086958 -0.8547916 -0.2497590  0.3552737  -0.2497590  0
@@ -218,12 +227,14 @@ jfit$summary.hyperpar
 ### Step 3: Model prediction
 
 ``` r
+
 # Define the prediction grids and projection system
 grids <- fmesher::fm_pixels(mesh, mask = ben_sf)
 projection <- "+proj=longlat +ellps=WGS84 +datum=WGS84"
 ```
 
 ``` r
+
 # Model predictions with 500 posterior samples
 jpred <- predict(jfit,
   newdata = grids,
@@ -249,6 +260,7 @@ to perform habitat suitability analysis. This will allow us to proceed
 with the evaluation of models and the visualisation of results.
 
 ``` r
+
 # Probability of presence
 jpred <- format_predictions(jpred)
 jt_prob <- suitability_index(jpred,
@@ -262,6 +274,7 @@ plot(jt_prob)
 ```
 
 ``` r
+
 # Expected counts
 jpred_count <- format_predictions(jpred_count)
 jt_count <- suitability_index(jpred_count,
@@ -285,6 +298,7 @@ threshold method (which is “best”), and the best method (which is
 the threshold that maximises both sensitivity and specificity.
 
 ``` r
+
 xy_observed <- rbind(
   st_coordinates(datasets_list$Presence)[, c("X", "Y")],
   st_coordinates(datasets_list$Count)[datasets_list$Count$count > 0, c("X", "Y")]
@@ -316,6 +330,7 @@ One can obtain detailed overview of the evaluation results via the
 method.
 
 ``` r
+
 summary(eval_metrics)
 
 #> ==============================================
@@ -349,10 +364,10 @@ summary(eval_metrics)
 #> ==============================================
 ```
 
-As you will have noticed, continuous-outcome metrics such as MAE (mean
-absolute error) and RMSE (root mean squared error) are not available for
+As you will have noticed, error-based metrics such as MAE (mean absolute
+error) and RMSE (root mean squared error) are not available for
 presence-only data, which makes sense. Furthermore, the weighted
-composite scores for continuous responses are identical to their
+composite scores for quantitative responses are identical to their
 individual counterparts, since there is only one count response.
 Moreover, you can check out the
 [`get_background()`](https://sodeidelphonse.github.io/isdmtools/reference/ISDMmetrics-methods.md)
@@ -374,6 +389,7 @@ in this object can be visualised using the
 helper which return a ggplot object that can be customised by the user.
 
 ``` r
+
 map <- generate_maps(jt_prob,
   var_names = c("q0.025", "mean", "q0.975"),
   base_map = ben_sf,
@@ -394,8 +410,8 @@ Prediction map of the ISDM model
 
 Using `isdmtools`, you have successfully fused multi-source biodiversity
 data and generated spatially independent partitions for robust model
-validation. The toolkit has enabled the *resampling of data* and the
-diagnostics of folds, thereby reducing the effects of *spatial
+validation. The toolkit has enabled the *spatial resampling of data* and
+the diagnostics of folds, thereby reducing the effects of *spatial
 autocorrelation* in the modelling process. It has also facilitated the
 analysis and comprehensive evaluation of ISDM using well-known metrics
 from the fields of statistics and machine learning. The outputs of the
@@ -435,7 +451,8 @@ Principled, Practical Approach to Constructing Priors.” *Statistical
 Science* 32 (1): 1–28. <https://doi.org/10.1214/16-STS576>.
 
 Sode, A. Idelphonse, A. Belarmain Fandohan, Elias T. Krainski, Achille
-E. Assogbadjo, and Romain Glèlè Kakaï. 2025. “Integrating Presence-only
+E. Assogbadjo, and Romain Glèlè Kakaï. 2026. “Integrating Presence-only
 and Abundance Data to Predict Baobab (Adansonia Digitata L.)
-Distribution: A Bayesian Data Fusion Framework.” Preprint.
-<https://doi.org/10.21203/rs.3.rs-7871875/v1>.
+Distribution: A Bayesian Data Fusion Framework.” *Enviornmental and
+Ecological Statistics*, ahead of print.
+<https://doi.org/10.1007/s10651-026-00737-2>.

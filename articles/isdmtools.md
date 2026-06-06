@@ -1,6 +1,7 @@
 # Get started with isdmtools
 
 ``` r
+
 library(isdmtools)
 library(sf)
 library(terra)
@@ -18,10 +19,11 @@ This vignette should bridge the gap between “having spatial data” and
 “being ready for modelling.” The fundamental philosophy of `isdmtools`
 is to provide a standardised bridge between diverse biodiversity spatial
 data sources and a robust spatial cross-validation (CV) strategy for
-evaluating integrated species distribution models (ISDMs). This tutorial
-will assist you through preparing data and generating spatial folds —
-the essential first steps before fitting an Integrated Species
-Distribution Model (ISDM).
+evaluating integrated species distribution models (ISDMs).
+
+This tutorial will assist you through preparing data and generating
+spatial folds — the essential first steps before fitting an Integrated
+Species Distribution Model (ISDM).
 
 ## Data Preparation
 
@@ -32,6 +34,7 @@ simple introduction to the tool, as opposed to addressing a very complex
 scenario of spatially autocorreleted datasets.
 
 ``` r
+
 # Simulate a list of presence-only and count data
 set.seed(42)
 presence_data <- data.frame(
@@ -79,6 +82,7 @@ performance. In the following code chunks, we illustrate with
 the observed spatial data (Valavi et al. 2018; Mahoney et al. 2023).
 
 ``` r
+
 # Create the DataFolds object using the default method
 folds <- create_folds(datasets_list, ben_sf, cv_method = "cluster")
 #>   train test
@@ -90,6 +94,7 @@ folds <- create_folds(datasets_list, ben_sf, cv_method = "cluster")
 ```
 
 ``` r
+
 # Visualize the folds with custom styling
 plot(folds, nrow = 2, annotate = FALSE) +
   scale_x_continuous(breaks = seq(0, 4, 1)) +
@@ -101,6 +106,7 @@ plot(folds, nrow = 2, annotate = FALSE) +
 ![](isdmtools_files/figure-html/fold-plot-1.png)
 
 ``` r
+
 # Create the DataFolds object using the `spatialsample` blocking engine
 fold_ss <- create_folds(datasets_list, ben_sf, cv_method = "block")
 
@@ -111,6 +117,7 @@ ggplot2::autoplot(fold_ss)
 ![](isdmtools_files/figure-html/auto-plot-1.png)
 
 ``` r
+
 # Folds summary
 summary(fold_ss)
 #> DataFolds Object Summary
@@ -140,7 +147,7 @@ blocks) that were created in the previous step. We distinguish between
 diagnostics in geographical and environmental spaces as well as combined
 analyses. The *geographical fold diagnostics* are performed using the
 [`check_folds()`](https://sodeidelphonse.github.io/isdmtools/reference/check_folds.md)
-method while the *environmental fold diagnostic* is achieved via the
+method whilst the *environmental fold diagnostic* is achieved via the
 [`check_env_balance()`](https://sodeidelphonse.github.io/isdmtools/reference/check_env_balance.md)
 method. Depending on the spatial blocking strategy used for data
 partitioning, both diagnostic analyses can be combined into a unified
@@ -157,6 +164,7 @@ a specific fold with its nearest fold (i.e. the inter-block gap) on the
 other hand.
 
 ``` r
+
 # Check spatial independence of folds using the default rho (N/A)
 geo_diag <- check_folds(folds, plot = TRUE)
 print(geo_diag)
@@ -196,7 +204,7 @@ et al. 2018). Additionally, if the correlation function is part of
 [`solve_practical_range()`](https://sodeidelphonse.github.io/isdmtools/reference/solve_practical_range.md)
 from our `isdmtools` package can be utilised to derive the corresponding
 *practical range* required for spatial diagnostics (see Sode et al.
-(2025) for further details). The same procedure can be applied to a
+(2026) for further details). The same procedure can be applied to a
 Bayesian analysis to check if the *posterior practical range* estimated
 aligns with the spatial geometry of the specified folds.
 
@@ -210,6 +218,7 @@ can allow this hypothesis to be assessed as nearly met before proceeding
 with the modelling process.
 
 ``` r
+
 # Check environmental balance of folds
 set.seed(42) # set this for background sample reproducibility
 env_diag <- check_env_balance(folds,
@@ -229,6 +238,7 @@ print(env_diag)
 ```
 
 ``` r
+
 # Plot outputs
 plot(env_diag)
 ```
@@ -255,6 +265,7 @@ appropriate block diagnostic tool may be contingent on the selected
 blocking scheme and the geometry of resulting folds.
 
 ``` r
+
 # Combined diagnostics
 summarise_fold_diagnostics(geo_diag, env_diag)
 #> 
@@ -284,6 +295,7 @@ Chi-square test based on the Monte Carlo approximation instead of the
 Kruskal Wallis test used for the continuous variables.
 
 ``` r
+
 # Continuous (temperature) and categorical (land cover) variables
 set.seed(42)
 
@@ -314,6 +326,7 @@ print(env_mixed)
 ```
 
 ``` r
+
 # Plot outputs
 plot(env_mixed)
 ```
@@ -321,6 +334,7 @@ plot(env_mixed)
 ![](isdmtools_files/figure-html/env-cat-1.png)
 
 ``` r
+
 # Combined diagnostics
 summarise_fold_diagnostics(geo_diag, env_mixed)
 #> 
@@ -348,6 +362,7 @@ can access both ‘train’ and ‘test’ sets and their corresponding datasets
 as follows:
 
 ``` r
+
 # Extract fold 1
 splits_1 <- extract_fold(folds, fold = 1)
 
@@ -410,17 +425,18 @@ perform model evaluation, suitability analysis and mapping.
 ## References
 
 Mahoney, Michael J., Lucas K. Johnson, Julia Silge, Hannah Frick, Max
-Kuhn, and Colin M. Beier. 2023. “Assessing the Performance of Spatial
-Cross-Validation Approaches for Models of Spatially Structured Data.”
-arXiv. <https://doi.org/10.48550/arXiv.2303.07334>.
+Kuhn, and Colin M. Beier. 2023. *Assessing the Performance of Spatial
+Cross-Validation Approaches for Models of Spatially Structured Data*.
+arXiv:2303.07334. arXiv. <https://doi.org/10.48550/arXiv.2303.07334>.
 
 Sode, A. Idelphonse, A. Belarmain Fandohan, Elias T. Krainski, Achille
-E. Assogbadjo, and Romain Glèlè Kakaï. 2025. “Integrating Presence-only
+E. Assogbadjo, and Romain Glèlè Kakaï. 2026. “Integrating Presence-only
 and Abundance Data to Predict Baobab (Adansonia Digitata L.)
-Distribution: A Bayesian Data Fusion Framework.” Preprint.
-<https://doi.org/10.21203/rs.3.rs-7871875/v1>.
+Distribution: A Bayesian Data Fusion Framework.” *Enviornmental and
+Ecological Statistics*, ahead of print.
+<https://doi.org/10.1007/s10651-026-00737-2>.
 
 Valavi, Roozbeh, Jane Elith, José J. Lahoz-Monfort, and Gurutzeta
-Guillera-Arroita. 2018. “blockCV: An R Package for Generating Spatially
+Guillera-Arroita. 2018. *blockCV: An R Package for Generating Spatially
 or Environmentally Separated Folds for k-Fold Cross-Validation of
-Species Distribution Models.” bioRxiv. <https://doi.org/10.1101/357798>.
+Species Distribution Models*. bioRxiv. <https://doi.org/10.1101/357798>.

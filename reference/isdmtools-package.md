@@ -1,14 +1,14 @@
-# A Toolkit for Integrated Species Distribution Models in R
+# A Reproducible R Framework for Spatial Data Resampling and Multisource Validation of Integrated Species Distribution Models
 
 `isdmtools` provides a set of tools for preparing, analyzing and
 visualizing spatial data for integrated species distribution models
 (ISDMs). It been developed to assist users in preparing multisource
-spatial point datasets for spatial block cross-validation, analysing the
+point-level spatial datasets for block cross-validation, analysing the
 habitat suitability from the joint model predictions, with a focus on
 Bayesian inference and visualising the results. The package also
 provides a holistic view of model performance by computing a
-comprehensive evaluation metrics, including ROC-based and
-continuous-outcome weighted composite scores.
+comprehensive evaluation metrics, including ROC-based and error-based
+weighted composite scores and performing predictive checks.
 
 ## See also
 

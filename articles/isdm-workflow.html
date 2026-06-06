@@ -7,8 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>ISDM Evaluation Workflow • isdmtools</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <meta property="og:title" content="ISDM Evaluation Workflow">
@@ -73,9 +73,9 @@
                         <h4 data-toc-skip class="author">Akoeugnigan
 Idelphonse SODE</h4>
             
-            <h4 data-toc-skip class="date">Generated on 2026-04-02</h4>
+            <h4 data-toc-skip class="date">Generated on 2026-06-06</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/sodeidelphonse/isdmtools/blob/v0.4.0/vignettes/isdm-workflow.Rmd" class="external-link"><code>vignettes/isdm-workflow.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/sodeidelphonse/isdmtools/blob/main/vignettes/isdm-workflow.Rmd" class="external-link"><code>vignettes/isdm-workflow.Rmd</code></a></small>
       <div class="d-none name"><code>isdm-workflow.Rmd</code></div>
     </div>
 
@@ -106,13 +106,13 @@ comprehensive and robust framework for data integration in SDM.</p>
 <p>As demonstrated in the <a href="isdmtools.html">Get started</a>
 guide, the first output from the <code>isdmtools</code> package is a set
 of clean <code>sf</code> objects, which makes it easy to integrate with
-various spatial modeling tools using block cross-validation techniques.
+various spatial modelling tools using block cross-validation techniques.
 The extracted training and testing data can be directly fed into your
-preferred integrated modeling tools such as <code>inlabru</code>,
-<code>PointedSDMs</code>, or any GLMMs/GAMMs tools that can accommodate
-multisource spatial data. This ensures that your model predictions are
-validated using a robust spatial cross-validation approach and
-comprehensive evaluation metrics.</p>
+preferred integrated modelling tools such as <code>inlabru</code>,
+<code>PointedSDMs</code>, or any generalised additive mixed model (GAMM)
+tools that can accommodate multisource spatial data. This ensures that
+your model predictions are validated using a robust spatial
+cross-validation approach and comprehensive evaluation metrics.</p>
 <p>This vignette shows step by step how the <code>isdmtools</code> can
 be used with other predictive modelling tools such as
 <code>inlabru</code> for a complete workflow of integrated species
@@ -153,7 +153,7 @@ spatial folds and the model fitting processes.</p>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"Region"</span><span class="op">)</span>,</span>
 <span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_polygon</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">ben_coords</span><span class="op">)</span><span class="op">)</span>, crs <span class="op">=</span> <span class="st">"epsg:4326"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>Now, we can partition the datasets using the clustering blocking
+<p>Now, we can partition the datasets using the ‘cluster’ blocking
 scheme for blocked cross-validation.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create spatial folds</span></span>
@@ -173,18 +173,18 @@ scheme for blocked cross-validation.</p>
 <h2 id="fitting-an-integrated-model-with-inlabru">Fitting an integrated model with <code>inlabru</code><a class="anchor" aria-label="anchor" href="#fitting-an-integrated-model-with-inlabru"></a>
 </h2>
 <p>The <code>inlabru</code> package <span class="citation">(Bachl et al.
-2019)</span> is a wrapper for <code>R-INLA</code> <span class="citation">(Rue, Martino, and Chopin 2009)</span> which is
-designed for Bayesian Latent Gaussian Modelling using Integrated Laplace
-Nested Approximations (INLA) and Extensions. Let us develop a Bayesian
-spatial model with the resampled data above for cross-validation.</p>
+2019)</span> is a wrapper for <code>R-INLA</code> <span class="citation">(Rue et al. 2009)</span> which is designed for Bayesian
+Latent Gaussian Modelling using Integrated Laplace Nested Approximations
+(INLA) and Extensions. Let us develop a Bayesian spatial model with the
+resampled data above for cross-validation.</p>
 <div class="section level3">
 <h3 id="step-1-model-definition">Step 1: Model definition<a class="anchor" aria-label="anchor" href="#step-1-model-definition"></a>
 </h3>
 <p>We assume the following basic joint model with a shared latent signal
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ξ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>.</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\xi(.)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ξ</mi><mo stretchy="false" form="prefix">(</mo><mi>.</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\xi(.)</annotation></semantics></math>
 represented by a Gaussian random field with a <em>Matern</em>
 correlation function:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>Y</mi><mrow><mtext mathvariant="normal">count</mtext><mo>,</mo><mi>i</mi></mrow></msub><mo stretchy="false" form="prefix">|</mo><mi>ξ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>.</mi><mo stretchy="true" form="postfix">)</mo></mrow></mtd><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>∼</mo><mtext mathvariant="normal">Pois</mtext><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>μ</mi><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mtd><mtd columnalign="right" style="text-align: right"><mi>i</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>n</mi></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>log</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>μ</mi><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mtd><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><msub><mi>β</mi><mrow><mn>0</mn><mo>,</mo><mtext mathvariant="normal">count</mtext></mrow></msub><mo>+</mo><mi>ξ</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>𝐬</mi><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>X</mi><mtext mathvariant="normal">presence</mtext></msub><mo stretchy="false" form="prefix">|</mo><mi>ξ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>.</mi><mo stretchy="true" form="postfix">)</mo></mrow></mtd><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>∼</mo><mtext mathvariant="normal">IPP</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>λ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝐬</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>log</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>λ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝐬</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mtd><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><msub><mi>β</mi><mrow><mn>0</mn><mo>,</mo><mtext mathvariant="normal">presence</mtext></mrow></msub><mo>+</mo><mi>ξ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝐬</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd></mtr></mtable><annotation encoding="application/x-tex">
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>Y</mi><mrow><mtext mathvariant="normal">count</mtext><mo>,</mo><mi>i</mi></mrow></msub><mo stretchy="false" form="prefix">|</mo><mi>ξ</mi><mo stretchy="false" form="prefix">(</mo><mi>.</mi><mo stretchy="false" form="postfix">)</mo></mtd><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>∼</mo><mtext mathvariant="normal">Pois</mtext><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>μ</mi><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mtd><mtd columnalign="right" style="text-align: right"><mi>i</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>n</mi></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mrow><mi mathvariant="normal">log</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>μ</mi><mi>i</mi></msub><mo stretchy="false" form="postfix">)</mo></mtd><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><msub><mi>β</mi><mrow><mn>0</mn><mo>,</mo><mtext mathvariant="normal">count</mtext></mrow></msub><mo>+</mo><mi>ξ</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>𝐬</mi><mi>i</mi></msub><mo stretchy="false" form="postfix">)</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>X</mi><mtext mathvariant="normal">presence</mtext></msub><mo stretchy="false" form="prefix">|</mo><mi>ξ</mi><mo stretchy="false" form="prefix">(</mo><mi>.</mi><mo stretchy="false" form="postfix">)</mo></mtd><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>∼</mo><mtext mathvariant="normal">IPP</mtext><mo stretchy="false" form="prefix">(</mo><mi>λ</mi><mo stretchy="false" form="prefix">(</mo><mi>𝐬</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo><mo>,</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mrow><mi mathvariant="normal">log</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><mi>λ</mi><mo stretchy="false" form="prefix">(</mo><mi>𝐬</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo></mtd><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><msub><mi>β</mi><mrow><mn>0</mn><mo>,</mo><mtext mathvariant="normal">presence</mtext></mrow></msub><mo>+</mo><mi>ξ</mi><mo stretchy="false" form="prefix">(</mo><mi>𝐬</mi><mo stretchy="false" form="postfix">)</mo><mo>,</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd></mtr></mtable><annotation encoding="application/x-tex">
 \begin{aligned} 
  &amp;Y_{\text{count},i}|\xi(.) &amp;&amp;\sim \text{Pois} \left(\mu_i \right), &amp; i = 1,\ldots,n\\
  &amp;\log(\mu_i) &amp;&amp;= \beta_{0,\text{count}} + \xi(\mathbf{s}_i) \\[2mm]
@@ -197,12 +197,12 @@ means a <em>Inhomogeneous Poisson Process</em> and
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐬</mi><annotation encoding="application/x-tex">\mathbf{s}</annotation></semantics></math>
 the vector of a location coordinates. The IPP model presented here is
 known in spatial statistics as a log-Gaussian Cox process model - LGCP
-(see, <span class="citation">Møller, Syversveen, and Waagepetersen
-(1998)</span>). Although the large-scale component which includes the
-data-specific intercept can also incorporate environmental covariates,
-we assume that the basic joint model above is valid for the data.
-Alternative specifications of data fusion model have been discussed in
-<span class="citation">Sode et al. (2025)</span>.</p>
+(see, <span class="citation">Møller et al. (1998)</span>). Although the
+large-scale component which includes the data-specific intercept can
+also incorporate environmental covariates, we assume that the basic
+joint model above is valid for the data. Alternative specifications of
+data fusion model have been discussed in <span class="citation">Sode et
+al. (2026)</span>.</p>
 </div>
 <div class="section level3">
 <h3 id="step-2-model-implementation">Step 2: Model implementation<a class="anchor" aria-label="anchor" href="#step-2-model-implementation"></a>
@@ -410,11 +410,11 @@ specificity.</p>
 <span><span class="co">#&gt;  TOT ROC SCORE     : 0.8048</span></span>
 <span><span class="co">#&gt;  TOT ERROR SCORE   : 1.9353</span></span>
 <span><span class="co">#&gt; ==============================================</span></span></code></pre></div>
-<p>As you will have noticed, continuous-outcome metrics such as MAE
-(mean absolute error) and RMSE (root mean squared error) are not
-available for presence-only data, which makes sense. Furthermore, the
-weighted composite scores for continuous responses are identical to
-their individual counterparts, since there is only one count response.
+<p>As you will have noticed, error-based metrics such as MAE (mean
+absolute error) and RMSE (root mean squared error) are not available for
+presence-only data, which makes sense. Furthermore, the weighted
+composite scores for quantitative responses are identical to their
+individual counterparts, since there is only one count response.
 Moreover, you can check out the <code><a href="../reference/ISDMmetrics-methods.html">get_background()</a></code>
 documentation for more details on background sample generated during the
 model evaluation.</p>
@@ -455,8 +455,8 @@ Prediction map of the ISDM model
 <p>Using <code>isdmtools</code>, you have successfully fused
 multi-source biodiversity data and generated spatially independent
 partitions for robust model validation. The toolkit has enabled the
-<em>resampling of data</em> and the diagnostics of folds, thereby
-reducing the effects of <em>spatial autocorrelation</em> in the
+<em>spatial resampling of data</em> and the diagnostics of folds,
+thereby reducing the effects of <em>spatial autocorrelation</em> in the
 modelling process. It has also facilitated the analysis and
 comprehensive evaluation of ISDM using well-known metrics from the
 fields of statistics and machine learning. The outputs of the final
@@ -471,7 +471,7 @@ statisticians.</p>
 <div class="section level2">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-bachl_inlabru_2019" class="csl-entry">
 Bachl, Fabian E., Finn Lindgren, David L. Borchers, and Janine B.
 Illian. 2019. <span>“Inlabru: An <span>R</span> Package for
@@ -504,12 +504,13 @@ Complexity</span>: <span>A Principled</span>, <span>Practical
 Approach</span> to <span>Constructing Priors</span>.”</span>
 <em>Statistical Science</em> 32 (1): 1–28. <a href="https://doi.org/10.1214/16-STS576" class="external-link">https://doi.org/10.1214/16-STS576</a>.
 </div>
-<div id="ref-sode_integrating_2025" class="csl-entry">
+<div id="ref-sode_integrating_2026" class="csl-entry">
 Sode, A. Idelphonse, A. Belarmain Fandohan, Elias T. Krainski, Achille
-E. Assogbadjo, and Romain Glèlè Kakaï. 2025. <span>“Integrating <span class="nocase">Presence-only</span> and <span>Abundance Data</span> to
+E. Assogbadjo, and Romain Glèlè Kakaï. 2026. <span>“Integrating <span class="nocase">Presence-only</span> and <span>Abundance Data</span> to
 <span>Predict Baobab</span> (<span>Adansonia</span> Digitata
 <span>L</span>.) <span>Distribution</span>: <span>A Bayesian Data Fusion
-Framework</span>.”</span> Preprint. <a href="https://doi.org/10.21203/rs.3.rs-7871875/v1" class="external-link">https://doi.org/10.21203/rs.3.rs-7871875/v1</a>.
+Framework</span>.”</span> <em>Enviornmental and Ecological
+Statistics</em>, ahead of print. <a href="https://doi.org/10.1007/s10651-026-00737-2" class="external-link">https://doi.org/10.1007/s10651-026-00737-2</a>.
 </div>
 </div>
 </div>

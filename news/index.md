@@ -6,11 +6,11 @@
 
 - [`compute_ppc_stats()`](https://sodeidelphonse.github.io/isdmtools/reference/compute_ppc_stats.md):
   A wrapper to calculate Pearson Chi-squared statistics and Bayesian
-  $p$-values to assess model fit.
+  $`p`$-values to assess model fit.
 - Added S3 methods: `print.ppc_stats` and `plot.ppc_stats` for immediate
   visual and console-based model diagnostics.
 - [`simulate_replicates()`](https://sodeidelphonse.github.io/isdmtools/reference/simulate_replicates.md):
-  A new vectorized simulation engine to generate $y_{rep}$ data from
+  A new vectorized simulation engine to generate $`y_{rep}`$ data from
   posterior samples. Supports `poisson`, `nbinomial`, and
   `quasi-poisson` families.
 - Posterior Predictive Checks (PPC): Introduced a robust Bayesian
