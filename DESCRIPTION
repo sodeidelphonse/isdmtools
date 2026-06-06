@@ -1,6 +1,6 @@
 Package: isdmtools
 Type: Package
-Title: Toolkit for Evaluating and Analysing Integrated Species Distribution Models in R
+Title: A Reproducible R Framework for Spatial Data Resampling and Multisource Validation of Integrated Species Distribution Models
 Version: 0.4.0
 Authors@R: 
     c(person(given = "Akoeugnigan Idelphonse", family = "SODE",
