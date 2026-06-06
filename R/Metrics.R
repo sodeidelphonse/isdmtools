@@ -10,15 +10,15 @@
 #' @param test_data A named `list` of `sf` objects. Each `sf` object represents a different test dataset and must contain point geometries. The function will loop through each named dataset in the list.
 #' In particular, `test_data` can be a 'fold' from the \link{create_folds} and \link{extract_fold} outputs, if independent validation datasets are not available.
 #' @param prob_raster A `SpatRaster` object with unique layer containing the model's predictions on a probability scale (0-1).
-#' It represents a suitability index, and its values are used to compute all ROC-based metrics (e.g., AUC, TSS, F1 score). This argument is optional if only continuous-outcome metrics are requested for count data.
-#' @param expected_response A `SpatRaster` object containing the model's predictions on a continuous scale (i.e. counts or rate if offset is used; see \link{suitability_index}).
-#' Its values are used to compute all continuous-outcome metrics (e.g., RMSE, MAE, MAPE). This argument is required if a continuous-outcome metric is requested.
+#' It represents a suitability index, and its values are used to compute all ROC-based metrics (e.g., AUC, TSS, F1 score). This argument is optional if only error-based metrics are requested for count data.
+#' @param expected_response A `SpatRaster` object containing the model's predictions on the response scale (i.e. counts or rate if offset is used; see \link{suitability_index}).
+#' Its values are used to compute all error-based metrics (e.g., RMSE, MAE, MAPE). This argument is required if an error-based metric is requested.
 #' @param xy_excluded An optional `SpatVector` or `sf` object representing locations where pseudo-absence points should not be sampled, such as occupied areas or known background points.
 #' Only relevant for presence-only (PO) data. Default is `NULL`.
 #' @param n_background integer. It specifies the number of pseudo-absence points to sample for presence-only data. Default is 1000 (see \link{sample_background}).
-#' @param response_counts character. The column name in the `sf` objects that contains observed counts. Default is 'counts' and must be standardized across all count data sets.
-#' Exceptionally, positive measurements (e.g. biomass) are supported by allowing exposure to its default value. In such cases, only continuous-outcome metrics can be requested.
-#' @param response_pa character. The column name in the `sf` objects that contains presence-absence data (1 for presence, 0 for absence). Default is 'present' and must be standardized across all PA data sets.
+#' @param response_counts character. The column name in the `sf` objects that contains observed counts. Default is 'counts' and must be standardised across all count data sets.
+#' Exceptionally, positive measurements (e.g. biomass) are supported by setting the exposure to its default value. In such cases, only error-based metrics can be requested.
+#' @param response_pa character. The column name in the `sf` objects that contains presence-absence data (1 for presence, 0 for absence). Default is 'present' and must be standardised across all PA data sets.
 #' @param seed integer. It sets the seed for random number generation, used for pseudo-absence sampling to ensure reproducibility. Default is 25.
 #' @param threshold_method character. The method to be used for selecting the threshold for converting probabilities to binary outcomes. Options are 'best' (using `best_method`) or 'fixed'. Default is "best".
 #' @param best_method character. The method to be used for selecting the best threshold when `threshold_method` is 'best'. Options are 'youden' or 'closest.topleft'.
@@ -32,11 +32,11 @@
 #' @param overall_roc_metrics character. A vector of a subset of ROC-based metrics to be used for the overall composite score (`TOT_ROC_SCORE`).
 #' Allowed options are "auc", "tss", "accuracy", and "f1". If `NULL`, the sensible default is "auc", "tss" and "accuracy".
 #' This metric is useful when the objective is to obtain a rapid overview of the rank of multiple candidate models fitted to datasets via blocked cross-validation using multi-criteria assessment.
-#' @param overall_error_metrics character. A vector of a subset of continuous outcome metrics to be used for the overall composite score (`TOT_ERROR_SCORE`). Allowed options are "rmse", "mae", and "r2".
+#' @param overall_error_metrics character. A vector of a subset of error-based metrics to be used for the overall composite score (`TOT_ERROR_SCORE`). Allowed options are "rmse", "mae", and "r2".
 #' If `NULL`, the default is "rmse" and "mae". In order to obtain an overall interpretable score, it is imperative to select metrics that have the same scale.
 #' @param is_pred_rate logical. If `TRUE`, it indicates that the `expected_response` contains predictions at the intensity (per-unit-of-exposure) scale (typical for Bayesian models with offset from `inlabru`).
 #' If `FALSE`, it assumes predictions are at the original scale (e.g., counts). Default is `FALSE`.
-#' @param exposure character. The column name in the `sf` objects that contains the exposure variable (offset). Only relevant for count (and sometimes presence-absence) data and must be standardized across all these types of datasets.
+#' @param exposure character. The column name in the `sf` objects that contains the exposure variable (offset). Only relevant for count (and rarely for presence-absence) data and must be standardised across all these types of datasets.
 #' If `is_pred_rate` is `TRUE`, observed counts are rescaled by this exposure variable. Default is `NULL`.
 #' @param ... Additional arguments to be passed on to internal functions, particularly \link[pROC]{coords} function.
 #'
@@ -44,14 +44,14 @@
 #'
 #' \itemize{
 #'   \item \strong{Presence-Absence (PA) Data:} The function uses the `response_pa` column and `prob_raster` to calculate all ROC-based metrics (see \link[pROC]{coords}, for more details on available metrics).
-#'   \item \strong{Count Data (or optionally measurements):} The function uses `expected_response` to calculate continuous-outcome metrics and can optionally use `prob_raster` to calculate ROC-based metrics for count data.
+#'   \item \strong{Count Data (or exceptionally a measurement):} The function uses `expected_response` to calculate error-based metrics and can optionally use `prob_raster` to calculate ROC-based metrics for count data.
 #'   \item \strong{Presence-Only (PO) Data:} The function uses the presence points from the `sf` object (`xy_excluded`) and samples `n` pseudo-absence points from the study background (excluding `xy_excluded`) to create a presence-absence dataset for ROC-based metric calculations.
 #' }
 #'
-#' For models based on count data, if a user wants to compute both continuous-outcome and ROC-based metrics, `expected_response` raster must be supplied for the continuous metrics and `prob_raster` must also be supplied for the ROC-based metrics.
-#' The `prob_raster` can be obtained by converting the continuous-outcome prediction (e.g., `linear predictor`) to a suitability index using the \link{suitability_index} function.
+#' For models based on count data, if a user wants to compute both error-based and ROC-based metrics, `expected_response` raster must be supplied for the error-based metrics and `prob_raster` must also be supplied for the ROC-based metrics.
+#' The `prob_raster` can be obtained by converting the log count prediction (e.g., `linear predictor`) to a suitability index using the \link{suitability_index} function.
 #'
-#' The available continuous-outcome metrics are given as follows:
+#' The available error-based metrics are given as follows:
 #' \itemize{
 #' \item **Root Mean Squared Error (RMSE)**: A measure of the average magnitude of the errors. It's the square root of the average of squared differences between prediction and actual observation. It gives higher weight to large errors.
 #'    \deqn{RMSE = \sqrt{\frac{1}{n}\sum_{i=1}^{n}(\hat{y_i} - y_i)^2}}.
@@ -63,7 +63,7 @@
 #'    \deqn{R^2 = 1 - \frac{SS_{res}}{SS_{tot}}}
 #'    Where:
 #'   \itemize{
-#'   \item \eqn{y_i} is the observed continuous value at location \eqn{i}.
+#'   \item \eqn{y_i} is the observed quantitative value at location \eqn{i}.
 #'   \item \eqn{\hat{y}_i} is the predicted value from the model at location \eqn{i} (e.g., the posterior mean of the predictions).
 #'   \item \eqn{\bar{y}} is the mean of all observed values.
 #'   \item \eqn{SS_{res}} is the residual sum of squares, which measures the discrepancy between the observed and predicted values:
@@ -100,7 +100,7 @@
 #' #   response_pa = "present"     # default labels column for all PA data
 #' # )
 #'
-#' # Example 2: Compute continuous-outcome metrics for a count-based model
+#' # Example 2: Compute error metrics for a count model
 #' # cont_metrics <- compute_metrics(
 #' #   test_data = list(ds1 = my_count_sf),
 #' #   expected_response = expected_raster, # prediction on count scale
@@ -108,7 +108,7 @@
 #' #   metrics = c("rmse", "mae", "mape")
 #' # )
 #'
-#' # Example 3: Compute both continuous and ROC-based metrics for a count model
+#' # Example 3: Compute both error-based and ROC-based metrics for a count model
 #' # The user must first generate a suitability index (prob_raster & expected_response)
 #' # from the linear scale prediction (pred_eta).
 #'
@@ -172,6 +172,7 @@ compute_metrics <- function(test_data,
                             is_pred_rate = FALSE,
                             exposure = NULL,
                             seed = 25, ...) {
+
   # Master list of allowed metrics
   error_metrics <- c("rmse", "mae", "mape", "r2")
   roc_metrics <- c(
@@ -194,7 +195,7 @@ compute_metrics <- function(test_data,
   has_error_metrics <- any(error_metrics %in% metrics)
 
   if (has_error_metrics && is.null(expected_response)) {
-    stop("Continuous-outcome metrics were requested but 'expected_response' raster was not provided.", call. = FALSE)
+    stop("Error-based metrics were requested but 'expected_response' raster was not provided.", call. = FALSE)
   }
 
   default_roc_metrics <- c("auc", "tss", "accuracy", "f1", "recall", "precision")
@@ -303,7 +304,7 @@ compute_metrics <- function(test_data,
   if (is.null(overall_error_metrics)) {
     error_metrics_to_average <- c("rmse", "mae")
     message(sprintf(
-      "No 'overall_error_metrics' specified. Overall continuous-outcome score will be computed for available metrics among: %s.",
+      "No 'overall_error_metrics' specified. Overall error-based score will be computed for available metrics among: %s.",
       paste(toupper(error_metrics_to_average), collapse = ", ")
     ))
   } else {
@@ -355,7 +356,7 @@ compute_metrics <- function(test_data,
     is_count_data <- response_counts %in% names(current_data)
     is_pa_data <- response_pa %in% names(current_data)
 
-    # --- Conditional continuous-outcome metrics calculation ---
+    # --- Conditional error-based metrics calculation ---
     if (has_error_metrics && response_counts %in% names(current_data)) {
       raw_expected <- terra::extract(expected_response, loc)[, 1]
       valid_idx <- is.finite(raw_expected)
@@ -383,7 +384,7 @@ compute_metrics <- function(test_data,
         if ("mape" %in% metrics) metrics_ds$mape <- mape(observed, predicted)
         if ("r2" %in% metrics) metrics_ds$r2 <- r_squared(observed, predicted)
       } else {
-        message(sprintf("Skipping continuous-outcome metrics for '%s' due to no valid predictions after filtering.", ds_name))
+        message(sprintf("Skipping error-based metrics for '%s' due to no valid predictions after filtering.", ds_name))
       }
     }
 
@@ -422,7 +423,7 @@ compute_metrics <- function(test_data,
             ))
           }
         } else {
-          message(sprintf("No background points sampled for '%s' (PO data). Cannot compute ROC metrics.", ds_name))
+          message(sprintf("No background points sampled for '%s' (PO data). Cannot compute ROC-based metrics.", ds_name))
         }
       }
 
@@ -578,7 +579,7 @@ compute_metrics <- function(test_data,
     message("Cannot compute an overall ROC composite score as no relevant composite metrics were available or calculated.")
   }
 
-  # Overall Continuous-outcome Composite Score
+  # Overall Error-based Composite Score
   TOT_ERROR_SCORE <- NA_real_
   relevant_cont_scores_names <- paste0(toupper(error_metrics_to_average), "_Comp")
   available_relevant_cont_scores <- weighted_composite_scores[relevant_cont_scores_names]
@@ -588,7 +589,7 @@ compute_metrics <- function(test_data,
   if (length(available_relevant_cont_scores) > 0) {
     TOT_ERROR_SCORE <- mean(available_relevant_cont_scores, na.rm = TRUE)
   } else {
-    message("Cannot compute an overall continuous-outcome composite score as no relevant composite metrics were available or calculated.")
+    message("Cannot compute an overall error-based composite score as no relevant composite metrics were available or calculated.")
   }
 
   return_list <- list()
@@ -660,7 +661,7 @@ compute_metrics <- function(test_data,
 #'   n_background = 1000,
 #'   metrics = c("rmse", "mae", "auc", "tss"),
 #'   is_pred_rate = TRUE, # model with offset
-#'   exposure = "area" # standardized exposure name across the counts data
+#'   exposure = "area" # standardised exposure name across the counts data
 #' )
 #'
 #' #--- Quick view of the results
@@ -918,7 +919,7 @@ get_background <- function(x) {
 }
 
 
-#--- Functions to compute evaluation metrics for continuous-outcome responses ----
+#--- Functions to compute evaluation metrics for quantitative responses ----
 
 # RMSE (root mean square error),
 rmse <- function(observed, predicted) {

@@ -31,20 +31,20 @@ compute_metrics(
 In particular, \code{test_data} can be a 'fold' from the \link{create_folds} and \link{extract_fold} outputs, if independent validation datasets are not available.}
 
 \item{prob_raster}{A \code{SpatRaster} object with unique layer containing the model's predictions on a probability scale (0-1).
-It represents a suitability index, and its values are used to compute all ROC-based metrics (e.g., AUC, TSS, F1 score). This argument is optional if only continuous-outcome metrics are requested for count data.}
+It represents a suitability index, and its values are used to compute all ROC-based metrics (e.g., AUC, TSS, F1 score). This argument is optional if only error-based metrics are requested for count data.}
 
 \item{xy_excluded}{An optional \code{SpatVector} or \code{sf} object representing locations where pseudo-absence points should not be sampled, such as occupied areas or known background points.
 Only relevant for presence-only (PO) data. Default is \code{NULL}.}
 
-\item{expected_response}{A \code{SpatRaster} object containing the model's predictions on a continuous scale (i.e. counts or rate if offset is used; see \link{suitability_index}).
-Its values are used to compute all continuous-outcome metrics (e.g., RMSE, MAE, MAPE). This argument is required if a continuous-outcome metric is requested.}
+\item{expected_response}{A \code{SpatRaster} object containing the model's predictions on the response scale (i.e. counts or rate if offset is used; see \link{suitability_index}).
+Its values are used to compute all error-based metrics (e.g., RMSE, MAE, MAPE). This argument is required if an error-based metric is requested.}
 
 \item{n_background}{integer. It specifies the number of pseudo-absence points to sample for presence-only data. Default is 1000 (see \link{sample_background}).}
 
-\item{response_counts}{character. The column name in the \code{sf} objects that contains observed counts. Default is 'counts' and must be standardized across all count data sets.
-Exceptionally, positive measurements (e.g. biomass) are supported by allowing exposure to its default value. In such cases, only continuous-outcome metrics can be requested.}
+\item{response_counts}{character. The column name in the \code{sf} objects that contains observed counts. Default is 'counts' and must be standardised across all count data sets.
+Exceptionally, positive measurements (e.g. biomass) are supported by setting the exposure to its default value. In such cases, only error-based metrics can be requested.}
 
-\item{response_pa}{character. The column name in the \code{sf} objects that contains presence-absence data (1 for presence, 0 for absence). Default is 'present' and must be standardized across all PA data sets.}
+\item{response_pa}{character. The column name in the \code{sf} objects that contains presence-absence data (1 for presence, 0 for absence). Default is 'present' and must be standardised across all PA data sets.}
 
 \item{threshold_method}{character. The method to be used for selecting the threshold for converting probabilities to binary outcomes. Options are 'best' (using \code{best_method}) or 'fixed'. Default is "best".}
 
@@ -64,13 +64,13 @@ while "rmse" (root mean squared error), "mae" (mean absolute error) and "r2" (ps
 Allowed options are "auc", "tss", "accuracy", and "f1". If \code{NULL}, the sensible default is "auc", "tss" and "accuracy".
 This metric is useful when the objective is to obtain a rapid overview of the rank of multiple candidate models fitted to datasets via blocked cross-validation using multi-criteria assessment.}
 
-\item{overall_error_metrics}{character. A vector of a subset of continuous outcome metrics to be used for the overall composite score (\code{TOT_ERROR_SCORE}). Allowed options are "rmse", "mae", and "r2".
+\item{overall_error_metrics}{character. A vector of a subset of error-based metrics to be used for the overall composite score (\code{TOT_ERROR_SCORE}). Allowed options are "rmse", "mae", and "r2".
 If \code{NULL}, the default is "rmse" and "mae". In order to obtain an overall interpretable score, it is imperative to select metrics that have the same scale.}
 
 \item{is_pred_rate}{logical. If \code{TRUE}, it indicates that the \code{expected_response} contains predictions at the intensity (per-unit-of-exposure) scale (typical for Bayesian models with offset from \code{inlabru}).
 If \code{FALSE}, it assumes predictions are at the original scale (e.g., counts). Default is \code{FALSE}.}
 
-\item{exposure}{character. The column name in the \code{sf} objects that contains the exposure variable (offset). Only relevant for count (and sometimes presence-absence) data and must be standardized across all these types of datasets.
+\item{exposure}{character. The column name in the \code{sf} objects that contains the exposure variable (offset). Only relevant for count (and rarely for presence-absence) data and must be standardised across all these types of datasets.
 If \code{is_pred_rate} is \code{TRUE}, observed counts are rescaled by this exposure variable. Default is \code{NULL}.}
 
 \item{seed}{integer. It sets the seed for random number generation, used for pseudo-absence sampling to ensure reproducibility. Default is 25.}
@@ -98,14 +98,14 @@ The function handles three main data types and any combination thereof:
 
 \itemize{
 \item \strong{Presence-Absence (PA) Data:} The function uses the \code{response_pa} column and \code{prob_raster} to calculate all ROC-based metrics (see \link[pROC]{coords}, for more details on available metrics).
-\item \strong{Count Data (or optionally measurements):} The function uses \code{expected_response} to calculate continuous-outcome metrics and can optionally use \code{prob_raster} to calculate ROC-based metrics for count data.
+\item \strong{Count Data (or exceptionally a measurement):} The function uses \code{expected_response} to calculate error-based metrics and can optionally use \code{prob_raster} to calculate ROC-based metrics for count data.
 \item \strong{Presence-Only (PO) Data:} The function uses the presence points from the \code{sf} object (\code{xy_excluded}) and samples \code{n} pseudo-absence points from the study background (excluding \code{xy_excluded}) to create a presence-absence dataset for ROC-based metric calculations.
 }
 
-For models based on count data, if a user wants to compute both continuous-outcome and ROC-based metrics, \code{expected_response} raster must be supplied for the continuous metrics and \code{prob_raster} must also be supplied for the ROC-based metrics.
-The \code{prob_raster} can be obtained by converting the continuous-outcome prediction (e.g., \verb{linear predictor}) to a suitability index using the \link{suitability_index} function.
+For models based on count data, if a user wants to compute both error-based and ROC-based metrics, \code{expected_response} raster must be supplied for the error-based metrics and \code{prob_raster} must also be supplied for the ROC-based metrics.
+The \code{prob_raster} can be obtained by converting the log count prediction (e.g., \verb{linear predictor}) to a suitability index using the \link{suitability_index} function.
 
-The available continuous-outcome metrics are given as follows:
+The available error-based metrics are given as follows:
 \itemize{
 \item \strong{Root Mean Squared Error (RMSE)}: A measure of the average magnitude of the errors. It's the square root of the average of squared differences between prediction and actual observation. It gives higher weight to large errors.
 \deqn{RMSE = \sqrt{\frac{1}{n}\sum_{i=1}^{n}(\hat{y_i} - y_i)^2}}.
@@ -117,7 +117,7 @@ The available continuous-outcome metrics are given as follows:
 \deqn{R^2 = 1 - \frac{SS_{res}}{SS_{tot}}}
 Where:
 \itemize{
-\item \eqn{y_i} is the observed continuous value at location \eqn{i}.
+\item \eqn{y_i} is the observed quantitative value at location \eqn{i}.
 \item \eqn{\hat{y}_i} is the predicted value from the model at location \eqn{i} (e.g., the posterior mean of the predictions).
 \item \eqn{\bar{y}} is the mean of all observed values.
 \item \eqn{SS_{res}} is the residual sum of squares, which measures the discrepancy between the observed and predicted values:
@@ -143,7 +143,7 @@ It can be viewed as a quick \emph{multi-criterion decision metric} for multiple 
 #   response_pa = "present"     # default labels column for all PA data
 # )
 
-# Example 2: Compute continuous-outcome metrics for a count-based model
+# Example 2: Compute error metrics for a count model
 # cont_metrics <- compute_metrics(
 #   test_data = list(ds1 = my_count_sf),
 #   expected_response = expected_raster, # prediction on count scale
@@ -151,7 +151,7 @@ It can be viewed as a quick \emph{multi-criterion decision metric} for multiple 
 #   metrics = c("rmse", "mae", "mape")
 # )
 
-# Example 3: Compute both continuous and ROC-based metrics for a count model
+# Example 3: Compute both error-based and ROC-based metrics for a count model
 # The user must first generate a suitability index (prob_raster & expected_response)
 # from the linear scale prediction (pred_eta).
 
