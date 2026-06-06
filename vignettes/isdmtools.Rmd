@@ -29,7 +29,9 @@ library(ggplot2)
 
 # Introduction
 
-The integrated species distribution modelling (ISDM) is any statistical approach that combine biodiversity data from different sampling schemes with the purpose of correcting for biases or providing an overall estimation of the species distribution based on multisource evidence. This vignette should bridge the gap between "having spatial data" and "being ready for modelling." The fundamental philosophy of `isdmtools` is to provide a standardised bridge between diverse biodiversity spatial data sources and a robust spatial cross-validation (CV) strategy for evaluating integrated species distribution models (ISDMs). This tutorial will assist you through preparing data and generating spatial folds — the essential first steps before fitting an Integrated Species Distribution Model (ISDM).
+The integrated species distribution modelling (ISDM) is any statistical approach that combine biodiversity data from different sampling schemes with the purpose of correcting for biases or providing an overall estimation of the species distribution based on multisource evidence. This vignette should bridge the gap between "having spatial data" and "being ready for modelling." The fundamental philosophy of `isdmtools` is to provide a standardised bridge between diverse biodiversity spatial data sources and a robust spatial cross-validation (CV) strategy for evaluating integrated species distribution models (ISDMs). 
+
+This tutorial will assist you through preparing data and generating spatial folds — the essential first steps before fitting an Integrated Species Distribution Model (ISDM).
 
 # Data Preparation
 
@@ -105,7 +107,7 @@ summary(fold_ss)
 
 # Folds Diagnostics
 
-The `isdmtools` package has introduced various *diagnostic tools* to perform supplementary analyses on the quality of the spatial folds (or blocks) that were created in the previous step. We distinguish between diagnostics in geographical and environmental spaces as well as combined analyses. The *geographical fold diagnostics* are performed using the `check_folds()` method while the *environmental fold diagnostic* is achieved via the `check_env_balance()` method. Depending on the spatial blocking strategy used for data partitioning, both diagnostic analyses can be combined into a unified framework. The following sections introduces how diagnostic tools can be used to assess the validity of spatial folds generated from mutisource data for blocked cross-validation.
+The `isdmtools` package has introduced various *diagnostic tools* to perform supplementary analyses on the quality of the spatial folds (or blocks) that were created in the previous step. We distinguish between diagnostics in geographical and environmental spaces as well as combined analyses. The *geographical fold diagnostics* are performed using the `check_folds()` method whilst the *environmental fold diagnostic* is achieved via the `check_env_balance()` method. Depending on the spatial blocking strategy used for data partitioning, both diagnostic analyses can be combined into a unified framework. The following sections introduces how diagnostic tools can be used to assess the validity of spatial folds generated from mutisource data for blocked cross-validation.
 
 * **Folds diagnostics in geographical space**
 
@@ -122,7 +124,7 @@ plot(geo_diag)
 
 As the results illustrates, the inter-block gap is approximately 42 km in average. This indicates that there is no contiguous spatial folds from the selected blocking strategy, thereby supporting the hypothesis of no *block leakage*.
 
-In the context of *geographical fold diagnostics*, should any prior information on the spatial range be available from an exploratory analysis, this can be used for the `rho` argument of the `check_folds()`' method. This value can then be compared to the calculated inter-fold gap in order to ascertain whether folds are independent. For instance, the `blockCV::cv_spatial_autocor()` function can help derive prior information on the spatial range [@valavi_blockcv_2018]. Additionally, if the correlation function is part of *Matérn* family, the helper function `solve_practical_range()` from our `isdmtools` package can be utilised to derive the corresponding *practical range* required for spatial diagnostics (see @sode_integrating_2025 for further details). The same procedure can be applied to a Bayesian analysis to check if the *posterior practical range* estimated aligns with the spatial geometry of the specified folds. 
+In the context of *geographical fold diagnostics*, should any prior information on the spatial range be available from an exploratory analysis, this can be used for the `rho` argument of the `check_folds()`' method. This value can then be compared to the calculated inter-fold gap in order to ascertain whether folds are independent. For instance, the `blockCV::cv_spatial_autocor()` function can help derive prior information on the spatial range [@valavi_blockcv_2018]. Additionally, if the correlation function is part of *Matérn* family, the helper function `solve_practical_range()` from our `isdmtools` package can be utilised to derive the corresponding *practical range* required for spatial diagnostics (see @sode_integrating_2026 for further details). The same procedure can be applied to a Bayesian analysis to check if the *posterior practical range* estimated aligns with the spatial geometry of the specified folds. 
 
 * **Folds diagnostics in the environmental space**
 

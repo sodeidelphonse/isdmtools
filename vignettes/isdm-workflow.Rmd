@@ -33,7 +33,7 @@ library(inlabru)
 
 Model-based data integration in the context of species distribution modeling (SDM) is any statistical approach that combine biodiversity data from different sampling schemes (see [Isaac et al. 2020](10.1016/j.tree.2019.08.006) for an overview). The purpose is to correct for certain biases in the primary data, or providing an overall estimation of species distribution based on multisource spatial information. A popular integration strategy is the joint analysis of presence-only (PO) observations which are generally available as citizen science data and abundance observations which are often collected through structured sampling protocols. The primary objective of `isdmtools` package is to provide a comprehensive and robust framework for data integration in SDM. 
 
-As demonstrated in the [Get started](isdmtools.html) guide, the first output from the `isdmtools` package is a set of clean `sf` objects, which makes it easy to integrate with various spatial modeling tools using block cross-validation techniques. The extracted training and testing data can be directly fed into your preferred integrated modeling tools such as `inlabru`, `PointedSDMs`, or any GLMMs/GAMMs tools that can accommodate multisource spatial data. This ensures that your model predictions are validated using a robust spatial cross-validation approach and comprehensive evaluation metrics. 
+As demonstrated in the [Get started](isdmtools.html) guide, the first output from the `isdmtools` package is a set of clean `sf` objects, which makes it easy to integrate with various spatial modelling tools using block cross-validation techniques. The extracted training and testing data can be directly fed into your preferred integrated modelling tools such as `inlabru`, `PointedSDMs`, or any generalised additive mixed model (GAMM) tools that can accommodate multisource spatial data. This ensures that your model predictions are validated using a robust spatial cross-validation approach and comprehensive evaluation metrics. 
 
 This vignette shows step by step how the `isdmtools` can be used with other predictive modelling tools such as `inlabru` for a complete workflow of integrated species distribution modelling (ISDM) analysis.
 
@@ -70,7 +70,7 @@ ben_sf <- st_sf(
 )
 ```
 
-Now, we can partition the datasets using the clustering blocking scheme for blocked cross-validation.
+Now, we can partition the datasets using the 'cluster' blocking scheme for blocked cross-validation.
 
 ```{r }
 # Create spatial folds
@@ -97,7 +97,7 @@ $$
  &\log (\lambda(\mathbf{s})) &&= \beta_{0,\text{presence}} + \xi(\mathbf{s}),\\
 \end{aligned}
 $$
-where $\mathrm{IPP}$ means a _Inhomogeneous Poisson Process_ and $\mathbf{s}$ the vector of a location coordinates. The IPP model presented here is known in spatial statistics as a log-Gaussian Cox process model - LGCP (see, @moller_log_1998). Although the large-scale component which includes the data-specific intercept can also incorporate environmental covariates, we assume that the basic joint model above is valid for the data. Alternative specifications of data fusion model have been discussed in @sode_integrating_2025. 
+where $\mathrm{IPP}$ means a _Inhomogeneous Poisson Process_ and $\mathbf{s}$ the vector of a location coordinates. The IPP model presented here is known in spatial statistics as a log-Gaussian Cox process model - LGCP (see, @moller_log_1998). Although the large-scale component which includes the data-specific intercept can also incorporate environmental covariates, we assume that the basic joint model above is valid for the data. Alternative specifications of data fusion model have been discussed in @sode_integrating_2026. 
 
 ## Step 2: Model implementation
 
@@ -295,7 +295,7 @@ summary(eval_metrics)
 #> ==============================================
 ```
 
-As you will have noticed, continuous-outcome metrics such as MAE (mean absolute error) and RMSE (root mean squared error) are not available for presence-only data, which makes sense. Furthermore, the weighted composite scores for continuous responses are identical to their individual counterparts, since there is only one count response. Moreover, you can check out the `get_background()` documentation for more details on background sample generated during the model evaluation.
+As you will have noticed, error-based metrics such as MAE (mean absolute error) and RMSE (root mean squared error) are not available for presence-only data, which makes sense. Furthermore, the weighted composite scores for quantitative responses are identical to their individual counterparts, since there is only one count response. Moreover, you can check out the `get_background()` documentation for more details on background sample generated during the model evaluation.
 
 Next, you can iterate through all five spatial folds to obtain an average model performance, then calculate the variation in metrics between blocks. Finally, you should run a model on the full data (i.e. 'datasets_list') in order to make the final prediction.
  
@@ -321,6 +321,6 @@ knitr::include_graphics("../man/figures/prediction_map.png")
 
 # Conclusion
 
-Using `isdmtools`, you have successfully fused multi-source biodiversity data and generated spatially independent partitions for robust model validation. The toolkit has enabled the *resampling of data* and the diagnostics of folds, thereby reducing the effects of *spatial autocorrelation* in the modelling process. It has also facilitated the analysis and comprehensive evaluation of ISDM using well-known metrics from the fields of statistics and machine learning. The outputs of the final model are visualised to obtain an annotated map ready to be interpreted for deriving valuable insights from the integrated analysis. The flexibility of `isdmtools` in providing a unified framework for evaluating ISDM based on any combination of the major three types of SDM data as well as its versatility to be integrated with other competing tools make it an appealing toolkit for ecologists and spatial statisticians. 
+Using `isdmtools`, you have successfully fused multi-source biodiversity data and generated spatially independent partitions for robust model validation. The toolkit has enabled the *spatial resampling of data* and the diagnostics of folds, thereby reducing the effects of *spatial autocorrelation* in the modelling process. It has also facilitated the analysis and comprehensive evaluation of ISDM using well-known metrics from the fields of statistics and machine learning. The outputs of the final model are visualised to obtain an annotated map ready to be interpreted for deriving valuable insights from the integrated analysis. The flexibility of `isdmtools` in providing a unified framework for evaluating ISDM based on any combination of the major three types of SDM data as well as its versatility to be integrated with other competing tools make it an appealing toolkit for ecologists and spatial statisticians. 
 
 # References
