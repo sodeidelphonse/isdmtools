@@ -44,6 +44,9 @@ jobs:
           files: ./cobertura.xml
           # Fail if error if not on PR, or if on PR and token is given
           fail_ci_if_error: ${{ github.event_name != 'pull_request' || secrets.CODECOV_TOKEN != ''}}
+          # Critical fixes for V5 GPG bug:
+          use_idc: true
+          binary: ./codecov
 
       - name: Show testthat output
         if: always()
