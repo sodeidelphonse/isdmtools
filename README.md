@@ -32,7 +32,7 @@ MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.or
 - [Citation](#citation)
 - [License](#license)
 
-## Overview
+## 📋 Overview
 
 `isdmtools` is an R package that streamlines the preparation,
 visualisation, and evaluation of multisource geospatial data for
@@ -41,10 +41,10 @@ Distribution Models (ISDMs)* with a particular focus on the Bayesian
 framework, the package provides a unified suite of tools for managing
 presence-only, count, and presence-absence data. It ensures robust,
 reproducible workflows through dedicated tools for block
-cross-validation, suitability analysis and standardised model
-evaluation.
+cross-validation, suitability analysis and standardised model evaluation
+and validation.
 
-## Installation
+## 📦 Installation
 
 - You can install the latest development version of `isdmtools` directly
   from GitHub using the `remotes` package.
@@ -80,18 +80,19 @@ install.packages("/path/to/your/download/isdmtools_<version>.tar.gz", repos = NU
 where `<version>` is the version number of the release you downloaded
 and `{/path/to/your/download/}` is the path to the `".tar.gz"` file.
 
-## Core Features
+## 🛠️ Core Features
 
 The package provides a set of core functions and classes to handle
-common tasks of data preparation, visualisation and model evaluation:
+common tasks of data preparation, visualisation, post-modelling
+analysis, and model evaluation:
 
-- **Resampling and Folds Diagnostics**: Create a `DataFolds` object that
-  binds multiple `sf` datasets and generates spatially-separated
-  cross-validation folds using `create_folds()` constructor. This
-  ensures the resulting models are robust to spatial autocorrelation.
-  The key methods `check_folds()` and `check_env_balance()` operate on
-  `DataFolds` to efficiently check the independence and environmental
-  balance of created folds, respectively.
+- **Spatial Resampling and Folds Diagnostics**: Create a `DataFolds`
+  object that binds multiple `sf` datasets and generates
+  spatially-separated cross-validation folds using `create_folds()`
+  constructor. This ensures the resulting models are robust to spatial
+  autocorrelation. The key methods `check_folds()` and
+  `check_env_balance()` operate on `DataFolds` to efficiently check the
+  independence and environmental balance of created folds, respectively.
 
 - **Suitability Analysis**: Standardise model predictions for consistent
   mapping and compute a final habitat suitability index. The
@@ -100,8 +101,8 @@ common tasks of data preparation, visualisation and model evaluation:
   complementary log-log transform (`cloglog`).
 
 - **Model Evaluation**: Compute comprehensive evaluation metrics,
-  including ROC-based and continuous-outcome metrics for each dataset
-  using the `compute_metrics()` constructor. The package also handles
+  including ROC- and error-based metrics for each dataset using the
+  `compute_metrics()` constructor. The package also handles
   *dataset-weighted composite scores*, providing a holistic view of
   model performance. Whilst `sample_background()` is called internally
   to sample pseudo-absences for presence-only data, users can extract
@@ -120,18 +121,18 @@ common tasks of data preparation, visualisation and model evaluation:
   replicates of data ($y_{rep}$) from the posterior samples of the
   fitted model. `compute_ppc_stats()` calculates Pearson Chi-squared
   statistics and Bayesian $p$-values from the replicated data to assess
-  model fit.
+  the model fit.
 
 - **Other Methods**: The package includes the `summary()`, `print()` and
   `plot()` methods for most of the available data structures. These
   provide a concise summary and clear visualisation of spatial data
-  partition, folds’ diagnostics, and models’ evaluation and validation.
-  Other methods are discussed in the package vignettes.
+  partition, folds’ diagnostics, and models’ validation. Other methods
+  are discussed in the package vignettes.
 
-## Usage Example
+## 💻 Usage Example
 
 The core workflow of `isdmtools` involves creating a `DataFolds` object
-and then extracting specific folds for a modelling pipeline.
+and then extracting specific folds for an integrated modelling pipeline.
 
 ### Data preparation
 
@@ -261,19 +262,41 @@ print(geo_diag)
 plot(geo_diag)
 ```
 
-<img src="man/figures/README-plot-diag-1.png" alt="" width="100%" /> For
-a detailed introduction to the spatial resampling, please see the [Get
-started](articles/isdmtools.html) guide.
+<img src="man/figures/README-plot-diag-1.png" alt="" width="100%" />
 
-## Contributing
+### To Learn More
 
-- We welcome contributions! If you encounter an issue or have a feature
-  request, please open an issue on the GitHub repository
-  [here](https://github.com/sodeidelphonse/isdmtools/issues).
+For a comprehensive overview of spatial data resampling, please refer to
+the [Get started](articles/isdmtools.html) guide. To dive deep into the
+integrated modelling workflow, please, consult the advanced guide on the
+[ISDM Evaluation Workflow](articles/isdm-workflow.html).
 
-- This project uses `renv` to manage package dependencies and ensure
-  reproducibility. A contributor who wants to install all the necessary
-  packages for this project can simply follow these steps:
+## 🤝 Contributing
+
+We welcome contributions! If you encounter an issue or have a feature
+request, please open an issue via our GitHub repository [issue
+tracker](https://github.com/sodeidelphonse/isdmtools/issues). We present
+below our contribution guide:
+
+- **Code of Conduct**: The `isdmtools` project is released with a
+  [Contributor Code of
+  Conduct](https://www.contributor-covenant.org/version/2/1/code_of_conduct/code_of_conduct.md).
+  By contributing to this project, you agree to abide by its terms.
+
+- **How to Help**: Before submitting a **Pull Request**, please open an
+  issue via our [issue
+  tracker](https://github.com/sodeidelphonse/isdmtools/issues) so we can
+  discuss the proposed changes.
+
+- **Coding Style**: We follow the `tidyverse` style guide and we
+  recommend you to run `lintr::lint_package()` before submitting code.
+  Please, minimise the use of additional package dependencies when
+  proposing changes.
+
+- **Virtual Environment**: This project uses `renv` to manage package
+  dependencies and ensure reproducibility. A contributor who wants to
+  install all the necessary packages for the project can simply follow
+  these steps:
 
   - Make sure you have the `renv` package installed:
 
@@ -288,12 +311,7 @@ started](articles/isdmtools.html) guide.
   renv::restore()
   ```
 
-- Please note that the `isdmtools` project is released with a
-  [Contributor Code of
-  Conduct](https://www.contributor-covenant.org/version/2/1/code_of_conduct/code_of_conduct.md).
-  By contributing to this project, you agree to abide by its terms.
-
-## Citation
+## 📝 Citation
 
 To cite this package in your research work, run the following command in
 your R session to generate the plain text and `BibTex` entry of the
@@ -303,6 +321,6 @@ citation:
 citation("isdmtools")
 ```
 
-## License
+## ⚖️ License
 
 The `isdmtools` package is released under the [MIT License](LICENSE).
