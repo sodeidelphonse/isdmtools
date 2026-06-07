@@ -130,20 +130,21 @@
 <div class="section level3">
 <h3 id="data-preparation">Data preparation<a class="anchor" aria-label="anchor" href="#data-preparation"></a>
 </h3>
-<p>First, let’s load the package and create some dummy data.</p>
+<p>First, let’s load the required packages.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://sodeidelphonse.github.io/isdmtools/">isdmtools</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Set the random seed for reproducibility</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span></code></pre></div>
+<p>We create some dummy data.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Set the random seed for reproducibility</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Presence-only data (e.g. Citizen science data)</span></span>
 <span><span class="va">presence_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>  x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">0</span>, <span class="fl">4</span><span class="op">)</span>,</span>
-<span>  y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">6</span>, <span class="fl">13</span><span class="op">)</span>,</span>
+<span>  y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">6</span>, <span class="fl">13</span><span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span>coords <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span>, crs <span class="op">=</span> <span class="fl">4326</span><span class="op">)</span></span>
 <span></span>
@@ -162,24 +163,51 @@
 <h3 id="spatial-partitioning">Spatial partitioning<a class="anchor" aria-label="anchor" href="#spatial-partitioning"></a>
 </h3>
 <p>We can now create spatial folds using the default blocking engine.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Create the DataFolds object</span></span>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Create the 'DataFolds' object</span></span>
 <span><span class="va">my_folds</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/create_folds.html">create_folds</a></span><span class="op">(</span><span class="va">datasets_list</span>, k <span class="op">=</span> <span class="fl">5</span>, seed <span class="op">=</span> <span class="fl">23</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   train test</span></span>
+<span><span class="co">#&gt; 1   110   40</span></span>
+<span><span class="co">#&gt; 2   127   23</span></span>
+<span><span class="co">#&gt; 3   121   29</span></span>
+<span><span class="co">#&gt; 4   113   37</span></span>
+<span><span class="co">#&gt; 5   129   21</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">my_folds</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Visualise the folds</span></span>
+<span><span class="co">#&gt; A DataFolds S3 object with 5 folds.</span></span>
+<span><span class="co">#&gt; Datasets included: Presence, Count </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Summary of individuals per dataset:</span></span>
+<span><span class="co">#&gt; Simple feature collection with 10 features and 3 fields</span></span>
+<span><span class="co">#&gt; Geometry type: MULTIPOINT</span></span>
+<span><span class="co">#&gt; Dimension:     XY</span></span>
+<span><span class="co">#&gt; Bounding box:  xmin: 0.0009555863 ymin: 6.009666 xmax: 3.986211 ymax: 12.87862</span></span>
+<span><span class="co">#&gt; Geodetic CRS:  WGS 84</span></span>
+<span><span class="co">#&gt; # A tibble: 10 × 4</span></span>
+<span><span class="co">#&gt;    datasetName folds_ids     n                                          geometry</span></span>
+<span><span class="co">#&gt;    &lt;fct&gt;           &lt;int&gt; &lt;int&gt;                                  &lt;MULTIPOINT [°]&gt;</span></span>
+<span><span class="co">#&gt;  1 Presence            1    34 ((2.447115 10.36529), (3.038177 10.21236), (3.33…</span></span>
+<span><span class="co">#&gt;  2 Presence            2    14 ((0.6850573 6.203601), (1.518237 7.039126), (1.7…</span></span>
+<span><span class="co">#&gt;  3 Presence            3    18 ((2.582528 7.814824), (3.312634 8.219373), (3.13…</span></span>
+<span><span class="co">#&gt;  4 Presence            4    19 ((1.085146 9.163205), (1.021715 9.169121), (0.86…</span></span>
+<span><span class="co">#&gt;  5 Presence            5    15 ((1.560814 12.43443), (1.333709 11.03565), (1.59…</span></span>
+<span><span class="co">#&gt;  6 Count               1     6 ((3.570874 12.20728), (2.189704 12.47532), (2.29…</span></span>
+<span><span class="co">#&gt;  7 Count               2     9 ((0.6315204 6.150152), (0.6360895 6.349245), (1.…</span></span>
+<span><span class="co">#&gt;  8 Count               3    11 ((3.407724 7.888013), (3.540471 8.339619), (3.28…</span></span>
+<span><span class="co">#&gt;  9 Count               4    18 ((0.2828876 8.206826), (0.7418143 8.82648), (0.8…</span></span>
+<span><span class="co">#&gt; 10 Count               5     6 ((1.254735 12.19655), (0.6865285 11.49745), (0.6…</span></span></code></pre></div>
+<p>We can visualise folds created with the observed data</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Visualise the block CV folds</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">my_folds</span><span class="op">)</span></span></code></pre></div>
-<div class="float">
-<img src="reference/figures/readme_blockCV_map.png" alt="The figure above shows the block cross-validation folds."><div class="figcaption">The figure above shows the block cross-validation folds.</div>
-</div>
+<p><img src="reference/figures/README-fold-plot-1.png" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
 <h3 id="extract-folds-for-an-integrated-modelling-workflow">Extract folds for an integrated modelling workflow<a class="anchor" aria-label="anchor" href="#extract-folds-for-an-integrated-modelling-workflow"></a>
 </h3>
 <p>One can extract a specific fold to evaluate the integrated model and keep the remaining folds for its training.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Extract the fold 3 for model evaluation</span></span>
-<span><span class="va">splits_fold_3</span> <span class="op">&lt;-</span> <span class="fu">extaract_fold</span><span class="op">(</span><span class="va">my_folds</span>, fold <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="va">splits_fold_3</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/DataFolds-methods.html">extract_fold</a></span><span class="op">(</span><span class="va">my_folds</span>, fold <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># You can access both 'train' and 'test' sets and their corresponding datasets</span></span>
 <span> <span class="va">train_data</span> <span class="op">&lt;-</span> <span class="va">splits_fold_3</span><span class="op">$</span><span class="va">train</span></span>
@@ -188,13 +216,30 @@
 <div class="section level3">
 <h3 id="folds-diagnostics">Folds diagnostics<a class="anchor" aria-label="anchor" href="#folds-diagnostics"></a>
 </h3>
-<p>You can check the spatial independence of folds using <code>check_folds</code>.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Check spatial independence of folds using the default range rho (N/A)</span></span>
-<span><span class="va">geo_diag</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/check_folds.html">check_folds</a></span><span class="op">(</span><span class="va">folds</span>, plot <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<p>You can check the spatial independence of folds using <code>check_folds</code> command.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Check spatial independence of folds using an estimated range rho (150 km)</span></span>
+<span><span class="va">geo_diag</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/check_folds.html">check_folds</a></span><span class="op">(</span><span class="va">my_folds</span>, rho <span class="op">=</span> <span class="fl">150</span>, plot <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">geo_diag</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; === isdmtools: Spatial Fold Diagnostic ===</span></span>
+<span><span class="co">#&gt; Model Spatial Range (rho): 150 km</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;         independence Count</span></span>
+<span><span class="co">#&gt; 1 Weakly Independent     5</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Internal Size (Max Distance to Fold Centroid):</span></span>
+<span><span class="co">#&gt;    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. </span></span>
+<span><span class="co">#&gt;   121.1   139.3   160.4   156.3   162.3   198.2 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Inter-block Gap (Min Distance to Nearest Fold):</span></span>
+<span><span class="co">#&gt;    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. </span></span>
+<span><span class="co">#&gt;   22.75   22.75   24.62   27.72   24.62   43.87 </span></span>
+<span><span class="co">#&gt; ==========================================</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Plot the diagnostics results</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">geo_diag</span><span class="op">)</span></span></code></pre></div>
-<p>For a detailed introduction to the package, please see the <a href="articles/isdmtools.html">Get started</a> guide.</p>
+<p><img src="reference/figures/README-plot-diag-1.png" alt="" width="100%"> For a detailed introduction to the spatial resampling, please see the <a href="articles/isdmtools.html">Get started</a> guide.</p>
 </div>
 </div>
 <div class="section level2">
@@ -207,12 +252,12 @@
 <ul>
 <li>Make sure you have the <code>renv</code> package installed:</li>
 </ul>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"renv"</span><span class="op">)</span></span></code></pre></div>
 <ul>
 <li>With the project directory as your working directory, use <code>renv</code> to install all packages listed in the <code>renv.lock</code> file:</li>
 </ul>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">renv</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/renv/reference/restore.html" class="external-link">restore</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </li>
 <li><p>Please note that the <code>isdmtools</code> project is released with a <a href="https://www.contributor-covenant.org/version/2/1/code_of_conduct/code_of_conduct.md" class="external-link">Contributor Code of Conduct</a>. By contributing to this project, you agree to abide by its terms.</p></li>
@@ -222,7 +267,7 @@
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
 <p>To cite this package in your research work, run the following command in your R session to generate the plain text and <code>BibTex</code> entry of the citation:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/citation.html" class="external-link">citation</a></span><span class="op">(</span><span class="st">"isdmtools"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">

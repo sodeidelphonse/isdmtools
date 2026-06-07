@@ -131,7 +131,7 @@ and then extracting specific folds for a modelling pipeline.
 
 ### Data preparation
 
-First, let’s load the package and create some dummy data.
+First, let’s load the required packages.
 
 ``` r
 
@@ -139,6 +139,11 @@ library(isdmtools)
 library(sf)
 library(ggplot2)
 library(dplyr)
+```
+
+We create some dummy data.
+
+``` r
 
 # Set the random seed for reproducibility
 set.seed(42)
@@ -146,7 +151,7 @@ set.seed(42)
 # Presence-only data (e.g. Citizen science data)
 presence_data <- data.frame(
   x = runif(100, 0, 4),
-  y = runif(100, 6, 13),
+  y = runif(100, 6, 13)
 ) |>
   st_as_sf(coords = c("x", "y"), crs = 4326)
 
@@ -168,18 +173,48 @@ We can now create spatial folds using the default blocking engine.
 
 ``` r
 
-# Create the DataFolds object
+# Create the 'DataFolds' object
 my_folds <- create_folds(datasets_list, k = 5, seed = 23)
+#>   train test
+#> 1   110   40
+#> 2   127   23
+#> 3   121   29
+#> 4   113   37
+#> 5   129   21
 print(my_folds)
+#> A DataFolds S3 object with 5 folds.
+#> Datasets included: Presence, Count 
+#> 
+#> Summary of individuals per dataset:
+#> Simple feature collection with 10 features and 3 fields
+#> Geometry type: MULTIPOINT
+#> Dimension:     XY
+#> Bounding box:  xmin: 0.0009555863 ymin: 6.009666 xmax: 3.986211 ymax: 12.87862
+#> Geodetic CRS:  WGS 84
+#> # A tibble: 10 × 4
+#>    datasetName folds_ids     n                                          geometry
+#>    <fct>           <int> <int>                                  <MULTIPOINT [°]>
+#>  1 Presence            1    34 ((2.447115 10.36529), (3.038177 10.21236), (3.33…
+#>  2 Presence            2    14 ((0.6850573 6.203601), (1.518237 7.039126), (1.7…
+#>  3 Presence            3    18 ((2.582528 7.814824), (3.312634 8.219373), (3.13…
+#>  4 Presence            4    19 ((1.085146 9.163205), (1.021715 9.169121), (0.86…
+#>  5 Presence            5    15 ((1.560814 12.43443), (1.333709 11.03565), (1.59…
+#>  6 Count               1     6 ((3.570874 12.20728), (2.189704 12.47532), (2.29…
+#>  7 Count               2     9 ((0.6315204 6.150152), (0.6360895 6.349245), (1.…
+#>  8 Count               3    11 ((3.407724 7.888013), (3.540471 8.339619), (3.28…
+#>  9 Count               4    18 ((0.2828876 8.206826), (0.7418143 8.82648), (0.8…
+#> 10 Count               5     6 ((1.254735 12.19655), (0.6865285 11.49745), (0.6…
+```
 
-# Visualise the folds
+We can visualise folds created with the observed data
+
+``` r
+
+# Visualise the block CV folds
 plot(my_folds)
 ```
 
-![The figure above shows the block cross-validation
-folds.](reference/figures/readme_blockCV_map.png)
-
-The figure above shows the block cross-validation folds.
+![](reference/figures/README-fold-plot-1.png)
 
 ### Extract folds for an integrated modelling workflow
 
@@ -189,7 +224,7 @@ keep the remaining folds for its training.
 ``` r
 
 # Extract the fold 3 for model evaluation
-splits_fold_3 <- extaract_fold(my_folds, fold = 3)
+splits_fold_3 <- extract_fold(my_folds, fold = 3)
 
 # You can access both 'train' and 'test' sets and their corresponding datasets
  train_data <- splits_fold_3$train
@@ -198,17 +233,39 @@ splits_fold_3 <- extaract_fold(my_folds, fold = 3)
 
 ### Folds diagnostics
 
-You can check the spatial independence of folds using `check_folds`.
+You can check the spatial independence of folds using `check_folds`
+command.
 
 ``` r
 
-# Check spatial independence of folds using the default range rho (N/A)
-geo_diag <- check_folds(folds, plot = TRUE)
+# Check spatial independence of folds using an estimated range rho (150 km)
+geo_diag <- check_folds(my_folds, rho = 150, plot = TRUE)
 print(geo_diag)
+#> 
+#> === isdmtools: Spatial Fold Diagnostic ===
+#> Model Spatial Range (rho): 150 km
+#> 
+#>         independence Count
+#> 1 Weakly Independent     5
+#> 
+#> Internal Size (Max Distance to Fold Centroid):
+#>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#>   121.1   139.3   160.4   156.3   162.3   198.2 
+#> 
+#> Inter-block Gap (Min Distance to Nearest Fold):
+#>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#>   22.75   22.75   24.62   27.72   24.62   43.87 
+#> ==========================================
+```
+
+``` r
+
+# Plot the diagnostics results
 plot(geo_diag)
 ```
 
-For a detailed introduction to the package, please see the [Get
+![](reference/figures/README-plot-diag-1.png) For a detailed
+introduction to the spatial resampling, please see the [Get
 started](https://sodeidelphonse.github.io/isdmtools/articles/isdmtools.md)
 guide.
 
