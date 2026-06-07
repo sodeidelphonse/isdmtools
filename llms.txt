@@ -211,7 +211,7 @@ We can visualise folds created with the observed data
 ``` r
 
 # Visualise the block CV folds
-plot(my_folds)
+plot(my_folds, nrow = 2)
 ```
 
 ![](reference/figures/README-fold-plot-1.png)
