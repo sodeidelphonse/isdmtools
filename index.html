@@ -84,12 +84,12 @@
 </ul>
 </div>
 <div class="section level2">
-<h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
+<h2 id="clipboard-overview">📋 Overview<a class="anchor" aria-label="anchor" href="#clipboard-overview"></a>
 </h2>
-<p><code>isdmtools</code> is an R package that streamlines the preparation, visualisation, and evaluation of multisource geospatial data for biodiversity modelling. Specifically engineered for <em>Integrated Species Distribution Models (ISDMs)</em> with a particular focus on the Bayesian framework, the package provides a unified suite of tools for managing presence-only, count, and presence-absence data. It ensures robust, reproducible workflows through dedicated tools for block cross-validation, suitability analysis and standardised model evaluation.</p>
+<p><code>isdmtools</code> is an R package that streamlines the preparation, visualisation, and evaluation of multisource geospatial data for biodiversity modelling. Specifically engineered for <em>Integrated Species Distribution Models (ISDMs)</em> with a particular focus on the Bayesian framework, the package provides a unified suite of tools for managing presence-only, count, and presence-absence data. It ensures robust, reproducible workflows through dedicated tools for block cross-validation, suitability analysis and standardised model evaluation and validation.</p>
 </div>
 <div class="section level2">
-<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+<h2 id="package-installation">📦 Installation<a class="anchor" aria-label="anchor" href="#package-installation"></a>
 </h2>
 <ul>
 <li>You can install the latest development version of <code>isdmtools</code> directly from GitHub using the <code>remotes</code> package.</li>
@@ -111,22 +111,22 @@
 <p>where <code>&lt;version&gt;</code> is the version number of the release you downloaded and <code>{/path/to/your/download/}</code> is the path to the <code>".tar.gz"</code> file.</p>
 </div>
 <div class="section level2">
-<h2 id="core-features">Core Features<a class="anchor" aria-label="anchor" href="#core-features"></a>
+<h2 id="hammer_and_wrench-core-features">🛠️ Core Features<a class="anchor" aria-label="anchor" href="#hammer_and_wrench-core-features"></a>
 </h2>
-<p>The package provides a set of core functions and classes to handle common tasks of data preparation, visualisation and model evaluation:</p>
+<p>The package provides a set of core functions and classes to handle common tasks of data preparation, visualisation, post-modelling analysis, and model evaluation:</p>
 <ul>
-<li><p><strong>Resampling and Folds Diagnostics</strong>: Create a <code>DataFolds</code> object that binds multiple <code>sf</code> datasets and generates spatially-separated cross-validation folds using <code><a href="reference/create_folds.html">create_folds()</a></code> constructor. This ensures the resulting models are robust to spatial autocorrelation. The key methods <code><a href="reference/check_folds.html">check_folds()</a></code> and <code><a href="reference/check_env_balance.html">check_env_balance()</a></code> operate on <code>DataFolds</code> to efficiently check the independence and environmental balance of created folds, respectively.</p></li>
+<li><p><strong>Spatial Resampling and Folds Diagnostics</strong>: Create a <code>DataFolds</code> object that binds multiple <code>sf</code> datasets and generates spatially-separated cross-validation folds using <code><a href="reference/create_folds.html">create_folds()</a></code> constructor. This ensures the resulting models are robust to spatial autocorrelation. The key methods <code><a href="reference/check_folds.html">check_folds()</a></code> and <code><a href="reference/check_env_balance.html">check_env_balance()</a></code> operate on <code>DataFolds</code> to efficiently check the independence and environmental balance of created folds, respectively.</p></li>
 <li><p><strong>Suitability Analysis</strong>: Standardise model predictions for consistent mapping and compute a final habitat suitability index. The <code><a href="reference/suitability_index.html">suitability_index()</a></code> function transforms raw integrated model predictions into a suitability score using the inverse of the complementary log-log transform (<code>cloglog</code>).</p></li>
-<li><p><strong>Model Evaluation</strong>: Compute comprehensive evaluation metrics, including ROC-based and continuous-outcome metrics for each dataset using the <code><a href="reference/compute_metrics.html">compute_metrics()</a></code> constructor. The package also handles <em>dataset-weighted composite scores</em>, providing a holistic view of model performance. Whilst <code><a href="reference/sample_background.html">sample_background()</a></code> is called internally to sample pseudo-absences for presence-only data, users can extract the <code>BackgroundPoints</code> object with the <code><a href="reference/ISDMmetrics-methods.html">get_background()</a></code> helper in order to visualise the generated pseudo-absences.</p></li>
+<li><p><strong>Model Evaluation</strong>: Compute comprehensive evaluation metrics, including ROC- and error-based metrics for each dataset using the <code><a href="reference/compute_metrics.html">compute_metrics()</a></code> constructor. The package also handles <em>dataset-weighted composite scores</em>, providing a holistic view of model performance. Whilst <code><a href="reference/sample_background.html">sample_background()</a></code> is called internally to sample pseudo-absences for presence-only data, users can extract the <code>BackgroundPoints</code> object with the <code><a href="reference/ISDMmetrics-methods.html">get_background()</a></code> helper in order to visualise the generated pseudo-absences.</p></li>
 <li><p><strong>Mapping</strong>: Visualise model predictions and final habitat suitability maps. The plotting method <code><a href="reference/generate_maps.html">generate_maps()</a></code> is designed to receive a formatted object from <code><a href="reference/format_predictions.html">format_predictions()</a></code> to provide a clear and informative map. It visualises multiple variables of model predictions (e.g. mean, SD, and quantiles), providing an easy way to interpret models’ results. Users can customize the final <code>ggplot2</code> object if needed.</p></li>
-<li><p><strong>Statistical Validation</strong>: <code><a href="reference/simulate_replicates.html">simulate_replicates()</a></code> generate replicates of data (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>y</mi><mrow><mi>r</mi><mi>e</mi><mi>p</mi></mrow></msub><annotation encoding="application/x-tex">y_{rep}</annotation></semantics></math>) from the posterior samples of the fitted model. <code><a href="reference/compute_ppc_stats.html">compute_ppc_stats()</a></code> calculates Pearson Chi-squared statistics and Bayesian <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-values from the replicated data to assess model fit.</p></li>
-<li><p><strong>Other Methods</strong>: The package includes the <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code>, <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> and <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> methods for most of the available data structures. These provide a concise summary and clear visualisation of spatial data partition, folds’ diagnostics, and models’ evaluation and validation. Other methods are discussed in the package vignettes.</p></li>
+<li><p><strong>Statistical Validation</strong>: <code><a href="reference/simulate_replicates.html">simulate_replicates()</a></code> generate replicates of data (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>y</mi><mrow><mi>r</mi><mi>e</mi><mi>p</mi></mrow></msub><annotation encoding="application/x-tex">y_{rep}</annotation></semantics></math>) from the posterior samples of the fitted model. <code><a href="reference/compute_ppc_stats.html">compute_ppc_stats()</a></code> calculates Pearson Chi-squared statistics and Bayesian <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-values from the replicated data to assess the model fit.</p></li>
+<li><p><strong>Other Methods</strong>: The package includes the <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code>, <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> and <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> methods for most of the available data structures. These provide a concise summary and clear visualisation of spatial data partition, folds’ diagnostics, and models’ validation. Other methods are discussed in the package vignettes.</p></li>
 </ul>
 </div>
 <div class="section level2">
-<h2 id="usage-example">Usage Example<a class="anchor" aria-label="anchor" href="#usage-example"></a>
+<h2 id="computer-usage-example">💻 Usage Example<a class="anchor" aria-label="anchor" href="#computer-usage-example"></a>
 </h2>
-<p>The core workflow of <code>isdmtools</code> involves creating a <code>DataFolds</code> object and then extracting specific folds for a modelling pipeline.</p>
+<p>The core workflow of <code>isdmtools</code> involves creating a <code>DataFolds</code> object and then extracting specific folds for an integrated modelling pipeline.</p>
 <div class="section level3">
 <h3 id="data-preparation">Data preparation<a class="anchor" aria-label="anchor" href="#data-preparation"></a>
 </h3>
@@ -239,16 +239,24 @@
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Plot the diagnostics results</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">geo_diag</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-plot-diag-1.png" alt="" width="100%"> For a detailed introduction to the spatial resampling, please see the <a href="articles/isdmtools.html">Get started</a> guide.</p>
+<p><img src="reference/figures/README-plot-diag-1.png" alt="" width="100%"></p>
+</div>
+<div class="section level3">
+<h3 id="to-learn-more">To Learn More<a class="anchor" aria-label="anchor" href="#to-learn-more"></a>
+</h3>
+<p>For a comprehensive overview of spatial data resampling, please refer to the <a href="articles/isdmtools.html">Get started</a> guide. To dive deep into the integrated modelling workflow, please, consult the advanced guide on the <a href="articles/isdm-workflow.html">ISDM Evaluation Workflow</a>.</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
+<h2 id="handshake-contributing">🤝 Contributing<a class="anchor" aria-label="anchor" href="#handshake-contributing"></a>
 </h2>
+<p>We welcome contributions! If you encounter an issue or have a feature request, please open an issue via our GitHub repository <a href="https://github.com/sodeidelphonse/isdmtools/issues" class="external-link">issue tracker</a>. We present below our contribution guide:</p>
 <ul>
-<li><p>We welcome contributions! If you encounter an issue or have a feature request, please open an issue on the GitHub repository <a href="https://github.com/sodeidelphonse/isdmtools/issues" class="external-link">here</a>.</p></li>
+<li><p><strong>Code of Conduct</strong>: The <code>isdmtools</code> project is released with a <a href="https://www.contributor-covenant.org/version/2/1/code_of_conduct/code_of_conduct.md" class="external-link">Contributor Code of Conduct</a>. By contributing to this project, you agree to abide by its terms.</p></li>
+<li><p><strong>How to Help</strong>: Before submitting a <strong>Pull Request</strong>, please open an issue via our <a href="https://github.com/sodeidelphonse/isdmtools/issues" class="external-link">issue tracker</a> so we can discuss the proposed changes.</p></li>
+<li><p><strong>Coding Style</strong>: We follow the <code>tidyverse</code> style guide and we recommend you to run <code>lintr::lint_package()</code> before submitting code. Please, minimise the use of additional package dependencies when proposing changes.</p></li>
 <li>
-<p>This project uses <code>renv</code> to manage package dependencies and ensure reproducibility. A contributor who wants to install all the necessary packages for this project can simply follow these steps:</p>
+<p><strong>Virtual Environment</strong>: This project uses <code>renv</code> to manage package dependencies and ensure reproducibility. A contributor who wants to install all the necessary packages for the project can simply follow these steps:</p>
 <ul>
 <li>Make sure you have the <code>renv</code> package installed:</li>
 </ul>
@@ -260,18 +268,17 @@
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">renv</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/renv/reference/restore.html" class="external-link">restore</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </li>
-<li><p>Please note that the <code>isdmtools</code> project is released with a <a href="https://www.contributor-covenant.org/version/2/1/code_of_conduct/code_of_conduct.md" class="external-link">Contributor Code of Conduct</a>. By contributing to this project, you agree to abide by its terms.</p></li>
 </ul>
 </div>
 <div class="section level2">
-<h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
+<h2 id="pencil-citation">📝 Citation<a class="anchor" aria-label="anchor" href="#pencil-citation"></a>
 </h2>
 <p>To cite this package in your research work, run the following command in your R session to generate the plain text and <code>BibTex</code> entry of the citation:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/citation.html" class="external-link">citation</a></span><span class="op">(</span><span class="st">"isdmtools"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
+<h2 id="balance_scale-license">⚖️ License<a class="anchor" aria-label="anchor" href="#balance_scale-license"></a>
 </h2>
 <p>The <code>isdmtools</code> package is released under the <a href="LICENSE">MIT License</a>.</p>
 </div>
