@@ -8,6 +8,10 @@ on:
 
 name: Render README
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
   render:
     runs-on: ubuntu-latest
