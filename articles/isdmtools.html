@@ -73,9 +73,9 @@
                         <h4 data-toc-skip class="author">Akoeugnigan
 Idelphonse SODE</h4>
             
-            <h4 data-toc-skip class="date">Generated on 2026-06-07</h4>
+            <h4 data-toc-skip class="date">Generated on 2026-08-08</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/sodeidelphonse/isdmtools/blob/v0.4.0/vignettes/isdmtools.Rmd" class="external-link"><code>vignettes/isdmtools.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/sodeidelphonse/isdmtools/blob/main/vignettes/isdmtools.Rmd" class="external-link"><code>vignettes/isdmtools.Rmd</code></a></small>
       <div class="d-none name"><code>isdmtools.Rmd</code></div>
     </div>
 
@@ -91,7 +91,7 @@ Idelphonse SODE</h4>
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
 <p>The integrated species distribution modelling (ISDM) is any
-statistical approach that combine biodiversity data from different
+statistical approach that combines biodiversity data from different
 sampling schemes with the purpose of correcting for biases or providing
 an overall estimation of the species distribution based on multisource
 evidence. This vignette should bridge the gap between “having spatial
@@ -100,7 +100,7 @@ data” and “being ready for modelling.” The fundamental philosophy of
 diverse biodiversity spatial data sources and a robust spatial
 cross-validation (CV) strategy for evaluating integrated species
 distribution models (ISDMs).</p>
-<p>This tutorial will assist you through preparing data and generating
+<p>This tutorial will assist you in preparing data and generating
 spatial folds — the essential first steps before fitting an Integrated
 Species Distribution Model (ISDM).</p>
 </div>
@@ -110,8 +110,8 @@ Species Distribution Model (ISDM).</p>
 <p>Let’s consider a simple scenario by generating two spatial datasets
 representing the presence and abundance of a given species within a
 designated study region. The purpose of this tutorial is to provide a
-simple introduction to the tool, as opposed to addressing a very complex
-scenario of spatially autocorreleted datasets.</p>
+simple introduction to the tool, as opposed to addressing a complex
+scenario of real spatially autocorrelated datasets.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Simulate a list of presence-only and count data</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span>
@@ -169,7 +169,7 @@ al. 2018; Mahoney et al. 2023)</span>.</p>
 <span><span class="co">#&gt; 4   125   25</span></span>
 <span><span class="co">#&gt; 5   120   30</span></span></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Visualize the folds with custom styling</span></span>
+<code class="sourceCode R"><span><span class="co"># Visualise the folds with custom styling</span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">folds</span>, nrow <span class="op">=</span> <span class="fl">2</span>, annotate <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">4</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">6</span>, <span class="fl">13</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
@@ -180,7 +180,7 @@ al. 2018; Mahoney et al. 2023)</span>.</p>
 <code class="sourceCode R"><span><span class="co"># Create the DataFolds object using the `spatialsample` blocking engine</span></span>
 <span><span class="va">fold_ss</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_folds.html">create_folds</a></span><span class="op">(</span><span class="va">datasets_list</span>, <span class="va">ben_sf</span>, cv_method <span class="op">=</span> <span class="st">"block"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Using the native autoplot of `spatialesample` which shows only pooled data</span></span>
+<span><span class="co"># Using the native autoplot() of `spatialesample`, which shows only pooled data</span></span>
 <span><span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">autoplot</a></span><span class="op">(</span><span class="va">fold_ss</span><span class="op">)</span></span></code></pre></div>
 <p><img src="isdmtools_files/figure-html/auto-plot-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
@@ -223,7 +223,7 @@ cross-validation.</p>
 <ul>
 <li><strong>Folds diagnostics in geographical space</strong></li>
 </ul>
-<p>This <em>diagnostic strategy</em> compute the maximum Euclidean
+<p>This <em>diagnostic strategy</em> computes the maximum Euclidean
 distance between points with respect to the fold centroid on the one
 hand (i.e. the internal size) and the minimum distance between points
 within a specific fold with its nearest fold (i.e. the inter-block gap)
@@ -247,20 +247,20 @@ on the other hand.</p>
 <span><span class="co"># Plot results</span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">geo_diag</span><span class="op">)</span></span></code></pre></div>
 <p><img src="isdmtools_files/figure-html/geo-diag-1.png" class="r-plt" alt="" width="90%"></p>
-<p>As the results illustrates, the inter-block gap is approximately 42
-km in average. This indicates that there is no contiguous spatial folds
+<p>As the results illustrate, the inter-block gap is approximately 42 km
+on average. This indicates that there are no contiguous spatial folds
 from the selected blocking strategy, thereby supporting the hypothesis
 of no <em>block leakage</em>.</p>
 <p>In the context of <em>geographical fold diagnostics</em>, should any
 prior information on the spatial range be available from an exploratory
 analysis, this can be used for the <code>rho</code> argument of the
-<code><a href="../reference/check_folds.html">check_folds()</a></code>’ method. This value can then be compared to
+<code><a href="../reference/check_folds.html">check_folds()</a></code> method. This value can then be compared to
 the calculated inter-fold gap in order to ascertain whether folds are
 independent. For instance, the
 <code><a href="https://rdrr.io/pkg/blockCV/man/cv_spatial_autocor.html" class="external-link">blockCV::cv_spatial_autocor()</a></code> function can help derive
 prior information on the spatial range <span class="citation">(Valavi et
 al. 2018)</span>. Additionally, if the correlation function is part of
-<em>Matérn</em> family, the helper function
+the <em>Matérn</em> family, the helper function
 <code><a href="../reference/solve_practical_range.html">solve_practical_range()</a></code> from our <code>isdmtools</code>
 package can be utilised to derive the corresponding <em>practical
 range</em> required for spatial diagnostics (see <span class="citation">Sode et al. (2026)</span> for further details). The
@@ -270,14 +270,14 @@ geometry of the specified folds.</p>
 <ul>
 <li><strong>Folds diagnostics in the environmental space</strong></li>
 </ul>
-<p>Another crucial aspect of blocked cross-validation strategy is to
+<p>Another crucial aspect of the blocked cross-validation strategy is to
 ensure that validation metrics reflect the integrated model’s ability to
 generalise across the species’ niche, rather than its proximity to
 training data. The analysis of spatial folds in the environmental space
 can allow this hypothesis to be assessed as nearly met before proceeding
 with the modelling process.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Check environmental balance of folds</span></span>
+<code class="sourceCode R"><span><span class="co"># Check the environmental balance of folds</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span> <span class="co"># set this for background sample reproducibility</span></span>
 <span><span class="va">env_diag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/check_env_balance.html">check_env_balance</a></span><span class="op">(</span><span class="va">folds</span>,</span>
 <span>  covariates <span class="op">=</span> <span class="va">r</span>,</span>
@@ -290,8 +290,8 @@ with the modelling process.</p>
 <span><span class="co">#&gt; Overlap (D &gt; 0.6 = Representative)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;  Variable       Type  p_val Schoener_D</span></span>
-<span><span class="co">#&gt;      cov1 Continuous 0.3053      0.902</span></span>
-<span><span class="co">#&gt;      cov2 Continuous 0.1631      0.893</span></span>
+<span><span class="co">#&gt;      cov1 Continuous 0.3053      0.901</span></span>
+<span><span class="co">#&gt;      cov2 Continuous 0.1631      0.892</span></span>
 <span><span class="co">#&gt; ==================================================</span></span></code></pre></div>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Plot outputs</span></span>
@@ -309,12 +309,12 @@ model prediction and generalisation.</p>
 <ul>
 <li><strong>Combined analysis</strong></li>
 </ul>
-<p>It is possible to combine both types of fold diagnostics in order to
-draw a unified conclusion. However, it should be noted that the
-applicability of both diagnostic tools is not universal across all the
-spatial blocking strategies covered in the package. Therefore, the most
+<p>It is possible to combine both types of fold diagnostics to draw a
+unified conclusion. However, it should be noted that the applicability
+of both diagnostic tools is not universal across all the spatial
+blocking strategies covered in the package. Therefore, the most
 appropriate block diagnostic tool may be contingent on the selected
-blocking scheme and the geometry of resulting folds.</p>
+blocking scheme and the geometry of the resulting folds.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Combined diagnostics</span></span>
 <span><span class="fu"><a href="../reference/summarise_fold_diagnostics.html">summarise_fold_diagnostics</a></span><span class="op">(</span><span class="va">geo_diag</span>, <span class="va">env_diag</span><span class="op">)</span></span>
@@ -342,7 +342,7 @@ categorical covariates (e.g. land cover). In this scenario, the
 <em>Schoener D</em> metric cannot be calculated for the categorical
 variables. The p-value for this type of variable is then derived from
 the Chi-square test based on the Monte Carlo approximation instead of
-the Kruskal Wallis test used for the continuous variables.</p>
+the Kruskal-Wallis test used for the continuous variables.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Continuous (temperature) and categorical (land cover) variables</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span>
@@ -368,7 +368,7 @@ the Kruskal Wallis test used for the continuous variables.</p>
 <span><span class="co">#&gt; Overlap (D &gt; 0.6 = Representative)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;     Variable        Type  p_val Schoener_D</span></span>
-<span><span class="co">#&gt;  temperature  Continuous 0.2311      0.909</span></span>
+<span><span class="co">#&gt;  temperature  Continuous 0.2311      0.916</span></span>
 <span><span class="co">#&gt;     land_use Categorical 0.2399         NA</span></span>
 <span><span class="co">#&gt; ==================================================</span></span></code></pre></div>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
@@ -386,7 +386,7 @@ the Kruskal Wallis test used for the continuous variables.</p>
 <span><span class="co">#&gt;         Domain                     Metric   Value    Status</span></span>
 <span><span class="co">#&gt;     Geographic Avg Internal Distance (km) 168.970 Separated</span></span>
 <span><span class="co">#&gt;     Geographic    Avg Inter-Fold Gap (km)  41.617 Separated</span></span>
-<span><span class="co">#&gt;  Environmental         Median Overlap (D)   0.909  Balanced</span></span>
+<span><span class="co">#&gt;  Environmental         Median Overlap (D)   0.916  Balanced</span></span>
 <span><span class="co">#&gt;  Environmental            Minimum p-value   0.231  Balanced</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ------------------------------------------</span></span>
@@ -397,10 +397,10 @@ the Kruskal Wallis test used for the continuous variables.</p>
 <div class="section level2">
 <h2 id="data-extraction-for-modelling">Data Extraction for Modelling<a class="anchor" aria-label="anchor" href="#data-extraction-for-modelling"></a>
 </h2>
-<p>Once spatial folds are created, one can extract the data and see how
-it looks like right before it goes into an integrated modelling tool.
-You can access both ‘train’ and ‘test’ sets and their corresponding
-datasets as follows:</p>
+<p>Once spatial folds are created, one can extract the data and see what
+it looks like before it goes into an integrated modelling tool. You can
+access both ‘train’ and ‘test’ sets and their corresponding datasets as
+follows:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Extract fold 1</span></span>
 <span><span class="va">splits_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/DataFolds-methods.html">extract_fold</a></span><span class="op">(</span><span class="va">folds</span>, fold <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
@@ -441,7 +441,7 @@ datasets as follows:</p>
 biodiversity data and generated spatially independent partitions for
 robust model validation. By using <code><a href="../reference/create_folds.html">create_folds()</a></code> and
 appropriate folds’ diagnostic tools, you’ve ensured that your model
-evaluation will account for spatial autocorrelation, providing a more
+evaluation accounts for spatial autocorrelation, providing a more
 realistic estimate of predictive performance.</p>
 <p>The <code>isdmtools</code> journey continues with model fitting and
 comprehensive evaluation. Depending on your needs, we recommend the
@@ -499,7 +499,7 @@ Models</em>. bioRxiv. <a href="https://doi.org/10.1101/357798" class="external-l
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

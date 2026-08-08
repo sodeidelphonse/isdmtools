@@ -12,7 +12,7 @@ library(ggplot2)
 ## Introduction
 
 The integrated species distribution modelling (ISDM) is any statistical
-approach that combine biodiversity data from different sampling schemes
+approach that combines biodiversity data from different sampling schemes
 with the purpose of correcting for biases or providing an overall
 estimation of the species distribution based on multisource evidence.
 This vignette should bridge the gap between “having spatial data” and
@@ -21,17 +21,17 @@ is to provide a standardised bridge between diverse biodiversity spatial
 data sources and a robust spatial cross-validation (CV) strategy for
 evaluating integrated species distribution models (ISDMs).
 
-This tutorial will assist you through preparing data and generating
-spatial folds — the essential first steps before fitting an Integrated
-Species Distribution Model (ISDM).
+This tutorial will assist you in preparing data and generating spatial
+folds — the essential first steps before fitting an Integrated Species
+Distribution Model (ISDM).
 
 ## Data Preparation
 
 Let’s consider a simple scenario by generating two spatial datasets
 representing the presence and abundance of a given species within a
 designated study region. The purpose of this tutorial is to provide a
-simple introduction to the tool, as opposed to addressing a very complex
-scenario of spatially autocorreleted datasets.
+simple introduction to the tool, as opposed to addressing a complex
+scenario of real spatially autocorrelated datasets.
 
 ``` r
 
@@ -95,7 +95,7 @@ folds <- create_folds(datasets_list, ben_sf, cv_method = "cluster")
 
 ``` r
 
-# Visualize the folds with custom styling
+# Visualise the folds with custom styling
 plot(folds, nrow = 2, annotate = FALSE) +
   scale_x_continuous(breaks = seq(0, 4, 1)) +
   scale_y_continuous(breaks = seq(6, 13, 2)) +
@@ -110,7 +110,7 @@ plot(folds, nrow = 2, annotate = FALSE) +
 # Create the DataFolds object using the `spatialsample` blocking engine
 fold_ss <- create_folds(datasets_list, ben_sf, cv_method = "block")
 
-# Using the native autoplot of `spatialesample` which shows only pooled data
+# Using the native autoplot() of `spatialesample`, which shows only pooled data
 ggplot2::autoplot(fold_ss)
 ```
 
@@ -157,7 +157,7 @@ data for blocked cross-validation.
 
 - **Folds diagnostics in geographical space**
 
-This *diagnostic strategy* compute the maximum Euclidean distance
+This *diagnostic strategy* computes the maximum Euclidean distance
 between points with respect to the fold centroid on the one hand
 (i.e. the internal size) and the minimum distance between points within
 a specific fold with its nearest fold (i.e. the inter-block gap) on the
@@ -186,20 +186,20 @@ plot(geo_diag)
 
 ![](isdmtools_files/figure-html/geo-diag-1.png)
 
-As the results illustrates, the inter-block gap is approximately 42 km
-in average. This indicates that there is no contiguous spatial folds
-from the selected blocking strategy, thereby supporting the hypothesis
-of no *block leakage*.
+As the results illustrate, the inter-block gap is approximately 42 km on
+average. This indicates that there are no contiguous spatial folds from
+the selected blocking strategy, thereby supporting the hypothesis of no
+*block leakage*.
 
 In the context of *geographical fold diagnostics*, should any prior
 information on the spatial range be available from an exploratory
 analysis, this can be used for the `rho` argument of the
-[`check_folds()`](https://sodeidelphonse.github.io/isdmtools/reference/check_folds.md)’
+[`check_folds()`](https://sodeidelphonse.github.io/isdmtools/reference/check_folds.md)
 method. This value can then be compared to the calculated inter-fold gap
 in order to ascertain whether folds are independent. For instance, the
 [`blockCV::cv_spatial_autocor()`](https://rdrr.io/pkg/blockCV/man/cv_spatial_autocor.html)
 function can help derive prior information on the spatial range (Valavi
-et al. 2018). Additionally, if the correlation function is part of
+et al. 2018). Additionally, if the correlation function is part of the
 *Matérn* family, the helper function
 [`solve_practical_range()`](https://sodeidelphonse.github.io/isdmtools/reference/solve_practical_range.md)
 from our `isdmtools` package can be utilised to derive the corresponding
@@ -210,8 +210,8 @@ aligns with the spatial geometry of the specified folds.
 
 - **Folds diagnostics in the environmental space**
 
-Another crucial aspect of blocked cross-validation strategy is to ensure
-that validation metrics reflect the integrated model’s ability to
+Another crucial aspect of the blocked cross-validation strategy is to
+ensure that validation metrics reflect the integrated model’s ability to
 generalise across the species’ niche, rather than its proximity to
 training data. The analysis of spatial folds in the environmental space
 can allow this hypothesis to be assessed as nearly met before proceeding
@@ -219,7 +219,7 @@ with the modelling process.
 
 ``` r
 
-# Check environmental balance of folds
+# Check the environmental balance of folds
 set.seed(42) # set this for background sample reproducibility
 env_diag <- check_env_balance(folds,
   covariates = r,
@@ -232,8 +232,8 @@ print(env_diag)
 #> Overlap (D > 0.6 = Representative)
 #> 
 #>  Variable       Type  p_val Schoener_D
-#>      cov1 Continuous 0.3053      0.902
-#>      cov2 Continuous 0.1631      0.893
+#>      cov1 Continuous 0.3053      0.901
+#>      cov2 Continuous 0.1631      0.892
 #> ==================================================
 ```
 
@@ -257,12 +257,12 @@ generalisation.
 
 - **Combined analysis**
 
-It is possible to combine both types of fold diagnostics in order to
-draw a unified conclusion. However, it should be noted that the
-applicability of both diagnostic tools is not universal across all the
-spatial blocking strategies covered in the package. Therefore, the most
+It is possible to combine both types of fold diagnostics to draw a
+unified conclusion. However, it should be noted that the applicability
+of both diagnostic tools is not universal across all the spatial
+blocking strategies covered in the package. Therefore, the most
 appropriate block diagnostic tool may be contingent on the selected
-blocking scheme and the geometry of resulting folds.
+blocking scheme and the geometry of the resulting folds.
 
 ``` r
 
@@ -292,7 +292,7 @@ categorical covariates (e.g. land cover). In this scenario, the
 *Schoener D* metric cannot be calculated for the categorical variables.
 The p-value for this type of variable is then derived from the
 Chi-square test based on the Monte Carlo approximation instead of the
-Kruskal Wallis test used for the continuous variables.
+Kruskal-Wallis test used for the continuous variables.
 
 ``` r
 
@@ -320,7 +320,7 @@ print(env_mixed)
 #> Overlap (D > 0.6 = Representative)
 #> 
 #>     Variable        Type  p_val Schoener_D
-#>  temperature  Continuous 0.2311      0.909
+#>  temperature  Continuous 0.2311      0.916
 #>     land_use Categorical 0.2399         NA
 #> ==================================================
 ```
@@ -345,7 +345,7 @@ summarise_fold_diagnostics(geo_diag, env_mixed)
 #>         Domain                     Metric   Value    Status
 #>     Geographic Avg Internal Distance (km) 168.970 Separated
 #>     Geographic    Avg Inter-Fold Gap (km)  41.617 Separated
-#>  Environmental         Median Overlap (D)   0.909  Balanced
+#>  Environmental         Median Overlap (D)   0.916  Balanced
 #>  Environmental            Minimum p-value   0.231  Balanced
 #> 
 #> ------------------------------------------
@@ -356,10 +356,10 @@ summarise_fold_diagnostics(geo_diag, env_mixed)
 
 ## Data Extraction for Modelling
 
-Once spatial folds are created, one can extract the data and see how it
-looks like right before it goes into an integrated modelling tool. You
-can access both ‘train’ and ‘test’ sets and their corresponding datasets
-as follows:
+Once spatial folds are created, one can extract the data and see what it
+looks like before it goes into an integrated modelling tool. You can
+access both ‘train’ and ‘test’ sets and their corresponding datasets as
+follows:
 
 ``` r
 
@@ -403,7 +403,7 @@ data and generated spatially independent partitions for robust model
 validation. By using
 [`create_folds()`](https://sodeidelphonse.github.io/isdmtools/reference/create_folds.md)
 and appropriate folds’ diagnostic tools, you’ve ensured that your model
-evaluation will account for spatial autocorrelation, providing a more
+evaluation accounts for spatial autocorrelation, providing a more
 realistic estimate of predictive performance.
 
 The `isdmtools` journey continues with model fitting and comprehensive

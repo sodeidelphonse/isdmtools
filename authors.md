@@ -15,10 +15,10 @@
 ## Citation
 
 Source:
-[`inst/CITATION`](https://github.com/sodeidelphonse/isdmtools/blob/v0.4.0/inst/CITATION)
+[`inst/CITATION`](https://github.com/sodeidelphonse/isdmtools/blob/main/inst/CITATION)
 
 Sode A. I., Fandohan A. B., Krainski E. T., Assogbadjo A. E., Glèlè
-Kakaï R. (2025). Integrating Presence-only and Abundance Data to Predict
+Kakaï R. (2026). Integrating Presence-only and Abundance Data to Predict
 Baobab (\*Adansonia digitata\* L.) Distribution: A Bayesian Data Fusion
 Framework. \*Environmental and Ecological Statistics\*.
 https://doi.org/10.1007/s10651-026-00737-2

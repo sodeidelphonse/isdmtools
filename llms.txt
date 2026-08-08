@@ -270,10 +270,10 @@ plot(geo_diag)
 
 For a comprehensive overview of spatial data resampling, please refer to
 the [Get
-started](https://sodeidelphonse.github.io/isdmtools/articles/isdmtools.md)
+started](https://sodeidelphonse.github.io/isdmtools/isdmtools.html)
 guide. To dive deep into the integrated modelling workflow, please,
 consult the advanced guide on the [ISDM Evaluation
-Workflow](https://sodeidelphonse.github.io/isdmtools/articles/isdm-workflow.md).
+Workflow](https://sodeidelphonse.github.io/isdmtools/isdm-workflow.html).
 
 ## 🤝 Contributing
 
