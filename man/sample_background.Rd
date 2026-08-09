@@ -64,7 +64,7 @@ plot(bg_sample2)
 
 }
 \seealso{
-Other BackgroundPoints methods: 
+Other BackgroundPoints methods:
 \code{\link{BackgroundPoints-methods}}
 }
 \concept{BackgroundPoints methods}

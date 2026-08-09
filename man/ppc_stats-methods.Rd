@@ -30,8 +30,8 @@ model fitted to the data.
 }
 }
 \seealso{
-Other PPC diagnostics: 
-\code{\link{compute_ppc_stats}()},
-\code{\link{simulate_replicates}()}
+Other PPC diagnostics:
+\code{\link[=compute_ppc_stats]{compute_ppc_stats()}},
+\code{\link[=simulate_replicates]{simulate_replicates()}}
 }
 \concept{PPC diagnostics}

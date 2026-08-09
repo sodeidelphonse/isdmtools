@@ -89,8 +89,8 @@ plot(ppc_results)
 }
 }
 \seealso{
-Other PPC diagnostics: 
+Other PPC diagnostics:
 \code{\link{ppc_stats-methods}},
-\code{\link{simulate_replicates}()}
+\code{\link[=simulate_replicates]{simulate_replicates()}}
 }
 \concept{PPC diagnostics}

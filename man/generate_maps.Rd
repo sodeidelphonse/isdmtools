@@ -107,8 +107,8 @@ generate_maps(
 
 }
 \seealso{
-Other prediction analyses: 
-\code{\link{format_predictions}()},
-\code{\link{suitability_index}()}
+Other prediction analyses:
+\code{\link[=format_predictions]{format_predictions()}},
+\code{\link[=suitability_index]{suitability_index()}}
 }
 \concept{prediction analyses}

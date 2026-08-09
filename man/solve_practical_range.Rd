@@ -68,8 +68,8 @@ solve_practical_range(param_val = 13.10, nu = 1.5, thresh = 0.1, engine = "spats
 }
 }
 \seealso{
-Other Matern covariance helpers: 
-\code{\link{plot.std_matern_corr}()},
-\code{\link{std_matern_corr}()}
+Other Matern covariance helpers:
+\code{\link[=plot.std_matern_corr]{plot.std_matern_corr()}},
+\code{\link[=std_matern_corr]{std_matern_corr()}}
 }
 \concept{Matern covariance helpers}

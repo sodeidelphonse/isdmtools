@@ -165,10 +165,10 @@ plot(env_diag)
 \seealso{
 \code{\link{DataFolds-methods}} for interacting with \code{DataFolds} objects.
 
-Other diagnostic tools: 
+Other diagnostic tools:
 \code{\link{EnvDiagnostic-methods}},
 \code{\link{GeoDiagnostic-methods}},
-\code{\link{check_folds}()},
-\code{\link{summarise_fold_diagnostics}()}
+\code{\link[=check_folds]{check_folds()}},
+\code{\link[=summarise_fold_diagnostics]{summarise_fold_diagnostics()}}
 }
 \concept{diagnostic tools}

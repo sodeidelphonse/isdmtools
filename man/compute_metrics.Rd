@@ -198,7 +198,7 @@ It can be viewed as a quick \emph{multi-criterion decision metric} for multiple 
 \seealso{
 \code{\link{extract_fold}}, \code{\link{sample_background}}
 
-Other ISDM evaluation methods: 
+Other ISDM evaluation methods:
 \code{\link{ISDMmetrics-methods}}
 }
 \concept{ISDM evaluation methods}

@@ -6,6 +6,7 @@ S3method(autoplot,DataFolds)
 S3method(check_env_balance,DataFolds)
 S3method(check_folds,DataFolds)
 S3method(extract_fold,DataFolds)
+S3method(extract_fold,default)
 S3method(plot,BackgroundPoints)
 S3method(plot,DataFolds)
 S3method(plot,EnvDiagnostic)
@@ -44,12 +45,16 @@ importFrom(ggplot2,autoplot)
 importFrom(graphics,points)
 importFrom(grid,unit)
 importFrom(rlang,.data)
-importFrom(stats,addmargins)
-importFrom(stats,rlnorm)
-importFrom(stats,rnbinom)
-importFrom(stats,rpois)
-importFrom(stats,uniroot)
+importFrom(stats,
+  addmargins,
+  rlnorm,
+  rnbinom,
+  rpois,
+  uniroot
+)
 importFrom(terra,map.pal)
 importFrom(units,set_units)
-importFrom(utils,head)
-importFrom(utils,tail)
+importFrom(utils,
+  head,
+  tail
+)

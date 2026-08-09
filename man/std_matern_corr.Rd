@@ -91,8 +91,8 @@ plot(matern_results$dist_vals, matern_results$cor,
 }
 }
 \seealso{
-Other Matern covariance helpers: 
-\code{\link{plot.std_matern_corr}()},
-\code{\link{solve_practical_range}()}
+Other Matern covariance helpers:
+\code{\link[=plot.std_matern_corr]{plot.std_matern_corr()}},
+\code{\link[=solve_practical_range]{solve_practical_range()}}
 }
 \concept{Matern covariance helpers}

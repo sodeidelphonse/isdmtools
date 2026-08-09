@@ -111,7 +111,7 @@ print(my_folds)
 \seealso{
 \code{\link[=check_folds]{check_folds()}} and \code{\link[=check_env_balance]{check_env_balance()}} for diagnostic analyses on folds.
 
-Other spatial blocking methods: 
+Other spatial blocking methods:
 \code{\link{DataFolds-methods}}
 }
 \concept{spatial blocking methods}

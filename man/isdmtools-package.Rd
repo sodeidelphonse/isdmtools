@@ -29,6 +29,11 @@ For a complete guide on the workflow, see the package vignettes:
 \author{
 \strong{Maintainer}: Akoeugnigan Idelphonse SODE \email{sdidelphonse@gmail.com} (\href{https://orcid.org/0000-0002-8556-239X}{ORCID}) (SODE A. Idelphonse - continued development of the main code)
 
+Authors:
+\itemize{
+  \item Akoeugnigan Idelphonse SODE \email{sdidelphonse@gmail.com} (\href{https://orcid.org/0000-0002-8556-239X}{ORCID}) (SODE A. Idelphonse - continued development of the main code)
+}
+
 Other contributors:
 \itemize{
   \item Adandé Belarmain Fandohan [contributor]

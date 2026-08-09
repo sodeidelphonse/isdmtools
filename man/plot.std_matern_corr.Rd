@@ -37,8 +37,8 @@ p + theme_bw() + ggtitle("Spatial Decay")
 }
 }
 \seealso{
-Other Matern covariance helpers: 
-\code{\link{solve_practical_range}()},
-\code{\link{std_matern_corr}()}
+Other Matern covariance helpers:
+\code{\link[=solve_practical_range]{solve_practical_range()}},
+\code{\link[=std_matern_corr]{std_matern_corr()}}
 }
 \concept{Matern covariance helpers}

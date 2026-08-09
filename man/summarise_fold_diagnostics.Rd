@@ -84,10 +84,10 @@ print(sum_diag)
 \seealso{
 \code{\link{DataFolds-methods}} for interacting with \code{DataFolds} objects.
 
-Other diagnostic tools: 
+Other diagnostic tools:
 \code{\link{EnvDiagnostic-methods}},
 \code{\link{GeoDiagnostic-methods}},
-\code{\link{check_env_balance}()},
-\code{\link{check_folds}()}
+\code{\link[=check_env_balance]{check_env_balance()}},
+\code{\link[=check_folds]{check_folds()}}
 }
 \concept{diagnostic tools}

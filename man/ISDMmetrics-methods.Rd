@@ -89,7 +89,7 @@ auc_only <- eval_results[grep("AUC", names(eval_results))]
 
 }
 \seealso{
-Other ISDM evaluation methods: 
-\code{\link{compute_metrics}()}
+Other ISDM evaluation methods:
+\code{\link[=compute_metrics]{compute_metrics()}}
 }
 \concept{ISDM evaluation methods}

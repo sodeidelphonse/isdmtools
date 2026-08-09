@@ -102,10 +102,10 @@ plot(spat_diag)
 \seealso{
 \code{\link{DataFolds-methods}} for interacting with \code{DataFolds} objects.
 
-Other diagnostic tools: 
+Other diagnostic tools:
 \code{\link{EnvDiagnostic-methods}},
 \code{\link{GeoDiagnostic-methods}},
-\code{\link{check_env_balance}()},
-\code{\link{summarise_fold_diagnostics}()}
+\code{\link[=check_env_balance]{check_env_balance()}},
+\code{\link[=summarise_fold_diagnostics]{summarise_fold_diagnostics()}}
 }
 \concept{diagnostic tools}

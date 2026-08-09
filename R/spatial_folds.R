@@ -282,6 +282,7 @@ extract_fold <- function(object, fold, ...) {
 }
 
 #' @method extract_fold default
+#' @exportS3Method
 extract_fold.default <- function(x) {
   cat("Default method for class", sQuote(class(x)), ".\n")
 }

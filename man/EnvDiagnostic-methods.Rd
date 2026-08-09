@@ -25,10 +25,10 @@
 Methods for EnvDiagnostic objects
 }
 \seealso{
-Other diagnostic tools: 
+Other diagnostic tools:
 \code{\link{GeoDiagnostic-methods}},
-\code{\link{check_env_balance}()},
-\code{\link{check_folds}()},
-\code{\link{summarise_fold_diagnostics}()}
+\code{\link[=check_env_balance]{check_env_balance()}},
+\code{\link[=check_folds]{check_folds()}},
+\code{\link[=summarise_fold_diagnostics]{summarise_fold_diagnostics()}}
 }
 \concept{diagnostic tools}

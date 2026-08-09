@@ -74,8 +74,8 @@ if (require("fmesher", quietly = TRUE)) {
 }
 }
 \seealso{
-Other prediction analyses: 
-\code{\link{generate_maps}()},
-\code{\link{suitability_index}()}
+Other prediction analyses:
+\code{\link[=generate_maps]{generate_maps()}},
+\code{\link[=suitability_index]{suitability_index()}}
 }
 \concept{prediction analyses}

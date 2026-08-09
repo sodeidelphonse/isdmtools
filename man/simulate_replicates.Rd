@@ -76,8 +76,8 @@ if (requireNamespace("DHARMa", quietly = TRUE)) {
 }
 }
 \seealso{
-Other PPC diagnostics: 
-\code{\link{compute_ppc_stats}()},
+Other PPC diagnostics:
+\code{\link[=compute_ppc_stats]{compute_ppc_stats()}},
 \code{\link{ppc_stats-methods}}
 }
 \concept{PPC diagnostics}

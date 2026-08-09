@@ -108,8 +108,8 @@ Fithian W, Elith J, Hastie T, Keith DA. Bias correction in species distribution 
 Phillips SJ, Anderson RP, Dudík M, et al Opening the black box: an open‐source release of Maxent. \emph{Ecography} (2017) 40:887–893. \doi{10.1111/ecog.03049}
 }
 \seealso{
-Other prediction analyses: 
-\code{\link{format_predictions}()},
-\code{\link{generate_maps}()}
+Other prediction analyses:
+\code{\link[=format_predictions]{format_predictions()}},
+\code{\link[=generate_maps]{generate_maps()}}
 }
 \concept{prediction analyses}
