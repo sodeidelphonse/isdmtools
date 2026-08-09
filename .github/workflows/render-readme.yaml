@@ -16,8 +16,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    env:
-      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v6
@@ -33,14 +31,12 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev gdal-bin libgdal-dev libproj-dev libudunits2-dev
 
-      # Uses r-lib's native dependency installer instead of setup-renv
-      - name: Install Package Dependencies and Rendering Tools
-        uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          extra-packages: |
-            local::.
-            rmarkdown
-            knitr
+      # Build environment purely from DESCRIPTION and required tools
+      - name: Install Infrastructure and Dependencies
+        run: |
+          Rscript -e 'options(repos = c(CRAN = "https://posit.co"))' \
+                  -e 'install.packages(c("callr", "remotes", "rmarkdown", "knitr"))' \
+                  -e 'remotes::install_local(".", dependencies = TRUE, upgrade = "never")'
 
       - name: Render README
         run: Rscript -e 'rmarkdown::render("README.Rmd")'
