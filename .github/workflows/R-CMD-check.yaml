@@ -4,6 +4,7 @@ on:
   push:
     branches: [main, master]
   pull_request:
+    branches: [main, master]
 
 name: R-CMD-check.yaml
 
@@ -39,12 +40,33 @@ jobs:
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
 
-      - uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          extra-packages: any::rcmdcheck
-          needs: check
+      - name: Install System Dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev gdal-bin libgdal-dev libproj-dev libudunits2-dev
 
-      - uses: r-lib/actions/check-r-package@v2
+      # Native installation of dependencies
+      - name: Install Package Dependencies
+        run: |
+          options(repos = c(CRAN = "https://r-project.org"))
+          if (!requireNamespace("remotes", quietly = TRUE)) install.packages("remotes")
+          if (!requireNamespace("rcmdcheck", quietly = TRUE)) install.packages("rcmdcheck")
+          remotes::install_local(".", dependencies = TRUE, upgrade = "never")
+        shell: Rscript {0}
+
+      - name: Check Package
+        run: |
+          rcmdcheck::rcmdcheck(
+            args = c("--no-manual", "--compact-vignettes=gs+qpdf"),
+            error_on = "error",
+            check_dir = "check"
+          )
+        shell: Rscript {0}
+
+      - name: Upload check results
+        if: failure()
+        uses: actions/upload-artifact@v7
         with:
-          upload-snapshots: true
-          build_args: 'c("--no-manual","--compact-vignettes=gs+qpdf")'
+          name: ${{ matrix.config.os }}-r${{ matrix.config.r }}-results
+          path: check
