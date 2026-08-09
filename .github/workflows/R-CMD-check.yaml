@@ -26,6 +26,7 @@ jobs:
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      R_PROFILE_USER: ""
       RENV_CONFIG_PAK_ENABLED: "false"
       RENV_DISABLE: "true"
       CRAN: "https://cloud.r-project.org"
