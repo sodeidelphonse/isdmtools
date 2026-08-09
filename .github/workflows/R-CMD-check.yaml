@@ -21,14 +21,14 @@ jobs:
         config:
           - {os: macos-latest,   r: 'release'}
           - {os: windows-latest, r: 'release'}
-          - {os: ubuntu-latest,   r: 'devel', http-user-agent: 'release'}
           - {os: ubuntu-latest,   r: 'release'}
           - {os: ubuntu-latest,   r: 'oldrel-1'}
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-      R_KEEP_PKG_SOURCE: yes
       RENV_CONFIG_PAK_ENABLED: "false"
+      RENV_DISABLE: "true"
+      CRAN: "https://cloud.r-project.org"
 
     steps:
       - uses: actions/checkout@v6

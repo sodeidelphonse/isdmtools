@@ -21,6 +21,8 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       RENV_CONFIG_PAK_ENABLED: "false"
+      RENV_DISABLE: "true"
+      CRAN: "https://cloud.r-project.org"
 
     permissions:
       contents: write
