@@ -282,9 +282,9 @@ extract_fold <- function(object, fold, ...) {
 }
 
 #' @method extract_fold default
-#' @exportS3Method
-extract_fold.default <- function(x) {
-  cat("Default method for class", sQuote(class(x)), ".\n")
+#' @export
+extract_fold.default <- function(object, fold = NULL, ...) {
+  cat("Default method for class", sQuote(class(object)), ".\n")
 }
 
 #' @rdname DataFolds-methods
