@@ -16,6 +16,8 @@ jobs:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       RENV_CONFIG_PAK_ENABLED: "false"
       RENV_DISABLE: "true"
+      RENV_CONFIG_AUTOLOAD: "false"
+      RENV_CONFIG_SHIMS_ENABLED: "false"
       CRAN: "https://cloud.r-project.org"
 
     steps:

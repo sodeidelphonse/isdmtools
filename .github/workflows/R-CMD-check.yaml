@@ -29,10 +29,12 @@ jobs:
       R_PROFILE_USER: ""
       RENV_CONFIG_PAK_ENABLED: "false"
       RENV_DISABLE: "true"
+      RENV_CONFIG_AUTOLOAD: "false"
+      RENV_CONFIG_SHIMS_ENABLED: "false"
       CRAN: "https://cloud.r-project.org"
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: r-lib/actions/setup-pandoc@v2
 

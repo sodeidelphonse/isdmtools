@@ -22,13 +22,15 @@ jobs:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       RENV_CONFIG_PAK_ENABLED: "false"
       RENV_DISABLE: "true"
+      RENV_CONFIG_AUTOLOAD: "false"
+      RENV_CONFIG_SHIMS_ENABLED: "false"
       CRAN: "https://cloud.r-project.org"
 
     permissions:
       contents: write
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: r-lib/actions/setup-pandoc@v2
 
